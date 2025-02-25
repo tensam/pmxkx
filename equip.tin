@@ -1,0 +1,271 @@
+#class {equip} open
+
+#nop ==========================Variable==========================
+#variable {equipClass} {1};
+
+#nop ===========================Alias============================
+#alias {equip.start} {
+    #class read $MOD/equipdm.tin;
+    #delay {10} {equip.check};
+}
+
+/*
+check_threshold_type
+div  评分/等级---建议0.6开始，各装备类型差异可能很大，谨慎使用 
+lvl 等级----按等级筛选
+int 智力----按智力筛选
+*/
+#nop equip.check mao lvl 15
+#alias {equip.check} {
+    #list {result_list} {clear};
+    #list {div_list} {clear};
+    #var {div_mid} {0};
+    #var {check_idx} {0};
+    #var {check_type} %1;
+    #var {check_threshold_type} {%2};
+    #var {check_threshold} {%3};
+    #var {check_threshold1} {%4};
+    #showme 检查下一件装备~~$check_type;
+}
+
+#alias {equip.cal} {
+    #if {"$check_threshold_type" == ""} {
+        #var {check_threshold_type} {$div};
+        #var {check_threshold} {$div_mid};  
+    };
+    #math {xequip_div} {$xequip_score.00/$xequip_lvl.00};
+    #if {$check_idx == 1} {#var {div_mean} {$xequip_div}};
+    #else {
+        #math {div_mean} {($div_mean*($check_idx-1)+$xequip_div)/$check_idx};
+    };
+    #list {div_list} {add} {$xequip_div};
+    #list {result_list} {add} {
+        {{cname}{$xequip_cname}{ename}{$xequip_ename}{score}{$xequip_score}{lvl}{$xequip_lvl}{$check_threshold_type}{${xequip_${check_threshold_type}}}}
+    };
+    #showme 计算完毕;
+}
+
+#alias {equip.show} {
+    #var l_idx 0;
+    #list {fit_list} {clear};
+    #list {disfit_list} {clear};
+    #while {$l_idx < &result_list[]} {
+        #math {l_idx} {$l_idx + 1};
+        #if {"$check_threshold_type" != "lvl"} {
+            #if {$result_list[$l_idx][$check_threshold_type] >= $check_threshold} {
+                #list {fit_list} {add} {
+                    {{idx}{$l_idx}{lvl}{$result_list[$l_idx][lvl]}{score}{$result_list[$l_idx][score]}{$check_threshold_type}{$result_list[$l_idx][$check_threshold_type]}}
+                };
+            }; 
+            #else {
+                #list {disfit_list} {add} {
+                    {{idx}{$l_idx}{lvl}{$result_list[$l_idx][lvl]}{score}{$result_list[$l_idx][score]}{$check_threshold_type}{$result_list[$l_idx][$check_threshold_type]}}
+                };
+            };
+        };
+        #else {
+            #if {$result_list[$l_idx][$check_threshold_type] >= $check_threshold && $result_list[$l_idx][$check_threshold_type] <= $check_threshold1} {
+                #list {fit_list} {add} {
+                    {{idx}{$l_idx}{lvl}{$result_list[$l_idx][lvl]}{score}{$result_list[$l_idx][score]}{$check_threshold_type}{$result_list[$l_idx][$check_threshold_type]}}
+                };
+            };
+            #else {
+                #list {disfit_list} {add} {
+                    {{idx}{$l_idx}{lvl}{$result_list[$l_idx][lvl]}{score}{$result_list[$l_idx][score]}{$check_threshold_type}{$result_list[$l_idx][$check_threshold_type]}}
+                };
+            };   
+        };
+    };
+    #unvariable l_idx;
+    #echo 要求：$check_threshold_type~~$check_threshold~~~$check_threshold1;
+    #if {&fit_list[] == 0} {#echo 未发现符合要求的装备} {#var fit_list};
+}
+
+#alias {xequip.reset} {
+    #unvariable xequip_%*;
+}
+
+#alias {xequip.record} {
+    #class xequip read $MOD/xequip.tin;
+    #var dbequip 111;
+    #class {xequip} write $MOD/dbtest.tin
+}
+
+#alias {db.update} {
+    #script {db} {python3 -c "lvl=$xequip_lvl"};
+    #script {db} {python3 $MOD/testdb.py}
+}
+
+#nop ===========================Action===========================
+#action {^%?%?检查下一件装备~~$check_type} {
+    #math {check_idx} {$check_idx+1};
+    l $check_type $check_idx;
+    #echo {$check_type $check_idx};
+    #delay {cal} {equip.cal} {0.2};
+}
+
+#action {^%?%?计算完毕} {
+    xequip.reset;
+    #showme 检查下一件装备~~$check_type;
+}
+
+#action {^%?%?你要看什么？} {
+    #undelay {cal};
+    #showme (评分/等级)均值~~~$div_mean;
+    #list {div_list} {sort};
+    #math {mid_idx} {&div_list[]/2};
+    #format {mid_idx} {%d} {$mid_idx};
+    #var {div_mid} {$div_list[$mid_idx]};
+    #showme (评分/等级)中值~~~~~$div_mid;
+    #showme 请查看结果 共&div_list[]件;
+    equip.show;
+}
+
+
+
+#action {%*伤%s害】:%s%+(%*锋%s利】:%s%+%s【硬%s度】:%s%+} {
+    #var xequip_dam %4;
+    #var xequip_sharp %8;
+    #var xequip_hardness %12;
+}
+
+#action {%*攻%s击】:%s%+%s【招%s架】:%s%+%s【气%s血】:%s%+%s【精%s神】:%s%+} {
+    #var xequip_att %4;
+    #var xequip_parry %8;
+    #var xequip_qx %12;
+    #var xequip_gin %16;
+}
+
+#action {%*内%s力】:%s%+%s【速%s度】:%s%+%s【容%s貌】:%s%+%s【福%s缘】:%s%+} {
+    #var xequip_force %4;
+    #var xequip_speed %8;
+    #var xequip_appearance %12;
+    #var xequip_lucky %16;
+}
+
+#action {%*力%s量】:%s%+%s【才%s智】:%s%+%s【体%s质】:%s%+%s【身%s法】:%s%+} {
+    #var xequip_str %4;
+    #var xequip_int %8;
+    #var xequip_con %12;
+    #var xequip_dex %16;
+}
+
+
+#action {%*护%s甲】:%s%+(%*防%s御】:%s%+%s【闪%s避】:%s%+} {
+    #var xequip_armor %4;
+    #var xequip_def %8;
+    #var xequip_dodge %12;
+}
+
+#action {%*护%s甲】:%s%+(%*攻%s击】:%s%+%s【招%s架】:%s%+} {
+    #var xequip_armor %4;
+    #var xequip_att %8;
+    #var xequip_parry %12;
+}
+
+#action {%*气%s血】:%s%+%s【精%s神】:%s%+%s【内%s力】:%s%+%s【速%s度】:%s%+} {
+    #var xequip_qx %4;
+    #var xequip_gin %8;
+    #var xequip_force %12;
+    #var xequip_speed %16;
+}
+
+
+#action {【%*%s系%s属%s性】:%s%+} {
+    #switch {"%1"} {
+        #case {"金"} {#var xequip_metal %6};
+        #case {"木"} {#var xequip_wood %6};
+        #case {"水"} {#var xequip_water %6};
+        #case {"火"} {#var xequip_fire %6};
+        #case {"土"} {#var xequip_earth %6};
+    } 
+}
+
+#action {%S额%s外 %+ 系%s伤%s害】:%s%+} {
+    #switch {"%3"} {
+        #case {"金"} {#var xequip_metal_dam %7};
+        #case {"木"} {#var xequip_wood_dam %7};
+        #case {"水"} {#var xequip_water_dam %7};
+        #case {"火"} {#var xequip_fire_dam %7};
+        #case {"土"} {#var xequip_earth_dam %7};
+    } 
+}
+
+#action {%S减%s少 %+ 系%s伤%s害】:%s%+} {
+    #switch {"%3"} {
+        #case {"金"} {#var xequip_metal_reduce %7};
+        #case {"木"} {#var xequip_wood_reduce %7};
+        #case {"水"} {#var xequip_water_reduce %7};
+        #case {"火"} {#var xequip_fire_reduce %7};
+        #case {"土"} {#var xequip_earth_reduce %7};
+    } 
+}
+
+#action {【%*%s系%s抗%s性】:%s%+} {
+    #switch {"%1"} {
+        #case {"金"} {#var xequip_metal_rst %6};
+        #case {"木"} {#var xequip_wood_rst %6};
+        #case {"水"} {#var xequip_water_rst %6};
+        #case {"火"} {#var xequip_fire_rst %6};
+        #case {"土"} {#var xequip_earth_rst %6};
+    } 
+}
+
+#action {【%*%s系%s特%s效%s攻%s击】:%s%+%} {
+    #switch {"%1"} {
+        #case {"金"} {#var xequip_metal_effect %8;#var xequip_effect %8};
+        #case {"木"} {#var xequip_wood_effect %8;#var xequip_effect %8};
+        #case {"水"} {#var xequip_water_effect %8;#var xequip_effect %8};
+        #case {"火"} {#var xequip_fire_effect %8;#var xequip_effect %8};
+        #case {"土"} {#var xequip_earth_effect %8;#var xequip_effect %8};
+    }
+}
+
+#action {%S兵%s器%s技%s能%s有%s效%s等%s级】:%s%+} {
+    #var xequip_weapon_enable %10;
+}
+
+/*
+【等 级】:  17  【力 量】:  40  【内 力】: 520
+*/
+
+#action {%S等%s级】:%s%+%s【} {
+    #var xequip_lvl %4;
+}
+
+#action {%S评%s价】:%s%+} {
+    #var xequip_score %4;
+}
+
+#action {%S保%s存】:%s%+} {
+    #var xequip_master %4;
+}
+
+
+#action {^%?%?%+(%+ %+)。} {
+    #var xequip_cname %3;
+    #var xequip_ename {%4 %5};
+    #var xequip_type {%5};
+}
+
+#prompt {请查看结果} {$check_type共$check_idx件 均值$div_mean 中值$div_mid} {1};
+
+/*
+仙品战靴(Xianpin xue)。
+★★★★★★★★★★★★★护★甲★属★性★★★★★★★★★★★★★
+【护 甲】: 180(95,+0%,+85)      【防 御】:   0  【闪 避】:   0
+【气 血】:   0  【精 神】:   0  【内 力】: 405  【速 度】:   0
+【力 量】:   0  【才 智】:   0  【体 质】:   4  【身 法】:   0
+★★★★★★★★★★★★★其★它★属★性★★★★★★★★★★★★★
+【木 系 抗 性】:  72
+【减 少 土 系 伤 害】:  41
+【减 少 火 系 伤 害】:  27
+★★★★★★★★★★★★★护★甲★要★求★★★★★★★★★★★★★
+【等 级】:  33                  【内 力】: 680
+★★★★★★★★★★★★飘★渺★侠★客★行★★★★★★★★★★★★
+【评 价】:  103
+*/
+
+
+ 
+#class {equip} close

@@ -1,0 +1,250 @@
+#class {mission_caiyao} open
+#nop ==========================Variable==========================
+#variable {mission_caiyaoClass} {1};
+
+#var {cy_blacklist} {
+    {1}{gw}
+    {2}{xkd}
+};
+
+#var {cyfight_flag} {0};
+
+#var {cy_List} {密林;草地;树林;河边};
+#var {kill_id} {};
+
+
+
+#var {spoils_List} {
+    {1}{{cname}{豹胎}{ename}{bao tai}{tar_cname}{豹子}{tar_ename}{baozi}}
+    {2}{{cname}{虎骨}{ename}{hu gu}{tar_cname}{老虎}{tar_ename}{laohu}}
+    {3}{{cname}{穿山甲鳞片}{ename}{lin pian}{tar_cname}{穿山甲}{tar_ename}{chuanshan jia}}
+    {4}{{cname}{牛黄}{ename}{niu huang}{tar_cname}{野牛}{tar_ename}{yeniu}}
+    {5}{{cname}{鲨胆}{ename}{sha dan}{tar_cname}{强盗}{tar_ename}{qiangdao}}
+    {6}{{cname}{黄金}{ename}{gold}{tar_cname}{土匪}{tar_ename}{tufei}}
+    {7}{{cname}{犀角}{ename}{xi jiao}{tar_cname}{犀牛}{tar_ename}{xiniu}}
+};
+
+#var {yao} {yao};
+
+#nop 负责卖东西的id
+#variable {yao_id} {yaoxm};
+#variable {sell_flag} {0};
+
+#variable {caiyao_escape} {};
+
+
+#nop ===========================Alias============================
+#alias {mission_caiyao.start}
+{
+	updatedolist mission_caiyao;
+    #class walk read $MOD/walk.tin;
+	#class fight read $MOD/fight.tin;
+    fly wm;e;s;s;e;e;n;n;
+    #delay {ask_cancel} {mission_caiyao.end}
+    ask ping about 采药;
+    quest;
+}
+
+
+
+#alias {mission_caiyao.kill}
+{
+	#unticker {caiyao};
+    #undelay {arrive};
+    #unticker {apply_yao};
+    #if {$walkClass == 1} {walk.kill};	
+	#if {$fightClass == 1} {fight.kill};
+    #echo {%c#class caiyao killed!} {cyan};
+	#class {caiyao} {kill};
+}
+
+
+#alias {mission_caiyao.end}
+{
+	caiyao.kill;
+	scmd {
+        halt;drop za cao;fly wm;w;
+    };
+}
+
+#alias {quest_finish} {
+    give $yao_quest to ping yizhi;
+}
+
+
+#alias {caiyao.go} {
+    #variable {vnum_list} {@gen_caiyao_vnumlist{$yao_loc}};
+    te walk;#map goto 1;
+    scmd {fight_ready;halt;vnum_list_go};
+}
+
+#alias {arrive_cmd} {#delay {arrive} {caiyao;#ticker {caiyao_act} {caiyao} {10}} {5}};
+
+#alias {caiyao.goon} {#delay {caiyao_goon} {caiyao;#ticker {caiyao_act} {caiyao} {10}} {3}};
+
+#alias {fight_cmd_under_attack} {
+    #var {cy_npc_cname} {%1};
+    #var {cyfight_flag} {1};
+    #list {sub_List} clr;
+    #foreach {$spoils_List[%*]} {item} {
+        #list {sub_List} {add} {$item[tar_cname]}
+    };
+    #list {sub_List} {find} {%1} {l_find};
+    #var {cy_npc_ename} {$spoils_List[$l_find][tar_ename]};
+    #var {yao} {$spoils_List[$l_find][ename]};
+    #var {kill_id} {$cy_npc_ename};
+    follow $cy_npc_ename;
+    #unticker {caiyao_act};
+    #undelay {arrive};
+    #delay {5} {
+        yun recover;
+        yun regenerate;
+	    #if {0 == $long_pfm} {
+            prefight;
+            #if {"$me[family]" != "少林派"} {busy_pfm};
+            #ticker {busy_test} {$status_test} {1};
+            #variable {cmd} {busy_pfm};
+        };
+    };	
+}
+
+
+
+#nop ===========================Action===========================
+
+#action {^%?%?平一指说道：我现在需要%*，在%2附近应该能找到。} {
+    #undelay ask_cancel;
+    #var {yao_quest} {%1};
+    #regex {%2} {%*、%*} {#var {yao_loc} {&1};} {#var {yao_loc} {%2}};
+    #variable {vnum_list} {@gen_caiyao_vnumlist{$yao_loc}};
+    #delay {3} {
+        te walk;#map goto 1;
+        scmd {fight_ready;halt;vnum_list_go};
+    };
+}
+
+
+#action {^%?%?你拿起药锄开始采药了。} {
+    #unticker {caiyao_act};
+}
+
+#action {^%?%?{这里似乎没有什么可以采的，到其他地方再找找吧。|这里的药好象已经被采光了，保护环境，再等等看吧。}} {
+    vnum_list_continue;
+}
+
+
+#action {^%?%?{你累得满头大汗、气喘吁吁，看来是没法再继续采药了。|你的精神不太好，休息一下吧。}} {
+    mission_caiyao.end;
+}
+
+
+#action {^%?%?你得到了一%.%.%.%1。} {
+    #delay {3} {
+        #switch {"%1"} {
+            #case {"$yao_quest"} {halt;fly wm;e;s;s;e;e;n;n;quest_finish;mission_caiyao.end};
+            #case {"杂草"} {drop za cao;caiyao.goon};
+            #default {
+                fly wm;e;s;s;e;e;n;n;drop xionghuang;sell yao;get xionghuang;
+                caiyao.goon;
+            };
+        }
+    }
+}
+
+
+#action {^{>?}%*脚下一个不稳，跌在地上一动也不动了。} {
+    #if {$cyfight_flag == 1} {
+        #unticker {busy_test};
+        kill $kill_id;
+    }
+} 
+
+#action {^%?%?$kill_id往%*落荒而逃了} {
+	#if {$cyfight_flag == 1} {
+		#variable caiyao_escape $cpathdir[%3];
+		#delay {caiyao_escape} {$caiyao_escape;kill $kill_id} {4};
+	}
+}
+
+#action {^%?%?这里没有 $kill_id。} {
+	#if {"$status_test" != "ai"} {
+		fight.end;
+		#undelay {caiyao_escape};
+		#variable cmd {$caiyao_escape;kill $kill_id};
+		#ticker {busy_test} {$status_test} {1};
+	}
+}
+
+#action {^%?%?通过这场战斗,你获得} {
+    #unticker {busy_test};
+    #delay {3} {get all from corpse;drop dao;drop jia}
+}
+
+#action {^%?%?{黑熊脚下一个不稳，跌在地上一动也不动了。|黑熊脚下一个不稳，跌在地上一动也不动了。}} {
+    get dan from corpse;eat dan;
+}
+
+#action {^%?%?你从$cy_npc_cname的尸体身上搜出一%*} {
+    #if {"$cy_npc_cname" != "土匪"} {
+        halt;
+        fly wm;e;s;s;e;e;n;n;sell $yao;
+        #unvariable {yao};
+        mission_caiyao.end;
+    };
+    #else {mission_caiyao.end};
+}
+
+
+#nop ==========================Function==========================
+/*  
+	function: gen_caiyao_total_vnumlist 
+	output: vnum list
+*/
+#function {gen_caiyao_total_vnumlist} {
+	#nop #list {result} clr;
+	#list {l_mapList} clr;
+    #foreach {$cy_List} {cyloc} {
+        #map goto 10;
+        #map list {roomname} {$cyloc} {variable} {l_mapList};
+        #if {&l_mapList[] > 0 } {
+            #foreach {*l_mapList[%*]} {l_vnum} {
+                #map goto $l_vnum;
+                #map get {roomarea} {l_roomarea};
+                #list {cy_blacklist} {find} {$l_roomarea} {l_find};
+                #if {$l_find == 0} {
+                    #list {result} {add} {$l_vnum}
+                };
+            };
+        };	
+    };
+}
+
+
+/*  
+	function: gen_caiyao_vnumlist 
+	input: %1 roomname(c_name)
+	output: vnum list
+*/
+#function {gen_caiyao_vnumlist} {
+	#list {result} clr;
+	#list {l_mapList} clr;
+    #map list {roomname} {%1} {variable} {l_mapList};
+    #if {&l_mapList[] > 0 } {
+        #foreach {*l_mapList[%*]} {l_vnum} {
+            #map goto $l_vnum;
+            #map get {roomarea} {l_roomarea};
+            #list {cy_blacklist} {find} {$l_roomarea} {l_find};
+            #if {$l_find == 0} {
+                #list {result} {add} {$l_vnum}
+            };
+        };
+    };
+    #unvariable l_%*;	
+}
+
+#nop ===========================Ticker===========================
+#ticker {caiyao_end} {mission_caiyao.end} {300};
+
+#class {mission_caiyao} close
+
+

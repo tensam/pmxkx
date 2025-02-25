@@ -1,0 +1,400 @@
+#class {fight} open
+#nop ==========================Variable==========================
+#variable {fightClass} {1};
+#variable {fight_name} {};
+#variable {busy_idx} {1};
+#variable {attack_idx} {1};
+#variable {status_test} {suicide};
+#variable {hardMode} {0};
+#variable {long_pfm} {0};
+#variable {bhurt} {0};
+#variable {bDropWeapon} {0};
+#variable {bTarDropWeapon} {0};
+#variable {bTardis} {0};
+#variable {bMedis} {0};
+
+#nop ===========================Alias============================
+#alias {fight.end} {
+	#unticker {busy_test};
+	#variable cmd {};
+	enforce none;
+}
+
+#alias {fight.kill} {
+	fight.end;
+	#class {fight} {kill};
+}
+
+#alias {busy_pfm} {
+	#if {$bDropWeapon} {
+		get $weapons[1];get $weapons[2];get $weaponType;
+		#variable {bDropWeapon} {0};
+		#variable {bMedis} {0};
+	};
+	#if {$bTarDropWeapon} {
+		get $weaponType;
+		#variable {bTarDropWeapon} {0};
+		#variable {bTardis} {0};
+	};
+	#if {$bUseBilin == 1} {get bilin zhen};
+	#if {$mission_task_nuoyiClass == 1} {
+		$nuoyi_pfm[$busy_idx];
+		#math busy_idx {$busy_idx+1};
+		#if {$busy_idx > &nuoyi_pfm[]} {#variable busy_idx 1};
+	};
+	#elseif {$ttask2Class == 1 && (&busy_team_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$busy_team_pfm[$busy_idx];
+		#math busy_idx {$busy_idx+1};
+		#if {$busy_idx > &busy_team_pfm[]} {#variable busy_idx 1};
+	};
+	#elseif {$mission_jianxiClass == 1 && (&attack_jx_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$attack_jx_pfm[$busy_idx];
+		#math busy_idx {$busy_idx+1};
+		#if {$busy_idx > &attack_jx_pfm[]} {#variable busy_idx 1};
+	};
+	#elseif {$mission_xiaojobClass == 1 && (&busy_xj_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$busy_xj_pfm[$busy_idx];
+		#math busy_idx {$busy_idx+1};
+		#if {$busy_idx > &busy_xj_pfm[]} {#variable busy_idx 1};
+	};
+	#else {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$busy_pfm[$busy_idx];
+		#math busy_idx {$busy_idx+1};
+		#if {$busy_idx > &busy_pfm[]} {#variable busy_idx 1};
+	}
+}
+
+#alias {attack_pfm} {
+	#if {$bDropWeapon} {
+		get $weapons[1];get $weapons[2];get $weaponType;
+		#variable {bDropWeapon} {0};
+		#variable {bMedis} {0};
+	};
+	#if {$bTarDropWeapon} {
+		get $weaponType;
+		#variable {bTarDropWeapon} {0};
+		#variable {bTardis} {0};
+	};
+	#if {$bUseBilin == 1} {get bilin zhen};
+	#if {$mission_task_nuoyiClass == 1} {nuoyi $kill_id to $kill_id};
+	#elseif {$mission_taskClass == 1 && (&attack_task_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$attack_task_pfm[$attack_idx];
+		#math attack_idx {$attack_idx+1};
+		#if {$attack_idx > &attack_task_pfm[]} {#variable attack_idx 1};
+	};
+	#elseif {$mission_xiaojobClass == 1 && (&attack_xiao_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$attack_xiao_pfm[$attack_idx];
+		#math attack_idx {$attack_idx+1};
+		#if {$attack_idx > &attack_xiao_pfm[]} {#variable attack_idx 1};
+	};
+	#elseif {$mission_guanfuClass == 1 && (&attack_gf_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$attack_gf_pfm[$attack_idx];
+		#math attack_idx {$attack_idx+1};
+		#if {$attack_idx > &attack_gf_pfm[]} {#variable attack_idx 1};
+	};
+	#elseif {$tiaozhanClass == 1 && (&attack_tiaozhan_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$attack_tiaozhan_pfm[$attack_idx];
+		#math attack_idx {$attack_idx+1};
+		#if {$attack_idx > &attack_tiaozhan_pfm[]} {#variable attack_idx 1};
+	};
+	#elseif {$mission_ttaskClass == 1 && (&attack_team_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$attack_team_pfm[$attack_idx];
+		#math attack_idx {$attack_idx+1};
+		#if {$attack_idx > &attack_team_pfm[]} {#variable attack_idx 1};
+	};
+	#elseif {$mzClass == 1 && (&attack_mz_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$attack_mz_pfm[$attack_idx];
+		#math attack_idx {$attack_idx+1};
+		#if {$attack_idx > &attack_mz_pfm[]} {#variable attack_idx 1};
+	};
+	#elseif {$shenshuClass == 1 && (&attack_ss_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$attack_ss_pfm[$attack_idx];
+		#math attack_idx {$attack_idx+1};
+		#if {$attack_idx > &attack_ss_pfm[]} {#variable attack_idx 1};
+	};
+	#elseif {$fimzClass == 1 && (&attack_mz_pfm[] > 0)} {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$attack_mz_pfm[$attack_idx];
+		#math attack_idx {$attack_idx+1};
+		#if {$attack_idx > &attack_mz_pfm[]} {#variable attack_idx 1};
+	};
+	#else {
+		#if {0 != &{wx_anti_force}} {enable force $wx_anti_force};
+		$attack_pfm[$attack_idx];
+		#math attack_idx {$attack_idx+1};
+		#if {$attack_idx > &attack_pfm[]} {#variable attack_idx 1};
+	}
+}
+
+#nop ===========================Action===========================
+#action {^%?%?看起来%*想杀死你} {
+	#variable {fight_name} %3;
+	#if {"$dolist[-1]" != "tiaozhan"|"mission_jianxi" } {fight_cmd_under_attack %3};
+}
+
+#action {^%?%?$busy_success} {
+	#if {$hardMode} {
+		#if {$bhurt} {#variable {cmd} {exert recover;erg;erf}};
+		#else {#variable {cmd} {attack_pfm;#variable {cmd} {busy_pfm}}};
+	};
+	#elseif {"$dolist[-1]" == "tiaozhan"} {
+		#variable {cmd} {attack_pfm};
+	};
+	#else {#variable {cmd} {attack_pfm}};
+}
+
+#action {^%?%?你{只觉得头昏脑胀，眼前一黑，接着什么也不知道了……|身行向后一跃，跳出战圈不打了}} {
+	#if {"$dolist[-1]" != "fimz"} {fight.end};
+}
+
+/*
+=========================================================================================
+if( ratio==100 ) return HIG "看起来充满活力，一点也不累。" NOR;
+if( ratio > 95 ) return HIG "似乎有些疲惫，但是仍然十分有活力。" NOR;
+if( ratio > 90 ) return HIY "看起来可能有些累了。" NOR;
+if( ratio > 80 ) return HIY "动作似乎开始有点不太灵光，但是仍然有条不紊。" NOR;
+if( ratio > 60 ) return HIY "气喘嘘嘘，看起来状况并不太好。" NOR;
+if( ratio > 40 ) return HIR "似乎十分疲惫，看来需要好好休息了。" NOR;
+if( ratio > 30 ) return HIR "已经一副头重脚轻的模样，正在勉力支撑著不倒下去。" NOR;
+if( ratio > 20 ) return HIR "看起来已经力不从心了。" NOR;
+if( ratio > 10 ) return RED "摇头晃脑、歪歪斜斜地站都站不稳，眼看就要倒在地上。" NOR;
+return RED "已经陷入半昏迷状态，随时都可能摔倒晕去。" NOR;
+=========escape action is added in core.tin when ratio <40===============================
+*/ 
+#action {^%?%?(%s你{看起来充满活力，一点也不累|似乎有些疲惫，但是仍然十分有活力|看起来可能有些累了|动作似乎开始有点不太灵光，但是仍然有条不紊}。%s)} {
+	#if {"$dolist[-1]" == "jingzuo"} {exert recover;erg;erf};
+	#elseif {$hardMode} {
+		#variable {bhurt} {1};
+		#variable {cmd} {busy_pfm};
+	};
+	#elseif {"$dolist[-1]" == "mission_jianxi"} {
+		#variable {cmd} {attack_pfm};
+	};
+	#else {#variable {cmd} {busy_pfm}};
+}
+
+#var b_ered 0;
+#action {^%?%?(%s你{气喘嘘嘘，看起来状况并不太好|似乎十分疲惫，看来需要好好休息了}。%s)} {
+	#if {"$dolist[-1]" == "jingzuo"} {exert recover;erg;erf};
+	#elseif {"$dolist[-1]" == "fimz" && $b_ered == 0} {#var b_ered 1;halt;exert recover;erg;erf;#delay {1} {#var b_ered 0}};
+	#elseif {$hardMode} {
+		#variable {bhurt} {1};
+		#variable {cmd} {busy_pfm};
+	};
+	#elseif {"$dolist[-1]" == "mission_jianxi"} {
+		#variable {cmd} {attack_pfm};
+	};
+	#else {#variable {cmd} {exert recover;erg;erf}};
+}
+
+#action {^%?%?你{深深吸了几口气，脸色看起来好多了|现在气力充沛}} {
+	#if {$hardMode} {
+		#variable {bhurt} {0};
+		#variable {cmd} {attack_pfm;#variable {cmd} {busy_pfm}};
+	};
+	#elseif {"$dolist[-1]" == "mission_jianxi"} {
+		#variable {cmd} {attack_pfm};
+	};
+	#else {#variable {cmd} {busy_pfm}};
+}
+
+
+#action {^%?%?%*{目前正自顾不暇|已在全力化解自已的招数，你可以放胆的击！}} {
+	#if {"$dolist[-1]" == "tiaozhan"} {
+		#math busy_idx {$busy_idx-1};
+		#if {$busy_idx<1} {#variable busy_idx &busy_pfm[]};	
+		#delay {busy} {busy_pfm} {1};
+	};
+	#else {
+		#math busy_idx {$busy_idx-1};
+		#if {$busy_idx<1} {#variable busy_idx &busy_pfm[]};	
+		attack_pfm;
+		#variable {cmd} {busy_pfm};
+	};
+}
+
+#action {^%?%?{你慢慢地移动著脚步，伺机出手。|你注视著%*的行动，企图寻找机会出手。}} {
+	busy_pfm;
+	#variable {cmd} {attack_pfm};
+}
+
+#action {^%?%?你尚未调息完毕，无法施展%*} {
+	kick;
+}
+
+/*{^%?%?{你以太极之意驱动手中.*刀画出无数个圆圈，向.*攻来！|你刀随心意，神在刀先，绵绵不绝，徐徐攻向.*收紧！}}  */
+#action {^%?%?{你以太极之意驱动手中|你刀随心意，神在刀先，绵绵不绝，徐徐攻向.*收紧！|你使出太极剑法「缠」字诀，一柄.*剑在画着一个个圆圈，每一招均是以弧形刺出}} {
+	#variable long_pfm 1;
+	#echo 长pfm状态是：$long_pfm;
+	#delay {long_pfm} {
+		#echo 7秒到了;
+		#variable long_pfm 0;
+		unwield all;
+		wield $weapons[2];
+	} {7};
+}
+
+
+#action {^%?%?{你使完一遍「乱环」诀，招数逐渐慢了下来|你不屑地望了.*一眼，将手中.*刀一向后摆，不再进攻|你将手中.*剑向后一摆，抱圆守一，撤回了散开的太极剑意．}} {
+	#variable long_pfm 0;
+	#undelay long_pfm;
+	unwield all;
+	wield $weapons[1];
+	$cmd;
+	#ticker {busy_test} {$status_test} {1};
+	#variable {cmd} {busy_pfm};
+}
+
+
+
+#action {^%?%?{.*微觉你招数涩滞，连忙急攻，制住了你的后招！|.*微觉你招数涩滞，急忙变招|.*看得真切，回招挡格了你中宫一刀，接着纵身一跃，已逃出圈外。|可是.*已然看穿了你的招数，孤注一掷直入圈心，破了你的「乱环」诀！}} {
+	#variable long_pfm 0;
+	#undelay long_pfm;
+	unwield all;
+	wield $weapons[1];
+	$cmd;
+	#ticker {busy_test} {$status_test} {1};
+	#variable {cmd} {busy_pfm};
+}
+
+
+#action {^%?%?做这种事当然需要一个安全的地方。} {
+	#if {"$status_test" != "ai"} {#variable status_test {ai}};
+	#else {
+		#if {$mission_guojobClass == 1} {
+			fight.end;
+			#undelay {heiyiren_escape};
+			#regex {$heiyiren_escape} {^$} {
+				get heiyi ren;
+				#ticker {get_heiyiren} {
+					#math heiyiren_idx {$heiyiren_idx+1};
+					get heiyi ren $heiyiren_idx;
+					#if {$heiyiren_idx > 4} {
+						#unticker {get_heiyiren};
+						#showme Fail to get heiyi ren!!!;
+					}
+				} {0.3}				
+			} {
+				$heiyiren_escape;kill heiyi ren;
+				#variable heiyiren_escape {};
+				#ticker {busy_test} {$status_test} {1};
+			}
+		};
+		#elseif {$tiaozhanClass == 1} {
+			fight.end;
+			#delay {5} {#showme tiaozhao over!!!};
+		};
+	}
+}
+
+#action {^%?%?你打架的时候也干这个？？？你还想不想活了？} {
+	#if {0 != &{long_pfm}} {
+		#if {0 == $long_pfm} {$cmd};
+	};
+	#else {$cmd};
+}
+
+#action {^{[^：]+}只能对战斗中的对手使用。} {
+	#math attack_idx {$attack_idx-1};
+	#if {$attack_idx < 1} {#variable {attack_idx} {&attack_pfm[]}};
+}
+
+#action {^%?%?你感觉全身气息翻腾，原来你真气不够，不能装备%*。} {
+	#if {$mission_taskClass == 1} {
+		fight.end;
+		scmd {halt;fly wm;w};
+	}	
+}
+
+
+#action {^%?%?{结果你手中的.*被这股阴柔之气震飞了出去|你心念电闪，一提内力，勒手仗剑，运劲于臂|你只觉得全身受到内力震荡，钻心般巨痛，一口鲜血喷出，手中.*坠地而出。|你只觉得浑身一热，手掌虎口巨痛，手中.*脱手而出。}} {
+	#variable {bDropWeapon} {1};
+}
+
+#action {^%*同时手腕一麻，手中%*{剑|箫|针|琴|笛|刀|锤|轮|杖|棍|棒|鞭}脱手而出} {
+	#switch {"%3"} {
+		#case {"剑"} {#var {weaponType} {jian}};
+		#case {"箫"} {#var {weaponType} {xiao}};
+		#case {"针"} {#var {weaponType} {zhen}};
+		#case {"琴"} {#var {weaponType} {qin}};
+		#case {"笛"} {#var {weaponType} {di}};
+		#case {"锤"} {#var {weaponType} {chu}};
+		#case {"轮"} {#var {weaponType} {lun}};
+		#case {"杖"} {#var {weaponType} {zhang}};
+		#case {"棍"} {#var {weaponType} {gun}};
+		#case {"棒"} {#var {weaponType} {bang}};
+		#case {"鞭"} {#var {weaponType} {bian}};
+		#default {#var {weaponType} {jian}};
+	};
+	#if {$bMedis == 1} {
+		#variable {bDropWeapon} {1};
+	};
+	#if {$bTardis == 1} {
+		#variable {bTarDropWeapon} {1};
+	};
+}
+
+
+#action {^%*顿时觉得眼前金光一闪，手腕一振，%*{剑|箫|针|琴|笛|刀|锤|轮|杖|棍|棒|鞭}脱手飞出！} {
+	#switch {"%3"} {
+		#case {"剑"} {#var {weaponType} {jian}};
+		#case {"箫"} {#var {weaponType} {xiao}};
+		#case {"针"} {#var {weaponType} {zhen}};
+		#case {"琴"} {#var {weaponType} {qin}};
+		#case {"笛"} {#var {weaponType} {di}};
+		#case {"锤"} {#var {weaponType} {chu}};
+		#case {"轮"} {#var {weaponType} {lun}};
+		#case {"杖"} {#var {weaponType} {zhang}};
+		#case {"棍"} {#var {weaponType} {gun}};
+		#case {"棒"} {#var {weaponType} {bang}};
+		#case {"鞭"} {#var {weaponType} {bian}};
+		#default {#var {weaponType} {jian}};
+	};
+	#if {"%1" == "你"} {
+		#variable {bDropWeapon} {1};
+	};
+	#else {#variable {bTarDropWeapon} {1}};
+}
+
+
+#action {^%?%?%1使出弹指神通之「弹指惊雷」, 顿时眼内精光暴射，} {
+	#if {"%1" == "你"} {
+		#var {bTardis} {1};
+	};
+	#else {#var {bMedis} {1}};
+}
+
+#action {$fight_name只觉得全身受到内力震荡，钻心般巨痛，一口鲜血喷出，手中%*{剑|箫|针|琴|笛|刀|锤|轮|杖|棍|棒|鞭}坠地而出。} {
+	#switch {"%2"} {
+		#case {"剑"} {#var {weaponType} {jian}};
+		#case {"箫"} {#var {weaponType} {xiao}};
+		#case {"针"} {#var {weaponType} {zhen}};
+		#case {"琴"} {#var {weaponType} {qin}};
+		#case {"笛"} {#var {weaponType} {di}};
+		#case {"锤"} {#var {weaponType} {chu}};
+		#case {"轮"} {#var {weaponType} {lun}};
+		#case {"杖"} {#var {weaponType} {zhang}};
+		#case {"棍"} {#var {weaponType} {gun}};
+		#case {"棒"} {#var {weaponType} {bang}};
+		#case {"鞭"} {#var {weaponType} {bian}};
+		#default {#var {weaponType} {jian}};
+	};
+	#variable {bTarDropWeapon} {1};
+}
+
+#action {^%?%?你经过一阵运功调息，又能施展「%*」} {
+}
+
+#nop ===========================Event============================
+#class {fight} close

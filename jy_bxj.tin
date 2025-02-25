@@ -1,0 +1,73 @@
+#class {jy_bxj} open
+#nop ==========================Variable==========================
+#variable {jyClass} {1};
+#variable {tri_lvl} {4};
+
+#nop ===========================Alias============================
+#alias {jy_bxj.start} {
+    updatedolist jy_bxj;
+    #alias {arrive_cmd} {pull sword};
+    gotonpc 金蛇锥;
+};
+
+#alias {jy_bxj.kill} {
+    #variable {tri_lvl} {5};
+    #unalias {arrive_cmd};
+    #class {jy_bxj} kill;
+}
+
+#alias {jy_bxj.end} {
+    jy_bxj.kill;
+    fly wm;w
+}
+
+
+#action {^%?%?你紧紧握住剑柄，潜运内力，嗤的一声响，拔了出来，剑柄下果然连有剑身} {
+    #2 mai skeleton;open xiao tiehe
+}
+
+#action {^%?%?你伸手打开铁盒，盒子里有三本书，上写《金蛇秘笈》四字，} {
+    #alias {arrive_cmd} {zhai hua};
+    walkto 879
+}
+
+
+#action {^%?%?{屏风上的字画被人先一步拿走了|剑好象已经被人拔走了|你身上没有这样东西。|你身上没有这样东西}} {
+    jy_bxj.end
+}
+
+#action {^%?%?你从屏风上摘下一幅画} {
+    fly ca;s;withdraw 20 gold;
+    #delay {2} {gotonpc 独臂神尼};
+}
+
+
+#action {^%?%?你踏进屋来，只见地上女尼横陈，喘息不止} {
+    give dubi hua
+}
+
+#action {^%?%?你拿出人物画(Renwu hua)给独臂神尼} {
+    #alias {arrive_cmd} {ask zhang chaotang about 南洋海图;give 1 gold to zhang chaotang};
+    #delay {15} {gotonpc 张朝唐}
+}
+
+#action {^%?%?张朝唐从怀里拿出一份地图交给你} {
+    fly fs;n;w;s;s;s;w;
+    ask lao chuanfu about 出海;give haitu to lao chuanfu;give 10 gold to lao chuanfu
+}
+
+
+#action {^%?%?大船终于停在了大海中一个大岛屿岸边。你走下船来} {
+    enter chuan
+} {1}
+
+#action {^%?%?大船终于抵达了一座小岛。你走下船来} {
+    #delay {3} {give yuan book1;give yuan book2;give yuan book3;give yuan jinshe jian}
+} {1}
+
+#action {^%?%?袁承志说道：%*能齐集此重宝，在下感激之至！} {
+    jy_bxj.end
+}
+
+
+#class {jy_bxj} close;

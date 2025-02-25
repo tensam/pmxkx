@@ -1,0 +1,17 @@
+#class fight2 open
+#alias {fi.go} {
+    te fight;
+    #var kill_id {};
+    #if {0 == $long_pfm} {
+        prefight;
+        #if {"$me[family]" != "少林派"} {busy_pfm};
+        #ticker {busy_test} {$status_test} {1};
+        #variable {cmd} {busy_pfm};
+    };	
+}
+
+#alias {fi.kill} {
+    #unticker busy_test;
+    ts fight;
+}
+#class fight2 close

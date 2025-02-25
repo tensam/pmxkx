@@ -1,0 +1,104 @@
+#class {food} open
+#nop ==========================Variable==========================
+#variable {foodClass} {1};
+#variable {foodCnt} {0};
+#variable {drinkCnt} {0};
+#variable {drinkMaxCnt} {40};
+#variable {myfood} {};
+#variable {mywater} {};
+
+#nop ===========================Alias============================
+#alias {food.start} {	
+	gotofood;	
+}
+
+#alias {food.kill} {	
+	#unticker {food_act};	
+	#if {"$myfood" != ""} {drop $myfood};
+	#if {"$mywater" != ""} {drop $mywater};	
+	#class {food} kill;
+}
+
+#alias {food.end} {
+	food.kill;
+	ihp;
+	#delay {2} {
+		#if {$robot && &mission_list[] > 0} {mission.do};
+		#else {scmd {halt;fly wm;w}};
+	}
+}
+
+#alias {gotofood} {	
+	#math {foodCnt} {$foodCnt + 1};
+	#if {$foodCnt == 1} {fly xyl;#2 w;s;order;#delay {food_failure} {halt;gotofood} {2}};	
+	#if {$foodCnt == 2} {fly xi;#2 w;#4 s;serve;#delay {food_failure} {halt;gotofood} {2}};
+	#if {$foodCnt == 3} {fly wm;e;n;#2 e;#2 s;serve;#delay {food_failure} {halt;gotofood} {2}};
+	#if {$foodCnt > 3} {
+		fly jx;buy jiu dai;
+		#if {$me[eff_food] < 1800} {buy zongzi};
+		#if {$me[eff_food] < 900} {buy zongzi};
+		#delay {food_failure} {food.end} {2}
+	};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?烧饭师傅给你一碗扬州炒饭和一碗西红柿蛋汤} {
+	#undelay {food_failure};
+	#variable {myfood} {chao fan};
+	#variable {mywater} {dantang};		
+	eat $myfood;
+	#if {&{drunkClass} == 0 || $me[eff_water]<2*$me[water]} {drink $mywater};
+	food.end;
+}
+
+#action {^%?%?烧饭师傅给你一碗高粱米饭和一碗野菜汤} {
+	#undelay {food_failure};
+	#variable {myfood} {mi fan};
+	#variable {mywater} {tang wan};	
+	eat $myfood;
+	#if {&{drunkClass} == 0 || $me[eff_water]<2*$me[water]} {#10 drink $mywater};
+	food.end;
+}
+
+#action {^%?%?小二哥连声答应，从内厅一溜烟跑出来，端着一碗米饭和一碗水拿了给你} {
+	#undelay {food_failure};
+	#variable {myfood} {mi fan};
+	#variable {mywater} {shui wan};	
+	eat $myfood;
+	#if {&{drunkClass} == 0 || $me[eff_water] < 2*$me[water]} {
+		#if {&{drunkClass} != 0} {#variable {drinkMaxCnt} {10}};
+		#ticker {food_act} {
+			drink $mywater;
+			#math {drinkCnt} {$drinkCnt + 1};
+			#if {$drinkCnt > $drinkMaxCnt} {food.end};
+		} {0.2};
+	};
+	#else {food.end};
+}
+
+#nop tintin V2.02.12有bug，scmd内嵌ticker中调用#math， #math计算不正确。移除了scmd。
+#action {^%?%?你从店小二那里买下了一个牛皮酒袋} {
+	#undelay {food_failure};
+	#variable {mywater} {jiu dai};	
+	#delay {food_wait} {
+		halt;fly tzf;sd;e;se;
+		#if {$me[eff_food] < 1800} {eat zongzi;drop zong ye};
+		#if {$me[eff_food] < 900} {eat zongzi;drop zong ye};
+		#if {&{drunkClass} == 0 || $me[eff_water] < 2*$me[water]} {
+			#if {&{drunkClass} != 0} {#variable {drinkMaxCnt} {15}};
+			#ticker {food_act} {
+				fill skin;drink skin;
+				#math {drinkCnt} {$drinkCnt + 1};
+				#if {$drinkCnt > $drinkMaxCnt} {food.end};
+			} {0.3};
+		};
+		#else {food.end};
+	} {2};
+}
+
+#action {^%?%?{水碗已经被喝得一滴也不剩了|你已经喝太多了，再也灌不下一滴水了}} {
+	#unticker {food_act};
+	food.end;
+}
+
+#class {food} close

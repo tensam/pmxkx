@@ -1,0 +1,182 @@
+#class {cure} open
+#nop ==========================Variable==========================
+#variable {cureClass} {1};
+#variable {poison_status} {1};
+#variable {l_nDan} {0};
+
+#nop count for buy drug 
+#variable {drug_cnt} {0};
+#variable {drug_type} {dan};
+
+#nop ===========================Alias============================
+#alias {cure.start} {
+	updatedolist cure;
+	#if {$me[eff_mana]*20 < $me[max_mana]} {fly thd;s;w;sleep};	
+	#elseif {$me[gin_ratio] > 70} {selfcure};
+	#else {
+		#math l_nDan {(104-$me[gin_ratio])/5-$traps[nDan]};
+		#if {$l_nDan > 0} {
+			#unticker {gin_cure};		
+			#variable {drug_type} {dan};
+			#if {$traps[nGold]>7} {gotoDrugStore;#$l_nDan buy yangjing dan};							
+			#else {fly ca;s;withdraw 19 gold;scmd {halt;gotoDrugStore;#$l_nDan buy yangjing dan}};
+		};
+		#else {ginCure};			
+	}
+}
+
+#alias {cure.kill} {
+	#unticker {gin_cure};
+	#class {cure} kill;
+}
+
+#alias {cure.end} {
+	cure.kill;
+	#showme {Health is OK!!!};
+}
+
+#alias {cure.halt} {
+	#delay {cure_halt} {
+		halt;
+		ihp;
+		#delay {1} {selfheal};
+	} {2};
+}
+
+#alias {selfcure} {
+	exert cure;
+	cure.halt;
+}
+
+#alias {selfheal} {
+	#variable {poison_status} {0};
+	#if {$me[gin_ratio] > 99 && $me[kee_ratio] > 99} {exert regenerate;exert recover;cure.end};
+	#elseif {$me[gin_ratio] < 100} {
+		#math l_nDan {(104-$me[gin_ratio])/5-$traps[nDan]};
+		#if {$l_nDan > 0} {
+			#unticker {gin_cure};
+			#variable {drug_cnt} {0};
+			#variable {drug_type} {dan};
+			#if {$traps[nGold]>7} {gotoDrugStore;#$l_nDan buy yangjing dan};							
+			#else {fly ca;s;withdraw 19 gold;scmd {halt;gotoDrugStore;#$l_nDan buy yangjing dan}};
+		};
+		#else {ginCure};
+	};
+	#else {exert regenerate;exert heal};
+}
+
+#alias {gotoDrugStore} {
+	#math {drug_cnt} {$drug_cnt+1};
+	#if {$drug_cnt > 5} {#variable {drug_cnt} {1}};
+	#if {$drug_cnt == 1} {fly bj;w;s};
+	#if {$drug_cnt == 2} {fly xi;e;s};
+	#if {$drug_cnt == 3} {fly wm;e;#2 s;#2 e;n};
+	#if {$drug_cnt == 4} {fly sz;w;#2 s;se;e;n};
+	#if {$drug_cnt == 5} {fly cd;#5 w;n;nw};
+	#delay {buydan_test} {#showme {药铺伙计被杀!!!}} {2};
+}
+
+#alias {ginCure} {
+	#ticker {gin_cure} {exert regenerate;eat yangjing dan} {2};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你并未中毒。} {	
+    #undelay {cure_halt};
+	selfheal;
+}
+
+#action {^%?%?你身上的%*毒性消褪了！} {
+	cure.halt;
+}
+
+#action {^%?%?你已经受伤过重，{经受不起真气震荡！|只怕一运真气便有生命危险！}} {
+	#variable {drug_type} {yao};
+	#if {$traps[nGold] > 10} {gotoDrugStore;buy jinchuang yao};			
+	#else {
+		fly ca;s;
+		withdraw 19 gold;
+		scmd {halt;gotoDrugStore;buy jinchuang yao}
+	};
+}
+
+#action {^%?%?{你.*真气不够|你的真气不足，无法运功疗伤|你现在的气太少了，无法产生内息运行全身经脉|你现在的身体状况太糟，无法运用内力}} {
+	#undelay {cure_halt};
+	fly thd;s;w;sleep;
+}
+
+#action {^%?%?你一觉醒来，只觉精力充沛。该活动一下了。} {
+	fly wm;w;
+	#unaction {^%?%?你一觉醒来，只觉精力充沛。该活动一下了。};
+}
+
+#action {^%?%?你正在运功疗伤，却发现自己所剩的内力不够了。} {
+	halt;fly wm;u;dazuo max;
+}
+
+#action {^%?%?$dazuo_end} {
+	#variable epochStamp @get_epoch_time{};
+	exert recover;
+	exert regenerate;
+	ihp;
+	#delay {1} {
+		#if {$me[eff_force] > $me[max_force]} {fly wm;nw;selfcure} {dazuo max};
+	}
+}
+
+#action {^%?%?良久，你感觉通过自己的内息运行，身上的伤势已经全好了。} {
+	exert recover;
+	cure.end;
+}
+
+#action {^%?%?你吃下一粒养精丹。} {
+	#math {traps[nDan]} {$traps[nDan]-1};
+	#if {$traps[nDan] < 1} {
+		#unticker {gin_cure};
+		ihp;
+		#delay {0.5} {
+			#if {$poison_status == 1} {scmd {selfcure}};
+			#else {scmd {exert regenerate;exert heal}};		
+		}
+	}
+}
+
+#action {^%?%?{你现在不需要用金创药。|你并没有受伤！}} {	
+	exert recover;
+	cure.end;
+}
+
+#action {^%?%?你的精元没有损伤，不需要吃药。} {
+	#unticker {gin_cure};
+	#variable {me[gin_ratio]} {100};
+	exert regenerate;
+	#if {$poison_status == 1} {selfcure};
+	#elseif {$me[kee_ratio] < 100} {exert heal};
+	#else {cure.end};
+}
+
+#action {^%?%?你从%*那里买下了一粒养精丹。} {
+	#undelay {buydan_test};
+	#math {traps[nDan]} {$traps[nDan]+1};
+	#delay {buydan_finish} {
+		scmd {halt;fly wm;nw;ginCure}
+	} {1}
+}
+
+#action {^%?%?你从%*那里买下了一包金创药。} {
+	#undelay {buydan_test};
+	scmd {halt;fly wm;eat jinchuang yao;scmd {u;dazuo max}};
+}
+
+#action {^%?%?药铺伙计被杀!!!} {
+	#delay {1} {
+		halt;gotoDrugStore;
+		#if {"$drug_type" == "dan"} {#$l_nDan buy yangjing dan};
+		#else {buy jinchuang yao};
+	};
+}
+
+#nop ===========================Ticker===========================
+#ticker {cure_antiidle} {#if {$robot == 1 && @get_epoch_time{} > $epochStamp+40} {halt;fly wm;w}} {20};
+
+#class {cure} close

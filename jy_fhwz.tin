@@ -1,0 +1,88 @@
+#class {jy_fhwz} open
+#nop ==========================Variable==========================
+#variable {jy_fhwzClass} {1};
+#variable {tri_lvl} {4};
+
+#nop ===========================Alias============================
+#alias {jy_fhwz.start} {
+    updatedolist jy_fhwz;
+    fly ca;s;withdraw 2 gold;
+    #alias {arrive_cmd} {ask yuan about 胡斐;#delay {2} {mount ma}};
+    #delay {2} {gotonpc 袁紫衣};
+};
+
+#alias {jy_fhwz.kill} {
+    #variable {tri_lvl} {5};
+    #unalias {arrive_cmd};
+    #class {jy_fhwz} kill;
+}
+
+#alias {jy_fhwz.end} {
+    jy_fhwz.kill;
+    fly wm;w
+}
+
+#action {^%?%?{获得奖励|你身上没有这样东西。|你身上没有这样东西}} {
+    jy_fhwz.end
+}
+
+#action {^%?%?你想骑什么？} {
+   uw;kill yuan
+}
+
+#action {^%?%?袁紫衣扑在地上挣扎了几下，口中喷出几口鲜血，死了！} {
+   jy_fwhz.end
+} {1}
+
+#action {^%?%?你潇洒地一个纵身，稳稳地骑在白马上！} {
+   w;s;# 4 e;ne;nw;nd;#15 n;
+}
+
+
+#action {^%?%?汉水南岸} {
+   yell boat;enter
+}
+
+
+
+
+#action {^%?%?艄公说“到啦，上岸吧”，随即把一块踏脚板搭上堤岸。} {
+   out;
+}
+
+#action {^%?%?汉水北岸} {
+   #8 n;ne;nw;#4 ne;n;ne;ne;#6 n;e;e;ne;e;n;
+   e;e;e;se;e;se;e;n;
+   ask hu about 袁紫衣;ask hu about 钟四嫂;
+}
+
+#action {^%?%?船很快停靠彼岸。你抬脚跨出船来。} {
+   e;e;e;se;e;se;e;n;
+   ask hu about 袁紫衣;ask hu about 钟四嫂;
+}
+
+#action {^%?%?胡斐说道：这位%*可否帮我了却这番心愿？} {
+   fly xi;e;e;e;s;buy mu gun;uw;wield gun;
+   #delay {3} {fly fs;n;ask zhong sisao about 鹅};
+}
+
+#action {^%?%?看起来钟四嫂想杀死你} {
+   halt;ask zhong sisao about 鹅;
+}
+
+
+#action {^%?%?钟四嫂给你一把菜刀。} {
+   uw;fly fs;n;e;n;kill feng tiannan
+}
+
+
+#action {^%?%?凤天南扑在地上挣扎了几下，口中喷出几口鲜血，死了！} {
+   uw;wield dao;kantou corpse
+} {1}
+
+#action {^%?%?你挥起%*将凤天南的尸体的脑袋砍了下来。} {
+   #alias {arrive_cmd} {uw;give hu head;give hu cai dao};
+   gotonpc 胡斐
+}
+
+#class {jy_fhwz} close;

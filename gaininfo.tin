@@ -1,0 +1,120 @@
+#class {gaininfo} open
+#nop ==========================Variable==========================
+#variable {gaininfoClass} {1};
+
+#nop ===========================Alias============================
+#alias {gaininfo.kill} {
+	#class {gaininfo} {kill};
+};
+
+#nop ===========================Action===========================
+#action {^%?%?【伤 害】:%s%d(%*)%s【锋 利】:%s%d%s【硬 度】:%s%d%s$} {
+    #variable item[伤害] %4;
+    #variable item[锋利] %8;
+    #variable item[硬度] %11;
+}
+
+#action {^%?%?【护 甲】:%s%d(%*)%s【防 御】:%s%d%s【闪 避】:%s%d%s$} {
+    #variable item[护甲] %4;
+    #variable item[防御] %8;
+    #variable item[闪避] %11;
+}
+
+#action {^%?%?【攻 击】:%s%d%s【招 架】:%s%d%s【气 血】:%s%d%s【精 神】:%s%d%s$} {
+    #variable item[攻击] %4;
+    #variable item[招架] %7;
+    #variable item[气血] %10;
+    #variable item[精神] %13;
+}
+
+#action {^%?%?【内 力】:%s%d%s【速 度】:%s%d%s【容 貌】:%s%d%s【福 缘】:%s%d%s$} {
+    #variable item[内力] %4;
+    #variable item[速度] %7;
+    #variable item[容貌] %10;
+    #variable item[福缘] %13;    
+}
+
+#action {^%?%?【气 血】:%s%d%s【精 神】:%s%d%s【内 力】:%s%d%s【速 度】:%s%d%s$} {
+    #variable item[气血] %4;
+    #variable item[精神] %7;
+    #variable item[内力] %10;
+    #variable item[速度] %13;
+}
+
+#action {^%?%?【力 量】:%s%d%s【才 智】:%s%d%s【体 质】:%s%d%s【身 法】:%s%d%s$} {
+    #variable item[力量] %4;
+    #variable item[才智] %7;
+    #variable item[体质] %10;
+    #variable item[身法] %13;
+}
+
+#action {^%?%?【%*五 行%*】:%s%d} {
+    #variable item[五行] 1;
+}
+
+#action {^%?%?【%*特 效%*】:%s%d%s$} {
+    #variable item[特效] 1；
+}
+
+#action {^%?%?【%+ 系 抗 性】:%s%d} {
+    #variable item[五行抗性] %3;
+}
+
+#action {^%?%?【减 少 %+ 系 伤 害】:%s%d} {
+    #variable item[五行减伤] %3;
+}
+
+#action {^%?%?【%*有 效 等 级】:%s%d} {
+    #variable item[有效等级] 1;
+}
+
+#action {^%?%?【兵 器 技 能 有 效 等 级】:%s%d} {
+    #variable item[兵器节能有效等级] 1;
+}
+
+#action {^{[○|★]+}$} {
+    #variable l_buff %0;
+    #replace {l_buff} {★} {};
+    #if {"$l_buff" != ""} {
+        #list l_list tokenize $l_buff;
+        #list l_list size item[孔洞];
+        #unvariable l_list;
+    };
+    #unvariable l_buff;
+}
+
+#action {^%?%?【等 级】:%s%d%s【} {
+    #variable item[等级] %4;
+    #if {$item[等级] == 99} {drop $item[id]};
+    #if {$batchfilterClass} {#math idx {$idx-1}};
+}
+
+#action {^%?%?【保 存】:%*$} {
+    #format {item[保存]} {%p} {%3};
+    #format {item[保存]} {%l} {$item[保存]};
+}
+
+#action {^%?%?【评 价】:%s%d%s$} {
+    #variable item[评价] %4;
+    gaininfo.kill;
+    #if {$gainfilterClass} {item.filter};
+}
+
+
+
+#action {^★★★★★★★★★★★★★宝★石★属★性★★★★★★★★★★★★★} {
+    #var gem[lines] 0;
+    #action {^%?%?【%*】:%*$} {
+        #math {gem[lines]} {$gem[lines] + 1};
+        #if {"%%3" == "才 智"} {#format {gem[才智]} {%p} {%%4}};
+        #elseif {"%%3" == "%*特 效%*"} {#format {gem[特效]} {%p} {%%4}};
+        #elseif {"%%3" == "等 级 要 求"} {
+            #format {gem[等级]} {%p} {%%4};
+            #unaction {^%?%?【%*】:%*$};
+            gaininfo.kill;
+            #if {$gainfilterClass} {gem.filter};
+        }
+    }
+}
+
+#class {gaininfo} close

@@ -1,0 +1,69 @@
+#class {jy_sdxl} open
+#nop ==========================Variable==========================
+#variable {jy_sdxlClass} {1};
+#variable {tri_lvl} {4};
+
+#nop ===========================Alias============================
+#alias {jy_sdxl.start} {
+    updatedolist jy_sdxl;
+    fly xi;w;n;n;n;ask guo about 郭襄;ask huang about 郭襄;ask guo about 救郭襄;
+    #var {end_flag} {0};
+};
+
+#alias {jy_sdxl.kill} {
+    #variable {tri_lvl} {5};
+    #unalias {arrive_cmd};
+    #class {jy_sdxl} kill;
+}
+
+#alias {jy_sdxl.end} {
+    jy_sdxl.kill;
+    fly wm;w
+}
+
+
+#action {^%?%?{你向郭靖打听有关『蒙哥』的消息|你身上没有这样东西。|你身上没有这样东西}} {
+    jy_sdxl.end
+}
+
+#action {^%?%?郭靖说道：这个丫头真不让人省心！眼下战事正急，这位%*能否帮我请几位高人前来助阵} {
+    fly thd;ask huang about 救郭襄;n;n;e;e;s;s;e;enter;ask zhou about 救郭襄;
+    fly gm;ask yang about 救郭襄;
+    fly xi;w;n;n;n;ask guo about 救郭襄;
+}
+
+#action {^%?%?郭靖说道：好，人都到齐了，大伙前往西门集合} {
+    fly xi;#5 w;ask guo about 救郭襄;
+    #delay {2} {#ticker {gowest} {west} {3}}
+}
+
+#action {^%?%?先救人要紧，郭襄正被绑在高台上！} {
+    #unticker gowest;up;kill daerba;kill fawang;
+    #ticker {free} {free guo xiang} {2}
+}
+
+
+#action {^%?%?你将郭襄从木桩上救了下来} {
+    #unticker free;d;
+    #ticker {gowest} {w} {3};
+}
+
+#action {^%?%?大汗金帐} {
+    #unticker {gowest};
+    te fight2;kill meng ge
+}
+
+#action {^%?%?你成功击杀蒙古大汗蒙古，蒙古军大乱，溃不成军，大军向北退却} {
+    #ticker {goeast} {e} {5};
+    #var {end_flag} {1}
+}
+
+#action {^%?%?白虎外门} {
+    #if {$end_flag == 1} {
+        #unticker goeast;
+        #delay {5} {fly xi;w;n;n;n;ask guo about 蒙哥};
+        #unaction {^%?%?白虎外门}
+    }
+}
+
+

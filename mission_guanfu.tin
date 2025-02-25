@@ -1,0 +1,242 @@
+#class {mission_guanfu} open
+#nop ==========================Variable==========================
+#variable {mission_guanfuClass} {1};
+#variable {kill_id} {};
+#variable {gf_escape_way} {};
+
+#nop ===========================Alias============================
+#alias {mission_guanfu.start} {
+	#if {!$robot || ($robot && "$dolist[-1]" != "mission_guanfu")} {		
+		updatedolist mission_guanfu;
+		#variable {mission_complete} {0};		
+		#class walk read $MOD/walk.tin;
+		#class fight read $MOD/fight.tin;
+		fly wm;e;#2 s;w;#2 s;e;jie wenshu;
+	};
+}
+
+#alias {mission_guanfu.kill} {
+	ensure_fly;
+	#if {$walkClass == 1} {walk.kill};
+	#if {$fightClass == 1} {fight.kill};
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_guanfu} {kill};
+	#echo {%c#class mission_guanfu killed!} {cyan};
+}
+
+#alias {mission_guanfu.end} {
+	mission_guanfu.kill;
+	scmd {halt;fly wm;w};
+}
+
+#alias {arrive_cmd} {
+	l;#showme arrived!!!;
+}
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "$gf_npc"} {		
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	}
+}
+
+#nop ===========================Action===========================
+#action {^%?%?{你推开围观的行人，走到近前，微微睁开眼睛，冷冷瞥了一眼告示，随手揭了下来揣进了怀中。|你壮了壮胆，费力拔开行人，来到近前深深吸了口气，竭力镇定一下紧张的心情，四下看了看，悄悄把文书揭了下来。|你分开行人来到近前，目光淡淡的扫视了几眼告示，嘴角微微一翘，神态自如的把文书揭了下来。}} {
+	#map goto 87;
+	kan wenshu;
+}
+
+#action {^%?%?你已经揭过榜了} {
+	mission_guanfu.kill;
+	#delay {2} {mission.do};
+}
+
+#action {^%?%?你身上还有文书11} {
+	mission_guanfu.kill;
+	#if {1 == $finish_flag} {quit};
+	#else {#delay {2} {mission.do}};
+}
+
+#action {^%?%?你身上还有文书} {
+	mission_guanfu.kill;
+	#delay {2} {mission.do};
+}
+
+#action {^%?%?111111~~~~~你{身上还有文书|已经揭过榜了}} {
+	mission_guanfu.kill;
+	#var l_mstask @select_task{};
+	#if {"$l_mstask" == "mission_task"} {quit};
+	#else {#delay {2} {mission.do}};
+}
+
+#action {^%?%?“江洋大盗「%*」，悬赏捉拿”。据飞鸽传书，该犯目前出没于「{.*}{☆|◇|◎}{.*}」附近} {
+	#variable {gf_npc} {%3};
+	#variable {gf_area} {%4};
+	#variable {gf_room} {%6};
+	#variable {target_bfind} {0};
+	#variable {neighbor} {0};
+	#variable {vnum_list} {@gen_location_vnumlist{$gf_area;$gf_room}};
+	#if {&vnum_list[] == 0} {
+		#line log {$LOG/guanfu.log} {@get_current_time{} $me[ename] $gf_area $gf_room 江洋大盗没找到};
+		mission_guanfu.end} {scmd {halt;vnum_list_go}};
+}
+
+#action {^%?%?“近有扰民野兽「%*」出没于「{.*}{☆|◇|◎}{.*}」附近} {
+	#variable {gf_npc} {%3};
+	#variable {gf_area} {%4};
+	#variable {gf_room} {%6};
+	#variable {target_bfind} {0};
+	#variable {neighbor} {0};
+	#variable {vnum_list} {@gen_location_vnumlist{$gf_area;$gf_room}};
+	#if {&{vnum_list[]} == 0} {
+		#line log {$LOG/guanfu.log} {@get_current_time{} $me[ename] $gf_area $gf_room 野兽没找到};
+		mission_guanfu.end} {scmd {halt;vnum_list_go}};
+}
+
+#action {^%?%?$dazuo_end} {
+	#echo in~guanfu~mission~~~~~~~~;
+	exert recover;#map goto 10;
+	#echo &{vnum_list[]};
+	#if {&{vnum_list[]} == 0} {
+		#line log {$LOG/guanfu.log} {@get_current_time{} $me[ename] $gf_area $gf_room 打坐结束room没找到};
+		mission_guanfu.end} {#delay {2} {halt;vnum_list_go}};
+};
+
+#action {^%?%?$gf_npc%*向「{.*}{☆|◇|◎}{.*}」处} {
+	walk.stop;
+	fight.end;
+	#undelay {neighbor_search};
+	#variable {gf_area} {%4};
+	#variable {gf_room} {%6};
+	#variable {target_bfind} {0};
+	#variable {neighbor} {0};
+	#variable {vnum_list} {@gen_location_vnumlist{$gf_area;$gf_room}};
+	#if {&{vnum_list[]} == 0} {
+		#line log {$LOG/guanfu.log} {@get_current_time{} $me[ename] $gf_area $gf_room 逃跑room没找到};
+		mission_guanfu.end
+	};
+	#else {
+		ihp;
+		#delay {1} {
+			#if {$me[eff_force]>$me[max_force]} {scmd {halt;er;vnum_list_go}};
+			#else {#map leave;scmd {halt;fly wm;u;dazuo max}};
+		};
+	} ;
+}
+
+#action {^%?%?目标好像往「{.*}{☆|◇|◎}{.*}」处溜了。} {
+	walk.stop;
+	fight.end;
+	#undelay {neighbor_search};
+	#variable {gf_area} {%3};
+	#variable {gf_room} {%5};	
+	#variable {target_bfind} {0};
+	#variable {neighbor} {0};
+	#variable {vnum_list} {@gen_location_vnumlist{$gf_area;$gf_room}};
+	#if {&vnum_list[] == 0} {
+		#line log {$LOG/guanfu.log} {@get_current_time{} $me[ename] $gf_area $gf_room 目标逃跑room没找到};
+		mission_guanfu.end
+	};
+	#else {
+		ihp;
+		#delay {1} {
+			#if {$me[eff_force]>$me[max_force]} {scmd {halt;er;vnum_list_go}};
+			#else {#map leave;scmd {halt;fly wm;u;dazuo max}};
+		};
+	} ;
+}
+
+#action {^%*{砍|咬}死$me[cname]%*$gf_npc(%*)} {
+	walk.stop;
+	#variable {target_bfind} {1};
+	#format {kill_id} {%l} {%4};
+	#if {"$walk_area" != "gcmg"} {follow $kill_id} {follow none};
+	kill $kill_id;
+}
+
+#action {$gf_npc正坐在地下运功疗伤。} {
+	#if {"$gf_npc" != ""} {
+		walk.stop;
+		#variable {target_bfind} {1};
+		#if {"$walk_area" != "gcmg"} {follow $kill_id};
+		kill $kill_id;
+	}
+}
+
+#action {^%?%?$gf_npc{看到你目光冷冷注视着自己一动不动，不由停下了脚步|额头青筋跳动，冷哼了一声，瞪着通红的眼睛向着你就冲了过去|气急败坏的对你嚷道，杀人不过头点地，你一再苦苦向逼|.*走了过来|瞅准你一个不注意，冷不防向你扑来|冲你一阵狂哮，扑将上来做困兽之斗|与你目光接触，立刻警觉起来}} {
+    #if {"$gf_npc" != ""} {
+		walk.stop;
+		l;
+	};
+}
+
+#action {^%?%?$gf_npc往%*{落荒而逃了|一窜就消失了}} {
+	fight.end;
+	#variable gf_escape_way {@get_escape_way{%4}};
+	scmd {$gf_escape_way;kill $kill_id};
+}
+
+#action {^%?%?这里没有这个人} {
+	#delay {guanfu_missing} {#variable target_bfind 0;#showme Target Missing!!!} {1};
+}
+
+#action {^%?%?$gf_npc{.*}死了} {
+	fight.end;
+	wancheng corpse;	
+	#delay {2} {
+		scmd {
+			halt;get all from corpse;drop bu yi;			
+			#if {$xuedaoClass == 1} {xuedao.prepare;kantou corpse;drop head};
+			#if {"$me[family]" == "密宗" && &skill_list[密宗心法] != 0} {get corpse;fly xs;n;w;s;ask fawang about fashi;give fawang corpse;drop corpse};
+			#delay {1} {
+				eat dan;
+				te pawnshop;rand_pawn;sell gang dao;sell gang jian;sell yin jian;
+				scmd {mission_guanfu.end};
+			};	
+		};
+	};
+}
+
+#action {^%?%?这里不能使用月光宝盒。} {
+	fight.end;
+	walk.stop;
+	halt;d;out;
+	#if {&vnum_list[] == 0} {
+		#line log {$LOG/guanfu.log} {@get_current_time{} $me[ename] $gf_area $gf_room 不能使用月光宝盒};
+		scmd {mission_guanfu.end};
+	};
+	#else {
+		scmd {halt;walk.to $vnum_list[$vnum_idx]};
+	};
+}
+
+#action {^%?%?你可以选择同意(yes)或者拒绝(no)。} {
+	#if {$bribe} {
+		yes;
+		walk.stop;
+		fight.end;
+		halt;scmd {mission_guanfu.end};			
+	}	
+}
+
+#action {^%?%?你今日已完成了%s%d/%d%s次官府任务} {	
+	#variable {mission_complete} {1};    
+	#variable {mission_status[mission_guanfu][complete]} {%4};
+	#variable {mission_status[mission_guanfu][total]} {%5};
+}
+
+#nop ===========================prompt===========================
+#prompt {^%?%?“江洋大盗「%*」，悬赏捉拿”。据飞鸽传书，该犯目前出没于「{.*}{☆|◇|◎}{.*}」附近} {官府：[%4]-[%6]} {2} {5};
+#prompt {^%?%?“近有扰民野兽「%*」出没于「{.*}{☆|◇|◎}{.*}」附近} {官府：[%4]-[%6]} {2} {5};
+#prompt {^%?%?$gf_npc%*向「{.*}{☆|◇|◎}{.*}」处} {官府：[%4]-[%6]} {2} {5};
+#prompt {^%?%?目标好像往「{.*}{☆|◇|◎}{.*}」处溜了。} {官府：[%3]-[%5]} {2} {5};
+#prompt {^%?%?$gf_npc{.*}死了} {官府：Done} {2} {5};
+
+#nop ===========================Ticker===========================
+#ticker {mission_guanfu_end} {#echo {%cAutomatic killed：} {cyan};#line log {$LOG/guanfu.log} {@get_current_time{} $me[ename] $gf_area $gf_room 时间到了};mission_guanfu.end} {300};
+
+#class {mission_guanfu} close

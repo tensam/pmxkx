@@ -1,0 +1,612 @@
+#class {mission_task} open
+#nop ==========================Variable==========================
+#variable {mission_taskClass} {1};
+#variable {task} {};
+#variable {task_area} {};
+#variable {task_room} {};
+#variable {task_family} {};
+#variable {task_wx} {unknown};
+#variable {kill_id} {$me[ename]'s task};
+#variable {zone_matrix} {};
+#variable {escape_way} {};
+#variable {parse_try} {0};
+#variable {visit_cnt} {0};
+#variable {idle_threshold} {120};
+
+#variable {area_loc} {
+	{sl}{jinyong}
+	{hmy}{jinyong}
+	{xkd}{jinyong}
+	{mj}{jinyong}
+	{kl}{jinyong}
+	{dl}{jinyong}
+	{yzw}{jinyong}	
+	{jx}{}
+	{ns}{}
+	{lz}{jinyong}
+	{ss}{}
+	{gm}{}
+	{yz}{jinyong}
+	{mz}{jinyong}
+	{ws}{jinyong}
+	{bj}{jinyong}
+	{hy}{}
+	{cs}{jinyong}
+	{cd}{}
+	{sz}{jinyong}
+	{fs}{}
+	{qz}{}
+	{xi}{}
+	{hz}{jinyong}
+	{fz}{}
+	{wg}{}
+	{gw}{jinyong}
+	{es}{}
+	{tzf}{}
+	{wjg}{}
+	{ws1}{}
+	{em}{jinyong}
+	{xs}{jinyong}
+	{wds}{jinyong}
+	{xyl}{jinyong}
+	{lj}{}
+	{gyz}{jinyong}
+	{qc}{}
+	{xx}{}
+	{tls}{}
+	{bjzjc}{}
+	{zns}{jinyong}
+	{bt}{}
+	{bhd}{}
+	{qzj}{jinyong}
+	{thd}{jinyong}
+	{sld}{}
+	{hh}{jinyong}
+	{gcmg}{jinyong}
+};
+
+
+#variable {maze} {
+	{sl}{{竹林}{mfly sl;walk.to 3709}}
+	{sl}{{松树林}{mfly sl;walk.to 3719}}
+	{gcmg}{{高昌迷宫}{mfly xx;walk.to 2492}}
+};
+#nop ===========================Alias============================
+#alias {mission_task.start} {
+	#if {!$robot || ($robot&& "$dolist[-1]" != "mission_task")} {
+		#if {0 != &{noforce}} {
+			#variable {bad_status} {1};
+			#echo {Bad status: dangerous in noforce mode!!!};
+		};
+		updatedolist mission_task;
+		#class walk read $MOD/walk.tin;
+		#class fight read $MOD/fight.tin;	
+		#if {0 == &{zone_pattern}} {#class zone_pattern read $MOD/zone_pattern.tin};
+		#if {$double_flag == 0 && $mission_status[mission_task][done] == 1 && @get_epoch_time{} < $mission_status[mission_task][start_time] + 10} {
+			#echo {%c#task cd 时间~~~~~~~~~~~~~~~~~} {cyan};
+			mission_task.kill;
+			mission.do;
+		};
+		#else {
+			#variable {mission_complete} {0};
+			fly wm;e;n;#3 e;task;
+			#delay {ask_failure} {#echo ask_failure;mission_task.end} {3};
+		};		
+	}
+}
+
+#alias {mission_task.kill} {
+	#unticker {loc_ticker};
+	#undelay {visit_task};
+	ensure_fly;
+	#if {$walkClass == 1} {walk.kill};	
+	#if {$fightClass == 1} {fight.kill};		
+	#if {&{wx_anti_force} != 0} {#unvariable wx_anti_force};
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_task} {kill};
+	#echo {%c#class mission_task killed!} {cyan};
+}
+
+#alias {mission_task.end} {
+	mission_task.kill;
+	scmd {halt;fly wm;w};
+}
+
+#alias {task_traversal} {
+	#map get {roomname} {l_roomname};
+	#if {&maze[$task_area][$l_roomname] != 0} {
+		halt;#echo $maze[$task_area][$l_roomname];$maze[$task_area][$l_roomname];
+		#unvariable l_roomname;
+	};
+	#else {
+		#map get roomvnum {l_orig};
+		#map get roomexits {l_orgexits};
+		#list vnum_list clr;
+		#foreach {*l_orgexits[%*]} {l_dir} {
+			#if {"$l_dir" == "{boat|ship|hard}"} {#continue};
+			#map get roomexits {l_exits} {$l_orgexits[$l_dir]};
+			#foreach {$l_exits[%*]} {l_vnum} {
+				#if {$l_vnum == $l_orig} {
+					#list {vnum_list} {add} {$l_orgexits[$l_dir]};
+					#break
+				};
+			};
+			#if {&vnum_list[]>0} {#break};
+		};
+		#list {vnum_list} {add} {$l_orig};
+		#unvariable l_%*;
+		#echo {walk round task!!!};
+		#variable target_bfind 0;
+		#variable {vnum_idx} {1};
+		halt;walk.to $vnum_list[$vnum_idx];
+	}
+}
+
+#alias {get_task_wx} {	
+	#regex {%1} {{雪山|灵鹫|铁掌|华山|采花}%*} {#variable {task_family} {&1};#variable {task_wx} {metal}};
+	#regex {%1} {{桃花|星宿|梅庄|峨嵋|姑苏慕容}%*} {#variable {task_family} {&1};#variable {task_wx} {wood}};
+	#regex {%1} {{逍遥|武当|昆仑|丐帮|日月}%*} {#variable {task_family} {&1};#variable {task_wx} {water}};
+	#regex {%1} {{明教|神龙|大理|云龙|江湖人物}%*} {#variable {task_family} {&1};#variable {task_wx} {fire}};
+	#regex {%1} {{少林|古墓|全真}%*} {#variable {task_family} {&1};#variable {task_wx} {earth}};
+	#if {&specialforce[] > 1} {
+		#if {("$task_wx" == "metal") && (0 != &{anti_metal})} {#variable {wx_anti_force} {$anti_metal}};
+		#if {("$task_wx" == "wood") && (0 != &{anti_wood})} {#variable {wx_anti_force} {$anti_wood}};
+		#if {("$task_wx" == "water") && (0 != &{anti_water})} {#variable {wx_anti_force} {$anti_water}};
+		#if {("$task_wx" == "fire") && (0 != &{anti_fire})} {#variable {wx_anti_force} {$anti_fire}};
+		#if {("$task_wx" == "earth") && (0 != &{anti_earth})} {#variable {wx_anti_force} {$anti_earth}};
+		enable force $wx_anti_force;	
+	}
+}
+
+#alias {arrive_cmd} {
+	#variable epochStamp @get_epoch_time{};
+	l;#showme arrived!!!;
+}
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "$task"} {
+		#undelay {visit_task};
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	}
+}
+
+
+#nop ===========================Action===========================
+#action {^%?%?贝海石悠悠地对你说道：『%*』这个家伙最近比较碍眼。} {
+	#undelay {ask_failure};
+	#variable {task} {%3};
+	#variable {taskCancel} {0};
+	#variable {mission_status[mission_task][done]} {0};
+	#variable {mission_status[mission_task][start_time]} {@get_epoch_time{}};
+	weara;
+	wi;
+	task1;
+}
+
+#action {^%?%?贝海石对你笑道：} {
+	#undelay {ask_failure};
+	weara;
+	wi;
+	mission_task.kill;				
+	#if {$robot && &mission_list[] > 0} {
+		mission.do;
+	};
+	#else {halt;fly wm;w};
+}
+
+#action {^%?%?你现在的使命是去「某地」杀『%*』} {
+	#undelay {ask_failure};	
+	#variable {mission_status[mission_task][done]} {0}; 
+	weara;wi;iskills;
+	#if {&skill_enable[dodge][level] == 0 || &skill_enable[parry]][level] == 0 || &skill_enable[move][level] == 0} {#variable {taskCancel} {0}};
+	#if {0 == $taskCancel}	{
+		#variable {task} {%3};
+		#line log {$LOG/$me[ename].log} {@get_current_time{} task retry!!!};	
+		task1
+	};
+	#else {
+		mission_task.kill;				
+		#if {($robot==1) && (&mission_list[] > 0)} {#echo go_next;#delay {2} {mission.do}};
+		#else {halt;fly wm;w};
+	}
+}
+
+#action {^%?%?$task最近出现在: } {
+	#variable {mission_status[mission_task][done]} {0};
+	#variable l_cnt 0;
+	#action {^%%0}
+	{
+		#regex {%%0} {%*#%*} {#math l_cnt {$l_cnt-1}} {
+			#unaction {^%%%0};
+			#list {zone_matrix} {clr};
+			#buffer get {l_matrix} {$l_cnt} {-1};
+			#foreach {$l_matrix[%*]} {l_raw} {
+				#replace {l_raw} {\e[0m} {};
+				#replace {l_raw} {\e[0;30m#} {0};
+				#replace {l_raw} {\e[1;33m#} {1};
+				#list {zone_matrix} {add} {$l_raw};
+			};
+			#unvariable l_raw;
+			#unvariable l_cnt;
+			#unvariable l_matrix;
+			#variable task_area @ParseMatrix{};
+			#if {"$task_area" == "yzw1"} {#variable task_area {yzw}};
+			#if {"$task_area" == "{xss|xdm|xdm1}"} {#variable task_area {xs}};
+			#if {"$task_area" != ""} {#showme task_area = [$task_area]};
+		}	
+	}
+}
+
+#action {^%?%?ParseMatrix error:} {
+	#if {$parse_try > 0} {mission_task.end};
+	#else {
+		#delay {3} {
+			#math parse_try {$parse_try+1};
+			task1
+		}
+	}
+}
+
+#action {^%?%?task_area = [%*]} {
+	#if {$bJin == 1} {
+		scmd {fly wm;u;n;loc $me[ename]'s task;#delay {loc_failure} {mission_task.end} {5}}
+	};
+	#else {
+		#if {$skill_list[阴阳八卦][level]>150} {
+			scmd {fly wm;u;#ticker {loc_ticker} {location $me[ename]'s task} {3}}
+		};
+		#elseif {"$area_loc[$task_area]" == "jinyong"} {
+			scmd {fly wm;u;n;loc $me[ename]'s task;#delay {loc_failure} {mission_task.end} {5}}
+		};
+		#elseif {"$area_loc[$task_area]" != ""} {
+			#nop  TODO: location dummy assistance
+		};
+		#else {
+			#variable epochStamp @get_epoch_time{};
+			#line log {$LOG/$me[ename].log} {@get_current_time{} task location: [$task_area]};
+			scmd {fight_ready;halt;area_travel $task_area};
+		}
+	}	
+}
+
+#action {^%?%?$task现在在%*。} {
+	#variable {mission_status[mission_task][done]} {0};
+	#if {"$task" != "" } {
+		#variable task_room {%3};
+		#unticker {loc_ticker};
+		#undelay {loc_failure};
+		#variable epochStamp @get_epoch_time{};
+		#line log {$LOG/$me[ename].log} {@get_current_time{} task location: [$task_area $task_room]};
+		#map goto 10;
+		#variable {vnum_list} {@gen_location_vnumlist{$task_area;$task_room}};
+		#if {&vnum_list[] == 0} {mission_task.end} {scmd {fight_ready;halt;vnum_list_go}};
+	};
+}
+
+#action {^%*「%*'s task」$task(%*)} {
+	#format {l_title} {%p} {%1};
+	#format {l_ename} {%l} {%2};
+	#regex {$l_title} {%*：%*} {kick} {
+		#if {"$l_ename" == "$me[ename]"} {
+			#variable epochStamp @get_epoch_time{};
+			#variable {idle_threshold} {40};
+			#undelay {task_missing};
+			walk.stop;
+			#if {"$task_wx" == "unknown"} {get_task_wx $l_title};
+			#if {$jingjie >= 1} {kill $kill_id};
+			#else {
+				#regex {$escape_way} {^$} {ask $kill_id about die} {kill $kill_id};
+				#if {0 == $visit_cnt} {
+					#map get roomname {l_roomname};
+					#line log {$LOG/$me[ename].log} {@get_current_time{} find task: ($task_area $l_roomname)};
+				};
+				#variable target_bfind 1;
+				#math {visit_cnt} {${visit_cnt}+1};
+				#if {"$fight_name" != "$task"} {#delay {visit_task} {task_traversal} {2}};
+			};
+		};
+	};
+	#unvariable l_ename;
+	#unvariable l_title;
+}
+
+#action {^%?%?你对$task造成%d点伤害} {
+	#delay {task_antiidle} {#variable epochStamp @get_epoch_time{}} {0.5};
+}
+
+#action {^%?%?你今日已完成了%s%d/%d%s次Task任务} {
+	#variable {mission_status[mission_task][done]} {1};
+	#unticker {walk};
+	fight.end;
+	#variable {mission_complete} {1};
+	#variable {mission_status[mission_task][complete]} {%4};
+	#variable {mission_status[mission_task][total]} {%5};
+	#variable {task} {};
+	#line log {$LOG/$me[ename].log} {@get_current_time{} task is killed -- about $visit_cnt visits};
+	l corpse;get all from corpse;
+	#delay {2} {get all from corpse};
+	#if {0 == $target_bfind} {
+		#showme 没找到;
+		#delay {3} {
+			#if {$xuedaoClass == 1} {#showme 预备性砍头;xuedao.prepare;kantou corpse;drop head};
+			mission_task.end;
+		};
+	};
+	#else {
+		#echo 找到了;
+		#delay {3} {
+			get all from corpse;
+			halt;get all from corpse;
+			#if {$xuedaoClass == 1} {#showme 血刀模式;xuedao.prepare;kantou corpse;drop head};
+			#if {("$me[family]" == "密宗") && (0 != &skill_list[密宗心法])} {get corpse;fly xs;n;w;s;ask fawang about fashi;give fawang corpse;drop corpse};
+			mission_task.end;
+		}	
+	}
+} {1}
+
+#action {^%?%?可惜你未在规定的时间之内完成任务，下次加油哦！} {
+	#unticker {walk};
+	fight.end;
+	#variable {task} {};
+	#line log {$LOG/$me[ename].log} {@get_current_time{} task is failed -- about $visit_cnt visits};
+	scmd {halt;mission_task.end}
+}
+
+#action {^%?%?你得到了一级%*。} {
+	#line log {$LOG/$me[ename].log} {@get_current_time{} : %0};
+}
+
+#action {%*听说%*勤于超度亡灵，佛祖奖励了一级%*。} {
+	#if {"$me[cname]" == "云流"} {
+		#line log {$LOG/$me[ename].log} {@get_current_time{} : %0};
+	}
+}
+
+#action {^%?%?贝海石对着你叹了一口气：哎，我就再给你一次机会吧。} {
+	#variable {task_round} {0};
+}
+
+#action {^%?%?【谣言】%*：$me[cname]%*作对，真是活得不耐烦了！} {
+	#line log {$LOG/$me[ename].log} {@get_current_time{} :%0};
+}
+
+#action {^%?%?$task往%*离开} {
+	#if {"$task" != ""} {
+		#variable l_dir {@get_escape_way{%3}};
+		$l_dir;ask $kill_id about die;
+		#unvariable l_dir;
+		#delay {visit_task} {task_traversal} {2};
+	}
+}
+
+#action {^%?%?%s$task正坐在地下运功疗伤。} {
+	#if {"$task" != ""} {
+		walk.stop;
+		#variable {target_bfind} {1};
+		touxi $kill_id;
+		#variable epochStamp @get_epoch_time{};
+	}
+}
+
+#action {^%?%?$task{往|身行一闪，飞一样地向}{.*}{落荒而逃|逃去}} {
+	#if {"$task" != ""} {
+		#variable escape_way {@get_escape_way{%4}};
+		scmd {$escape_way;touxi $kill_id};
+	}
+}
+
+#action {^%?%?{这里没有这个人|你想偷袭谁？}} {
+	#delay {task_missing} {#variable target_bfind 0;#showme Target Missing!!!} {1};
+}
+
+#action {^%?%?你一回头，正好发现%*的手正抓着你身上的} {
+	#undelay {visit_task};
+	#if {"%3" == "$task"} {		
+		prefight;
+		attack_pfm;
+		#variable {cmd} {busy_pfm};
+		#ticker {busy_test} {$status_test} {1};
+	};
+	#else {halt};
+}
+
+#action {^%?%?$task向后一纵，恨恨地说道：君子报仇，十年不晚！} {
+	#if {"$task" != ""} {kill $kill_id};
+}
+
+#action {^%?%?$task说道：最近风紧，我还是去避一避的好。} {
+	#if {"$task" != ""} {
+		#unticker {walk};
+		fight.end;
+		#variable {task} {};
+		#line log {$LOG/$me[ename].log} {@get_current_time{} task is failed -- about $visit_cnt visits};
+		scmd {halt;mission_task.end}
+	}
+}
+
+#nop ===================== function ========================
+#function {ParseMatrix} {
+	#list {l_matrix} {clr};
+	#list {l_histo} {clr};
+	#variable {l_yidx} {1};
+	#foreach {$zone_matrix[%*]} {l_raw} {
+		#variable {l_xidx} {1};
+		#parse {$l_raw} {l_char} {
+			#if {(1 == $l_yidx) || ($l_yidx == &zone_matrix[])} {#variable {l_matrix[$l_yidx][$l_xidx]} {0}};
+			#else {#variable {l_matrix[$l_yidx][$l_xidx]} {$l_char}}; 
+			#math {l_xidx} {$l_xidx+1};
+		};
+		#math {l_yidx} {$l_yidx+1};
+	};
+	#unvariable {l_char};
+	#unvariable {l_raw};
+	#loop {1} {&l_matrix[1][]} {l_xidx} {#variable {l_histo[$l_xidx]} {0}};
+	#loop {1} {&l_matrix[]} {l_yidx} {
+		#loop {1} {&l_histo[]} {l_xidx} {
+			#if {1 == $l_matrix[$l_yidx][$l_xidx]} {
+				#variable {l_sum} {0};
+				#math {l_prevraw} {$l_yidx-1};
+				#math {l_nextraw} {$l_yidx+1};
+				#math {l_prevcol} {$l_xidx-1};
+				#math {l_nextcol} {$l_xidx+1};
+				#if {1 == $l_yidx} {
+					#math {l_sum} {$l_sum + $l_matrix[$l_nextraw][$l_xidx]};
+					#if {$l_prevcol>0} {
+						#math {l_sum} {$l_sum + $l_matrix[$l_nextraw][$l_prevcol] + $l_matrix[$l_yidx][$l_prevcol]}
+					};
+					#if {$l_nextcol <= &l_histo[]} {
+						#math {l_sum} {$l_sum + $l_matrix[$l_nextraw][$l_nextcol] + $l_matrix[$l_yidx][$l_nextcol]}
+					}
+				};
+				#elseif {$l_yidx == &l_matrix[]} {
+					#math {l_sum} {$l_sum + $l_matrix[$l_prevraw][$l_xidx]};
+					#if {$l_prevcol>0} {
+						#math {l_sum} {$l_sum + $l_matrix[$l_prevraw][$l_prevcol] + $l_matrix[$l_yidx][$l_prevcol]}
+					};
+					#if {$l_nextcol <= &l_histo[]} {
+						#math {l_sum} {$l_sum + $l_matrix[$l_prevraw][$l_nextcol] + $l_matrix[$l_yidx][$l_nextcol]}
+					}
+				};
+				#else {
+					#math {l_sum} {$l_sum + $l_matrix[$l_prevraw][$l_xidx] + $l_matrix[$l_nextraw][$l_xidx]};
+					#if {$l_prevcol>0} {
+						#math {l_sum} {$l_sum + $l_matrix[$l_prevraw][$l_prevcol] + $l_matrix[$l_yidx][$l_prevcol] + $l_matrix[$l_nextraw][$l_prevcol]}
+					};
+					#if {$l_nextcol <= &l_histo[]} {
+						#math {l_sum} {$l_sum + $l_matrix[$l_prevraw][$l_nextcol] + $l_matrix[$l_yidx][$l_nextcol]+ $l_matrix[$l_nextraw][$l_nextcol]}
+					}
+				};
+				#if {$l_sum > 0} {#math {l_histo[$l_xidx]} {$l_histo[$l_xidx]+1}};
+			}
+		}
+	};
+	#unvariable {l_sum};
+	#unvariable {l_prevraw};
+	#unvariable {l_nextraw};
+	#unvariable {l_prevcol};
+	#unvariable {l_nextcol};
+	#unvariable {l_xidx};
+	#unvariable {l_yidx};
+	#variable {l_max} {&l_histo[]};
+	#while {0 == $l_histo[$l_max]} {#math {l_max} {$l_max-1}};
+	#variable {l_min} {1};
+	#while {0 == $l_histo[$l_min]} {#math {l_min} {$l_min+1}};
+	#math {l_nChars} {($l_max-$l_min+6)/15};
+	#math {l_charWidth} {($l_max-$l_min+1)/$l_nChars};
+	#list {l_Seg} {clr};
+	#variable {l_Seg[1][start]} {$l_min};
+	#variable {l_Seg[$l_nChars][end]} {$l_max};
+	#loop {1} {$l_nChars-1} {l_cnt} {
+		#math {l_next} {$l_cnt+1};
+		#math {l_min} {$l_Seg[$l_cnt][start]+$l_charWidth};
+		#variable {l_max} {$l_min};
+		#while {($l_histo[$l_min] > 0) && ($l_histo[$l_max] > 0)} {
+			#math {l_min} {$l_min-1};
+			#math {l_max} {$l_max+1};
+		};
+		#if {$l_min == $l_max} {
+			#while {0 == $l_histo[$l_min]} {#math {l_min} {$l_min-1}};
+			#variable {l_Seg[$l_cnt][end]} {$l_min}; 
+			#while {0 == $l_histo[$l_max]} {#math {l_max} {$l_max+1}};
+			#variable {l_Seg[$l_next][start]} {$l_max}; 
+		};
+		#else {
+			#if {0 == $l_histo[$l_max]} {
+				#math {l_Seg[$l_cnt][end]} {$l_max-1};
+				#while {0 == $l_histo[$l_max]} {#math {l_max} {$l_max+1}};
+				#variable {l_Seg[$l_next][start]} {$l_max};
+			};
+			#else {
+				#math {l_Seg[$l_next][start]} {$l_min+1};
+				#while {0 == $l_histo[$l_min]} {#math {l_min} {$l_min-1}};
+				#variable {l_Seg[$l_cnt][end]} {$l_min};
+			}
+		}
+	};
+	#list {m_feat} {clr};
+	#loop {1} {&l_Seg[]} {l_cnt} {
+		#list {m_feat[$l_cnt]} {clr};
+		#loop {$l_Seg[$l_cnt][start]} {$l_Seg[$l_cnt][end]} {l_idx} {#list {m_feat[$l_cnt]} {add} {$l_histo[$l_idx]}};
+	};
+	#unvariable {l_%*};
+	#variable {result} {};
+	#variable {l_minDiff}  {1000};
+	#foreach {*zone_pattern[%*]} {l_zone} {
+		#if {&m_feat[] == &zone_pattern[$l_zone][]} {
+			#variable {l_breakflag} {0};
+			#variable {l_totalDiff} {0};
+			#loop {1} {&m_feat[]} {l_idx} {
+				#variable {l_dfeat} {$zone_pattern[$l_zone][$l_idx]};
+				#variable {l_mfeat} {$m_feat[$l_idx]};
+				#if {&l_dfeat[] < &l_mfeat[]} {#variable {l_size} {&l_mfeat[]}} {#variable {l_size} {&l_dfeat[]}};
+				#if {&l_dfeat[] < $l_size} {
+					#loop {&l_dfeat[]+1} {$l_size} {l_loop} {
+						#if {1 == ($l_loop % 2)} {#list {l_dfeat} {add} {0}} {#list {l_dfeat} {insert} {1} {0}}
+					}
+				};
+				#if {&l_mfeat[] < $l_size} {
+					#loop {&l_mfeat[]+1} {$l_size} {l_loop} {
+						#if {1 == ($l_loop % 2)} {#list {l_mfeat} {add} {0}} {#list {l_mfeat} {insert} {1} {0}}
+					}
+				};
+				#variable {l_segDiff} {1000};
+				#loop {-3} {3} {l_shift} {
+					#variable {l_shiftDiff} {0};
+					#if {$l_shift < 0} {
+						#loop {1} {-1*$l_shift} {l_midx} {#math {l_shiftDiff} {$l_shiftDiff + $l_mfeat[$l_midx]}};
+						#loop {-1*$l_shift+1} {$l_size} {l_midx} {
+							#math {l_didx} {$l_midx + $l_shift};
+							#math {l_Diff} {$l_dfeat[$l_didx] - $l_mfeat[$l_midx]};
+							#if {$l_Diff > 0} {#math {l_shiftDiff} {$l_shiftDiff + $l_Diff}};
+							#else {#math {l_shiftDiff} {$l_shiftDiff - $l_Diff}};
+						};
+						#loop {$l_size+$l_shift+1} {$l_size} {l_didx} {#math {l_shiftDiff} {$l_shiftDiff + $l_dfeat[$l_didx]}};
+					};
+					#elseif {$l_shift > 0} {
+						#loop {1} {$l_shift} {l_didx} {#math {l_shiftDiff} {$l_shiftDiff + $l_dfeat[$l_didx]}};
+						#loop {$l_shift+1} {$l_size} {l_didx} {
+							#math {l_midx} {$l_didx - $l_shift};
+							#math {l_Diff} {$l_dfeat[$l_didx] - $l_mfeat[$l_midx]};
+							#if {$l_Diff > 0} {#math {l_shiftDiff} {$l_shiftDiff + $l_Diff}};
+							#else {#math {l_shiftDiff} {$l_shiftDiff - $l_Diff}};
+						};
+						#loop {$l_size-$l_shift+1} {$l_size} {l_midx} {#math {l_shiftDiff} {$l_shiftDiff + $l_mfeat[$l_midx]}};
+					};
+					#else {
+						#loop {1} {$l_size} {l_midx} {
+							#math {l_Diff} {$l_dfeat[$l_midx] - $l_mfeat[$l_midx]};
+							#if {$l_Diff > 0} {#math {l_shiftDiff} {$l_shiftDiff + $l_Diff}};
+							#else {#math {l_shiftDiff} {$l_shiftDiff - $l_Diff}};
+						}
+					};
+					#if {$l_shiftDiff < $l_segDiff} {#variable {l_segDiff} {$l_shiftDiff}};
+				};
+				#if {$l_segDiff <= 18} {#math {l_totalDiff} {$l_totalDiff + $l_segDiff}};
+				#else {#variable {l_breakflag} {1};#break};
+			};
+			#if {1 == $l_breakflag} {#continue};
+			#if {$l_totalDiff < $l_minDiff} {
+				#variable {l_minDiff} {$l_totalDiff};
+				#variable {result} {$l_zone};
+			}
+		};
+	};
+	#if {1000 == $l_minDiff} {
+		#line log {$LOG/error.log} {@get_current_time{} $me[ename]'s ParseMatrix Error:};
+		#foreach {$zone_matrix[%*]} {l_raw} {#line log {$LOG/error.log} {$l_raw}};
+		#loop {1} {&m_feat[]} {l_idx} {#line log {$LOG/error.log} {$m_feat[$l_idx]}};
+		#showme {ParseMatrix error:Character number is not between [2-4]};
+	};
+	#unvariable {l_%*};
+	#unvariable {m_feat};
+}
+
+#nop ===========================Ticker===========================
+#ticker {mission_task_end} {#if {@get_epoch_time{} > $epochStamp+$idle_threshold} {mission_task.end}} {60};
+
+#class {mission_task} close

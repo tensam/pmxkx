@@ -1,0 +1,176 @@
+#class {ttask2} open
+#nop ==========================Variable==========================
+#variable {ttask2Class} {1};
+#variable ttcmd {};
+#variable binteam {0};
+
+
+#alias {tt.start} {
+	#class fight read $MOD/fight.tin;	
+	updatedolist ttask2;
+	#variable kill_id {};
+	#variable binteam {0};
+	enforce max;	
+};
+
+#alias {tt.go} {
+	#showme 寻求组队;
+	fly wm;nw;
+	tt.start;
+}
+
+#alias {tt.end} {
+	#class fight kill;	
+	enforce none;
+	follow none;
+	#class {ttask2} {kill};
+};
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "$ttask"} {	
+		#if {0 == $long_pfm} {
+			prefight;
+			busy_pfm;
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	};
+}
+
+#alias {chat_for_team} {
+	chat* hi;
+	chat team task 带我一个，wm nw等你来撩!!!!!;
+	chat wm nw 目前经验$me[comb_exp];
+}
+
+#action {^%?%?寻求组队} {
+	#if {$binteam == 0} {
+		chat_for_team;
+	};
+	#delay {chat_again} {#showme 寻求组队;team} {600};
+}
+
+#action {^%?%?你现在并没有参加任何队伍。} {
+	#if {$binteam == 1} {
+		tt.end;
+		#zap;
+	}
+}
+
+
+#action {^%?%?%*邀请你加入他的队伍。}
+{
+    #variable lead_ch {%3};
+}
+
+#action {^%?%?如果你愿意加入，请用 team with %*。}
+{
+    #variable lead_en {%3};
+    #variable {kill_id} {$lead_en's ttask};
+    team with $lead_en;
+    follow $lead_en;
+	#var binteam 1;
+}
+
+
+#action {^%?%?%*将队伍解散了} {tt.end;#zap}
+
+#action {^%?%?【队伍】%*：all (%*)} {
+	#format {ttcmd} {%s} {%4};
+	#replace {ttcmd} {\\} {};	
+	yun recover;
+	#var binteam 1;
+	$ttcmd;
+}
+
+#action {^%?%?$dazuo_end} {tt 打坐好了;#if {$binteam == 1} {ask jin about 双倍奖励};d;yun recover}
+
+#action {^%?%?$dazuo_start} {
+	#if {$binteam == 1} {ask jin about 双倍奖励}} {1}
+
+#action {^%?%?可是$ttask看破了%*的企图}
+{
+  #variable {cmd} {busy_pfm};  
+}
+
+#action {^%?%?李四对%*说：在「%*」的『%*』最近作恶多端。}
+{   tt.start;
+	fight_ready;
+	uw;
+	#variable {task_zone} {%4};
+	#variable {ttask} {%5};
+	#var binteam 1;
+}
+
+#action {^%?%?%*「%*'s ttask」%*(%*)}
+{
+    #format {l_ename} {%l} {%4};
+	#if {"$l_ename" == "$lead_en"}
+	{ 
+	   #variable {ttask} {%5};
+	   follow $lead_en's ttask;
+	};
+    #unvariable l_ename;
+}
+
+#action {^%?%?你现在的使命是去「%*」杀『%*』。}
+{	uw;
+    #format {ttask} {%l} {%4};
+	#var binteam 1;
+}
+
+#action {^%?%?{$lead_ch对着$ttask喝道：「%*」|$ttask对著%*大喝一声：%*|$ttask瞪大眼，对着%*大声喊道：%*|$ttask对%*冷笑道：%* |$lead_cn嘿嘿一笑}}
+{   tt.start;
+    #variable {kill_id} {$lead_en's ttask};
+	touxi $kill_id; 
+}
+
+#action {^%?%?恭喜你们！又完成了一项艰巨的任务！}
+{
+	uw;
+	#var binteam 1;
+	fight.end;		
+	te fight;
+	
+}
+#action {^%?%?%*死了}
+{	uw;
+	fight.end;
+}
+#action {^%?%?$ttask%*死了}
+{	uw;
+	fight.end;
+}
+
+#event {HOUR 1} {team dismiss;tt.end;quit};
+#event {HOUR} {
+	#format hour {%t} {%H};
+	#if {$hour <= 21 && $binteam == 0} {#zap};
+}
+
+#prompt {^%?%?李四对%*说：在「%*」的『%*』最近作恶多端。} {tt：[%4]-[%5]} 1;
+#class {ttask2} close
+/* 
+大力邀请你加入他的队伍。
+如果你愿意加入，请用 team with xdbdl。
+
+队长收到的信息：
+李四对你说：在「北京」的『端木十七妹』最近作恶多端。
+李四对你说：限你在十一分零秒内把那家伙除掉。
+
+队员收到的信息：
+李四对大力说：在「北京」的『端木十七妹』最近作恶多端。
+李四对大力说：限你在十一分零秒内把那家伙除掉。
+
+师空九郎现在在内宅。
+我看到的信息 ：看起来阎法三郎想杀死你！
+少林寺沙弥「Mmma's ttask」阎法三郎(Yanfa)
+木木对着淳于七郎喝道：「小王八蛋！，你死期已到，今天就让本少爷我送你上西天吧！」
+
+
+队长看到的信息：阎法三郎瞪大眼，对着水水大声喊道：“左右是个死，大和尚我跟你拼了！”
+木木对着皇甫三郎喝道：「小书呆子！，你死期已到，今天就让本少爷我送你上西天吧！」
+诸葛大郎对著你大喝一声：看招！，只见一个500kg的大锤砸在你的脸上．．．
+诸葛大郎决定开始跟随你一起行动。
+公西七郎对水水冷笑道：听说你要找我麻烦，今天就让我教训教训你！
+*/

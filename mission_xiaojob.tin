@@ -1,0 +1,268 @@
+#class {mission_xiaojob} open
+#nop ==========================Variable==========================
+#variable {mission_xiaojobClass} {1};
+#variable {xjob_area} {};
+#variable {xjob_room} {};
+#variable {xjob_type} {0};
+#variable {difficult} {0};
+#variable {kill_id} {mengmian shashou};
+#variable {escape_way} {};
+#variable {meet_flag} {0};
+#variable {renshu_cnt} {0};
+#variable {renshu_max} {7};
+
+#nop ===========================Alias============================
+#alias {mission_xiaojob.start} {
+	#if {!$robot || ($robot && "$dolist[-1]" != "mission_xiaojob")} {
+		updatedolist mission_xiaojob;
+		#class walk read $MOD/walk.tin;
+		#class fight read $MOD/fight.tin;			
+		#variable {mission_complete} {0};				
+		#if {$double_flag == 1} {#variable {renshu_max} {3}};
+		fly lz;s;w;ask xiao feng about job;
+		#delay {ask_failure} {mission_xiaojob.end} {3};
+	}
+}
+
+#alias {mission_xiaojob.kill} {		
+	ensure_fly;
+	#if {$walkClass == 1} {walk.kill};
+	#if {$fightClass == 1} {fight.kill};	
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_xiaojob} kill;
+	#echo {%c#class mission_xiaojob killed!} {cyan};
+}
+
+#alias {mission_xiaojob.end} {
+	mission_xiaojob.kill;
+	scmd {halt;fly wm;w};
+}
+
+#alias {arrive_cmd} {
+	l;#showme arrived!!!;
+}
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "蒙面杀手"} {		
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	}
+}
+
+#alias {select_pfm} {
+	#echo 选择pfm;
+	#if {$xjob_type != 4} {
+		#if {$difficult < 3 && &{attack_xiao_pfm_1_easy}} {#echo easy~mode;#var attack_xiao_pfm $attack_xiao_pfm_1_easy};
+		#elseif {$difficult == 3 && &{attack_xiao_pfm_1_mid}} {#echo mid~mode;#var attack_xiao_pfm $attack_xiao_pfm_1_mid};
+		#elseif {&{attack_xiao_pfm_1_hard}} {#echo hard~mode;#var attack_xiao_pfm $attack_xiao_pfm_1_hard};
+	};
+	#elseif {&{attack_xiao_pfm_k_hard}} {#echo hadr~mode;#var attack_xiao_pfm $attack_xiao_pfm_k_hard};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你向萧峰打听有关『job』的消息。} {	
+	#undelay {ask_failure};
+	#action {^%?%?萧峰道：「传闻西夏一品堂派出了若干蒙面杀手，最近出现在%*的%*。} {			
+		#unaction {^%?%?萧峰道：「传闻西夏一品堂派出了若干蒙面杀手，最近出现在%*的%*。};
+		#unaction {^%?%?萧峰说道：%*$};	
+		#variable {xjob_area} {@get_area{%%3;%%4}};
+		#variable {xjob_room} {%%4};
+		#action {^%%%0} {
+			#regex {%%%0} {^          %*」} {
+				#unaction {^%%%%0};
+				#regex {%%%0} {%*相仿%*} {#variable {difficult} {1}};
+				#regex {%%%0} {%*不弱%*} {#variable {difficult} {2}};
+				#regex {%%%0} {%*颇强%*} {#variable {difficult} {3}};
+				#regex {%%%0} {%*大敌%*} {#variable {difficult} {4}};
+				#regex {%%%0} {%*深不可测%*} {#variable {difficult} {5}};	
+				#showme {xiaojob type:$xjob_type， xiaojob_difficult: $difficult};
+				select_pfm;
+				#if {$difficult > $xiaojob_difficult} {
+					ask xiao feng about fail;
+					mission_xiaojob.end;
+				};
+				#else {
+					#map goto 508;
+					#variable {vnum_list} {@gen_location_vnumlist{$xjob_area;$xjob_room}};
+					#if {&vnum_list[] == 0} {mission_xiaojob.end} {scmd {fight_ready;halt;vnum_list_go}};
+				};
+			} {
+				#regex {%%%0} {%*劝劝(quan)%*} {#variable {xjob_type} {1}};
+				#regex {%%%0} {%*擒回%*} {#variable {xjob_type} {2}};
+				#regex {%%%0} {%*认输就好。} {#variable {xjob_type} {3}};
+				#regex {%%%0} {%*取其首级回来。} {#variable {xjob_type} {4}};
+				#var fight_cnt 0;							
+			}
+		}
+	};
+	#action {^%?%?萧峰说道：%*$} {
+		#unaction {^%?%?萧峰说道：%*$};	
+		#unaction {^%?%?萧峰道：「传闻西夏一品堂派出了若干蒙面杀手，最近出现在%*的%*。};
+		#regex {%%3} {^这位%*} {ask xiao feng about fail};	
+		mission_xiaojob.kill;
+		#if {$robot && &mission_list[] > 0} {mission.do};
+		#else {scmd {halt;fly wm;w}};	
+	};
+}
+
+#action {^%?%?    西夏一品堂「$me[cname]的目标」%*(%*)} {	
+	#if {"%3" == "蒙面杀手"} {
+		#undelay {chase};
+		walk.stop;
+		#variable {meet_flag} {1};
+		#variable {kill_id} {mengmian shashou};
+		#if {$xjob_type == 4 || $xjob_type == 2} {
+			#if {$fight_cnt == 0} {fight $kill_id;#var fight_cnt 1};
+			#else {touxi $kill_id};
+		};
+		#else {fight $kill_id};			
+		prefight;
+		#if {"$me[family]" != "少林派"} {busy_pfm};
+		#ticker {busy_test} {$status_test} {1};
+		#variable {cmd} {busy_pfm};		
+	};
+	#else {
+		halt;
+		#format {kill_id} {%l} {%4};
+		scmd {halt;get all from $kill_id;get $kill_id};
+	}
+}
+
+#action {^%?%?你走近蒙面杀手，只见蒙面杀手衣领上几个蝇头小字，显是蒙面杀手姓名。} {
+	#if {$xjob_type == 2} {#3 halt;fight.end;l};
+}
+
+#action {^%?%?你将%*扶了起来背在背上。} {
+	#if {$walkClass == 1} {walk.kill};
+	#delay {xiaojob_finish} {scmd {halt;fly lz;s;w;give $kill_id to xiao feng}} {2};
+}
+
+#action {^%?%?而此时%*嘴唇青黑，身中剧毒，眼见不活了} {
+	fight.end;
+	#if {$walkClass == 1} {walk.kill};
+	#undelay {xiaojob_finish};
+	scmd {
+		halt;get all from corpse;
+		#if {$xjob_type == 4} {
+			#if {$xuedaoClass == 1} {xuedao.prepare} {wi2};
+			kantou corpse;fly lz;s;w;give head to xiao feng
+		};
+		#else {
+			#if {$xuedaoClass == 1} {xuedao.prepare;kantou corpse;drop head};
+			#if {("$me[family]" == "密宗") && (0 != &skill_list[密宗心法])} {get corpse;fly xs;n;w;s;ask fawang about fashi;give fawang corpse;drop corpse};
+			fly lz;s;w;ask xiao feng about fail;mission_xiaojob.end
+		};		
+	}	
+}
+
+#action {^%?%?蒙面杀手%*说道：%*$} {  
+	#regex {%4} {%*我认输%*} {
+		fight.end;halt;
+		#if {$walkClass == 1} {walk.kill};
+		scmd {fly lz;s;w;ask xiao feng about finish};
+	};
+	#regex {%4} {%*你认输%*} {
+		exert recover;
+		exert regenerate;
+		#if {$renshu_cnt < $renshu_max} {l} {mission_xiaojob.end};
+	};
+	#regex {%4} {{.*}{佩服|算我输了|算了算了|君子报仇|阁下武艺不凡}{.*}} {	
+		fight.end;		
+		#if {$xjob_type == 1} {#delay {xiaojob_renshu} {quan;#math {renshu_cnt} {$renshu_cnt+1}} {1}};
+		#if {$xjob_type == 3} {#delay {xiaojob_renshu} {ask shashou about 认输;#math {renshu_cnt} {$renshu_cnt+1}} {1}};
+		#if {$xjob_type == 2 || $xjob_type == 4} {l};
+	};
+	#regex {%4} {我不服%*} {
+		#if {"$me[family]" != "少林派"} {busy_pfm};
+		#ticker {busy_test} {$status_test} {1};
+		#variable {cmd} {busy_pfm};		
+	};
+}
+
+
+#action {^%?%?蒙面杀手纵声而笑，叫道%*你运气好！你运气好！} {
+	haha;
+	fight.end;	
+	#if {$xjob_type == 1} {#delay {xiaojob_renshu} {quan;#math {renshu_cnt} {$renshu_cnt+1}} {1}};
+	#if {$xjob_type == 3} {#delay {xiaojob_renshu} {ask shashou about 认输;#math {renshu_cnt} {$renshu_cnt+1}} {1}};
+}
+
+#action {^%?%?你{.*}{说|笑}道：承让} {
+	fight.end;
+	#if {$xjob_type == 1} {#delay {xiaojob_renshu} {quan;#math {renshu_cnt} {$renshu_cnt+1}} {1}};
+	#if {$xjob_type == 3} {#delay {xiaojob_renshu} {ask shashou about 认输;#math {renshu_cnt} {$renshu_cnt+1}} {1}};
+}
+
+#action {^%?%?你双手一拱，笑著说道：知道我的利害了吧！} {
+	fight.end;
+	#if {$xjob_type == 1} {#delay {xiaojob_renshu} {quan;#math {renshu_cnt} {$renshu_cnt+1}} {1}};
+	#if {$xjob_type == 3} {#delay {xiaojob_renshu} {ask shashou about 认输;#math {renshu_cnt} {$renshu_cnt+1}} {1}};
+}
+
+#action {^%?%?你现在没功夫规劝别人} {
+	#delay {xiaojob_quan} {quan} {2};
+}
+
+#action {^%?%?{你走上前去，试图劝服蒙面杀手，但蒙面杀手不耐烦的转了个身，不愿听你说下去。|蒙面杀手运功完毕，站起身来，看上去气色饱满，精神抖擞。}} {
+	#if {$renshu_cnt < $renshu_max} {l} {mission_xiaojob.end};
+}
+
+#action {^%?%?看起来蒙面杀手并不想跟你较量} {
+	#delay {xf_wait} {ask shashou about rumors} {3};
+}
+
+#action {^%?%?你嘿嘿一笑：「蒙面杀手，你都到了如此田地，怎地还是执迷不悟？」} {
+	fight.end;
+	#if {$walkClass == 1} {walk.kill};
+	halt;
+	scmd {fly lz;s;w;ask xiao feng about finish};
+}
+
+#action {^%?%?蒙面杀手{往|身行一闪，飞一样地向}{.*}{落荒而逃|逃去|离开}} {
+	#variable escape_way {@get_escape_way{%4}};
+	#if {("%5" == "离开") && (1 == $meet_flag)} {
+		l;
+		#delay {chase} {scmd {$escape_way;l mengmian shashou}} {2};
+	};	
+}
+
+#action {^%?%?你要看什么？} {
+	#delay {xiaojob_missing} {#variable meet_flag 0;#showme Target Missing!!!} {1};
+}
+
+#action {^%?%?这里没有 mengmian shashou。} {
+	fight.end;
+	scmd {$escape_way;l mengmian shashou};
+}
+
+#action {^%?%?你今日已完成了%s%d/%d%s次萧峰任务} {
+	#unticker {walk};
+	fight.end;
+	#variable {mission_complete} {1};
+	#variable {mission_status[mission_xiaojob][complete]} {%4};
+	#variable {mission_status[mission_xiaojob][total]} {%5};
+	mission_xiaojob.end;
+}
+
+#action {^%?%?你得到了一级%*。} {
+	#line log {$LOG/$me[ename].log} {@get_current_time{} : %0};
+}
+
+#action {^%*给你一枚荣誉勋章。} {
+	#regex {%1} {%*：%*} {kick} {
+		wear xunzhang;
+		#delay {2} {
+			mfly $xjob_area;			
+			walk.to $vnum_list[$vnum_idx]
+		}
+	}
+}
+
+#nop ===========================Ticker===========================
+#ticker {mission_xiaojob_end} {mission_xiaojob.end} {300};
+
+#class {mission_xiaojob} close

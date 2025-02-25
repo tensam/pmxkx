@@ -1,0 +1,137 @@
+#class {xkd_mianbi} open
+#nop ==========================Variable==========================
+#variable {xkd_mianbiClass} {1};
+#variable {mianbi_idx} {1};
+#variable {act_cnt} {2};
+#variable {maxlevel} {0};
+#variable {bAutoAfterMianbi} {0};
+
+#nop ===========================Alias============================
+#alias {xkd_mianbi.start} {
+	#if {&mianbi_list[] > 0} {
+		updatedolist xkd_mianbi;
+		#math {act_cnt} {$me[gin]/1000};
+		#if {$act_cnt<2} {#variable {act_cnt} {2}};
+		#if {$act_cnt>20} {#variable {act_cnt} {20}};
+		#if {$bAverageSkill} {
+			iskills;
+			#delay {1} {
+				#variable {maxlevel} {@skillmaxlevel{}};
+				#variable {l_mbskill} {};
+				#while {$mianbi_idx <= &mianbi_list[]} {
+					#foreach {$skill_list[%*]} {l_skill} {
+						#if {"$l_skill[name]" == "$mianbi_list[$mianbi_idx]" && $l_skill[level] < $maxlevel} {
+							#variable {l_mbskill} {$mianbi_list[$mianbi_idx]};
+							#break;
+						};
+					};
+					#unvariable {l_skill};
+					#if {"$l_mbskill" == ""} {#math {mianbi_idx} {$mianbi_idx+1}};
+					#else {#break};
+				};
+				#if {"$l_mbskill" == ""} {xkd_mianbi.end};
+				#else {gotonpc $l_mbskill};
+				#unvariable {l_mbskill};
+			};
+		};
+		#else {gotonpc $mianbi_list[1]};	
+	};
+	#else {xkd_mianbi.end};
+}
+
+#alias {xkd_mianbi1.start} {
+	#variable {bAutoAfterMianbi} {1};
+	xkd_mianbi.start;
+}
+
+#alias {xkd_mianbi.kill} {
+	#unticker {xkd_mianbi_act};
+	#class {walk} kill;
+	#class {xkd_mianbi} kill;
+}
+
+#alias {xkd_mianbi.end} {
+	xkd_mianbi.kill;
+	halt;
+	#alias {arrive_cmd} {};
+	scmd {halt;fly wm;w};
+	#if {0 != $bAutoAfterMianbi} {robot start};
+	#unticker {xkd_mianbi_act};
+	xkd_mianbi.kill;
+}
+
+#alias {arrive_cmd} {
+	#ticker {xkd_mianbi_act} {think wall $act_cnt;exert regenerate} {0.2};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你的内力不够。} {
+	#unticker {xkd_mianbi_act};
+	dazuo max;
+}
+
+#action {^%?%?$dazuo_end} {
+	exert recover;
+	#ticker {xkd_mianbi_act} {
+		think wall $act_cnt;;
+		exert regenerate;
+	} {0.3};
+	#variable epochStamp @get_epoch_time{};
+}
+
+#action {^%?%?{也许是缺乏实战经验|你的实战经验不足|你对着石壁冥思苦想了一会，毫无收获|你望着石壁冥思苦想了一会，发觉上面的东西对你来说太浅薄了}} {
+	#unticker {xkd_mianbi_act};
+	#math {mianbi_idx} {$mianbi_idx+1};
+	#if {$mianbi_idx > &mianbi_list[]} {xkd_mianbi.end};
+	#else {
+		#list l_mapresult clr;
+		#map list {roomnote} {%*<$mianbi_list[$mianbi_idx]>%*} {variable} {l_mapresult};
+		#if {&l_mapresult[] > 0} {
+			#foreach {*l_mapresult[%*]} {l_vnum} {#break};
+			walk.to $l_vnum;
+			#unvariable l_vnum;
+		};
+		#else {#echo {$mianbi_list[$mianbi_idx] is not in pmxkx map note!!!}};
+		#unvariable l_mapresult;
+	}
+}
+
+#action {^%?%?你现在精不够，无法控制内息的流动！} {
+	#delay {dazuo_wait} {exert regenerate;dazuo max} {2};
+}
+
+#action {^%?%?你的「%*」进步了！} {
+	#if {&skill_list[%3] == 0} {#variable skill_list[%3][level] 1};
+	#else {#math skill_list[%3][level] {$skill_list[%3][level]+1}};
+	#if {$bAverageSkill && $skill_list[%3][level] >= $maxlevel} {
+		#unticker {xkd_mianbi_act};
+		#variable {l_mbskill} {};
+		#math {mianbi_idx} {$mianbi_idx+1};
+		#while {$mianbi_idx <= &mianbi_list[]} {
+			#foreach {$skill_list[%*]} {l_skill} {
+				#if {"$l_skill[name]" == "$mianbi_list[$mianbi_idx]" && $l_skill[level] < $maxlevel} {
+					#variable {l_mbskill} {$mianbi_list[$mianbi_idx]};
+					#break;
+				};
+			};
+			#unvariable {l_skill};
+			#if {"$l_mbskill" == ""} {#math {mianbi_idx} {$mianbi_idx+1}};
+			#else {#break};
+		};
+		#if {"$l_mbskill" == ""} {xkd_mianbi.end};
+		#else {
+			#list l_mapresult clr;
+			#map list {roomnote} {%*<$l_mbskill>%*} {variable} {l_mapresult};
+			#if {&l_mapresult[] > 0} {
+				#foreach {*l_mapresult[%*]} {l_vnum} {#break};
+				walk.to $l_vnum;
+				#unvariable l_vnum;
+			};
+			#else {#echo {$mianbi_list[$mianbi_idx] is not in pmxkx map note!!!}};
+			#unvariable l_mapresult;
+		};
+		#unvariable {l_mbskill};
+	}; 
+}
+
+#class {xkd_mianbi} close

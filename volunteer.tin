@@ -1,0 +1,13 @@
+#var vol_cnt 0;
+#action {令东来开始在武当山门值守。} {
+    #echo $vol_cnt;
+}
+
+#action {蒙面大汉脚下一个不稳，跌在地上一动也不动了。} {
+    kill dahan
+}
+
+#action {你在武当山门值守期已满。} {
+    #math vol_cnt $vol_cnt+1;
+    #if {$vol_cnt < 10} {#echo $vol_cnt;volunteer} {fly wm}
+}

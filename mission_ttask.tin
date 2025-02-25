@@ -1,0 +1,507 @@
+#class {mission_ttask} open
+#nop ==========================Variable==========================
+#variable {mission_ttaskClass} {1};
+#variable {ttcmd} {};
+#var state {free};
+#nop 记录 task返回的结果，1：开始阶段打task获得  2：ttask.ask获得
+#var check_step {1};
+
+#nop ===========================Alias============================
+#alias {mission_ttask.start} {
+	#echo {%c#执行ttask!!!!} {cyan};
+	updatedolist mission_ttask;
+	#if {$mission_status[mission_ttask][complete] > 200} {mission_ttask.kill;mission.do};
+	#elseif {$mission_status[mission_ttask][done] == 1 && @get_epoch_time{} < $mission_status[mission_ttask][start_time] + 45} {
+		#echo {%c#ttask cd 时间~~~~~~~~~~~~~~~~~} {cyan};
+		mission_ttask.kill;
+		mission.do;
+	};
+	#else {
+		fly wm;u;u;task;
+		#var check_step {1};
+		#delay {ttask_go} {mission_ttask.go} {1};
+	}	
+};
+
+#alias {mission_ttask.go} {
+	#if {&ttask_mate != 0} {
+		#var {lead_en} {$me[ename]};
+		#var {lead_cn} {$me[cname]};
+	};
+	#class fight read $MOD/fight.tin;
+	#class walk read $MOD/walk.tin;
+	#map goto 865;
+	#map unlink n;
+	#var hardMode 1;
+	fly wm;u;u;ub;follow none;
+	team.make;
+}
+
+
+#alias {mission_ttask.kill} {
+	#variable {mission_ttaskClass} {0};
+	#unticker {loc_ticker};
+	#unticker {get_mate};
+	ensure_fly;
+	#var hardMode 0;
+	#if {$walkClass == 1} {walk.kill};	
+	#if {$fightClass == 1} {fight.kill};		
+	#if {&{wx_anti_force} != 0} {#unvariable wx_anti_force};
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_ttask} {kill};
+	#echo {%c#class mission_ttask killed!} {cyan};
+}
+
+#alias {mission_ttask.end} {
+	mission_ttask.kill;
+	scmd {halt;fly wm;w};
+}
+
+#alias {team.make} {
+	#map goto 9;
+	#if {&ttask_mate != 0} {
+		tell $ttask_mate team;
+	};
+	#else {
+		tell $lead_en team;
+	};
+	#delay {pending} {
+		#echo {%c#对方没回应 退出ttask!} {cyan};
+		mission_ttask.kill;
+		#if {$robot && &mission_list[] > 0} {mission_ttask.kill;mission.do};
+		#else {halt;fly wm;w};
+	} {1};
+}
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "$ttask"} {
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	}
+}
+
+#alias {ttask.ask} {
+	ub;follow none;
+	fly wm;e;#2 s;#3 e;#4 s;
+	#var check_step {2};
+	#delay {1} {task};
+	#delay {ask_failure} {mission_ttask.end} {15};
+}
+
+#alias {ttask_traversal} {
+	#map get {roomname} {l_roomname};
+	#if {&maze[$ttask_area][$l_roomname] != 0} {
+		halt;#echo $maze[$ttask_area][$l_roomname];$maze[$ttask_area][$l_roomname];
+		#unvariable l_roomname;
+	};
+	#else {
+		#map get roomvnum {l_orig};
+		#map get roomexits {l_orgexits};
+		#list vnum_list clr;
+		#foreach {*l_orgexits[%*]} {l_dir} {
+			#if {"$l_dir" == "{boat|ship|hard}"} {#continue};
+			#map get roomexits {l_exits} {$l_orgexits[$l_dir]};
+			#foreach {$l_exits[%*]} {l_vnum} {
+				#if {$l_vnum == $l_orig} {
+					#list {vnum_list} {add} {$l_orgexits[$l_dir]};
+					#break
+				};
+			};
+			#if {&vnum_list[]>0} {#break};
+		};
+		#list {vnum_list} {add} {$l_orig};
+		#unvariable l_%*;
+		#echo {walk round ttask!!!};
+		#variable target_bfind 0;
+		#variable {vnum_idx} {1};
+		halt;walk.to $vnum_list[$vnum_idx];
+	}
+}
+
+
+
+#alias {get_task_wx} {	
+	#regex {%1} {{雪山|灵鹫|铁掌|华山|采花}%*} {#variable {task_family} {&1};#variable {task_wx} {metal}};
+	#regex {%1} {{桃花|星宿|梅庄|峨嵋|姑苏慕容}%*} {#variable {task_family} {&1};#variable {task_wx} {wood}};
+	#regex {%1} {{逍遥|武当|昆仑|丐帮|日月}%*} {#variable {task_family} {&1};#variable {task_wx} {water}};
+	#regex {%1} {{明教|神龙|大理|云龙|江湖人物}%*} {#variable {task_family} {&1};#variable {task_wx} {fire}};
+	#regex {%1} {{少林|古墓|全真}%*} {#variable {task_family} {&1};#variable {task_wx} {earth}};
+	#if {&specialforce[] > 1} {
+		#if {("$task_wx" == "metal") && (0 != &{anti_metal})} {#variable {wx_anti_force} {$anti_metal}};
+		#if {("$task_wx" == "wood") && (0 != &{anti_wood})} {#variable {wx_anti_force} {$anti_wood}};
+		#if {("$task_wx" == "water") && (0 != &{anti_water})} {#variable {wx_anti_force} {$anti_water}};
+		#if {("$task_wx" == "fire") && (0 != &{anti_fire})} {#variable {wx_anti_force} {$anti_fire}};
+		#if {("$task_wx" == "earth") && (0 != &{anti_earth})} {#variable {wx_anti_force} {$anti_earth}};
+		enable force $wx_anti_force;	
+	}
+}
+
+#alias {get_double} {
+	#var enDouble 1;
+	#if {$enDouble == 1} {
+		#if {$jingjie == 0 && $me[comb_exp] <= 50000000} {ask jin about 双倍奖励};
+		#elseif {$jingjie == 1 && $me[comb_exp] <= 100000000} {ask jin about 双倍奖励};
+		#elseif {$jingjie == 2 && $me[comb_exp] <= 180000000} {ask jin about 双倍奖励};
+		#else {ask jin about 双倍奖励};
+	}
+}
+
+
+#nop ===========================Action===========================
+#unaction {{文盲|离开|过来}}
+
+
+#action {^%?%?★ %1(%2)告诉你：tt_%3} {
+	#echo 接收到回应;
+	#format {l_ename} {%l} {%2};
+	#variable epochStamp @get_epoch_time{};
+	#var {team_ask} {$l_ename};
+	#format {l_cname} {%l} {%1};
+	#var {team_ask_cn} {$l_cname};
+	#if {"$me[ename]" != "$lead_en"} {#var {lead_cn} {$me[cname]}};
+	#if {0 != &worldlist[$l_ename]} {
+		#undelay {pending};
+		#if {"%3" == "mission_ttask"} {fly wm;u;u;#undelay {time_over};#delay {1} {whisper $team_ask team}};
+		#else {#delay {time_over} {#echo {%c#等待超时!} {cyan};mission_ttask.kill;mission.do} {60}};
+	} {#echo 未注册id;};
+	#unvariable l_ename;
+} {3}
+
+#action {^%?%?你告诉%*：tt_mission_ttask} {
+	fly wm;u;u;
+}
+
+#action {你在%*的耳边悄声说道：team} {#undelay {time_over};#if {"$me[ename]" == "$lead_en"} {guard $team_ask;team with $ttask_mate}} {4};
+#action {%*在你的耳边悄声说道：team} {#undelay {time_over};#if {"$me[ename]" == "$lead_en"} {guard $team_ask;team with $ttask_mate}} {4};
+
+#action {^%?%?如果你愿意加入，请用 team with %*。}
+{
+    #variable {kill_id} {$lead_en's ttask};
+    team with $lead_en;
+}
+
+#action {^%?%?%*决定加入你的队伍} {
+	#variable {kill_id} {$lead_en's ttask};
+	tt go to ask ttask;
+}
+
+#action {^%?%?你决定加入%*的队伍} {
+	#variable {kill_id} {$lead_en's ttask};
+}
+
+#action {^%?%?你们已经是伙伴了} {
+	#variable {kill_id} {$lead_en's ttask};
+	#if {"$me[ename]" == "$lead_en"} {tt go to ask ttask};
+}
+
+#action {^%?%?【队伍】%*：go to ask ttask} {
+	ttask.ask;
+} {4};
+
+
+
+#action {^%?%?李四对你说：在「%3」的『%4』最近作恶多端。} {
+	#undelay {ask_failure};
+	#variable {ttask_area} {%3};
+	#variable {ttask} {%4};
+	tt got_ttask;
+};
+
+#action {^%?%?【队伍】%*：got_ttask} {
+	#undelay {ask_failure};
+	#variable {mission_status[mission_ttask][done]} {0};
+	#variable {mission_status[mission_ttask][start_time]} {@get_epoch_time{}};
+	#line log {$LOG/$me[ename]_tt.log} {@get_current_time{} ttask is started};
+	fly wm;u;n;get_double;#var {b_loced} {0};
+	#if {"$me[ename]" == "$lead_en"} {loc $me[ename]'s ttask};
+}
+
+#action {^%?%?你现在的使命是去「%3」杀『%4』。} {
+	#variable {ttask_area} {%3};
+	#variable {ttask} {%4};
+	#if {&ttask_mate != 0} {
+		#var {lead_en} {$me[ename]};
+		#var {lead_cn} {$me[cname]};
+	};
+	#if {"%3" == "某地"} {
+		tt mission failed;
+	};
+	#elseif {$check_step == 1} {
+		#if {$failed_ttask == $ttask && $failed_area == $ttask_area} {
+			#undelay {ttask_go};
+			tt mission failed;
+		};
+	};
+	#elseif {$check_step == 2} {
+		#delay {2} {
+			#undelay {ask_failure};
+			#variable {mission_status[mission_ttask][done]} {0};
+			#var {b_loced} {0};
+			fly wm;u;n;get_double;
+			#if {"$me[ename]" == "$lead_en"} {loc $me[ename]'s ttask};
+		};	
+	};	
+} {4}
+
+#action {^%?%?你不是刚打听过吗？} {
+	#if {$b_loced == 0} {
+		#delay {5} {u;d;n;get_double;#if {"$me[ename]" == "$lead_en"} {loc $me[ename]'s ttask}}
+	};
+}
+
+#action {^%?%?$ttask现在在%1。} {
+	#variable ttask_room {%1};
+	#list {abandonroom_list} {find} {$ttask_area $ttask_room} {l_dis};
+	#if {$l_dis != 0} {#echo 在不可去的地方;tt mission failed};
+	#if {"$me[ename]" == "$lead_en"} {#delay {2} {tt $ttask现在在$ttask_area的%1。}};
+	#variable {mission_status[mission_ttask][done]} {0};
+	#unvariable l_dis;	
+} {4}
+
+#action {^%?%?【队伍】%*：%1现在在%2的%3。} {
+	#var {b_loced} {1};
+	#map goto 865;
+	#map unlink n;
+	weara;wi;fight_ready;
+	te walk;
+	#variable {ttask} {%1};
+	#variable {ttask_area} {%2};
+	#variable ttask_room {%3};
+	#echo $ttask_area $ttask_room;
+	#variable epochStamp @get_epoch_time{};
+	#line log {$LOG/$me[ename]_tt.log} {@get_current_time{} ttask location: [$ttask_area $ttask_room]};
+	#map goto 10;
+	#variable {vnum_list} {@gen_location_vnumlist{$ttask_area;$ttask_room}};
+	#echo $vnum_list;
+	#alias {arrive_cmd} {
+		#variable epochStamp @get_epoch_time{};
+		l;#showme arrived!!!;
+	};
+	#if {&vnum_list[] == 0} {#echo 找不到;mission_ttask.end} {#delay {1} {scmd {halt;vnum_list_go}}};
+}
+
+#action {^%?%?【队伍】%*：vnum_%3} {
+	#variable target_bfind 0;
+	#var {aim} {%3};
+	walkto $aim;
+} {4};
+
+#action {^%?%?$team_ask_cn脚下一个不稳，跌在地上一动也不动了。} {
+	halt;get $team_ask;
+	#ticker {get_mate} {halt;get $team_ask} {0.2};
+}
+
+#action {你将$team_ask_cn扶了起来背在背上。} {
+	#unticker {get_mate};
+	halt;fly wm;drop $team_ask;
+	mission_ttask.end;
+}
+
+#action {^%?%?{你要打听谁的所在？|李四对你摇了摇头：“%*还有任务没有完成，无法参加任务！”|李四对你笑道：干得不错，你先歇息一会，等一下再来}} {
+	#delay {2} {tt mission failed};
+} {4}
+
+#action {^%?%?你要打听谁的所在？} {
+	#var {failed_ttask} {$ttask};
+	#var {failed_area} {$ttask_area};
+	tt mission failed;
+} {4}
+
+#action {^%?%?李四对你笑道：让%*先歇息一会，等一下再来} {
+	tt mission failed;
+} {4}
+
+#action {^%?%?【队伍】%*：mission failed} {
+	mission_ttask.kill;
+	#if {$robot && &mission_list[] > 0} {mission_ttask.kill;mission.do};
+	#else {halt;fly wm;w};
+} {4};
+
+#action {^%?%?{李四对你道：你赤手空拳的|你将队伍解散了}} {
+	mission_ttask.kill;
+	#if {$robot && &mission_list[] > 0} {mission_ttask.kill;mission.do};
+	#else {halt;fly wm;w};
+}
+
+#action {^%?%?$$fight_name%*死了}
+{
+	fight.end;
+}
+
+
+#action {^%*「%*'s ttask」%*(%*)%*} {
+	#format {l_title} {%p} {%1};
+	#format {l_ename} {%l} {%2};	
+	#regex {$l_title} {%*：%*} {kick} {
+		#if {"$l_ename" == "$lead_en"} {
+			#echo 找到了;
+			#undelay visit_task;
+			te fight;
+			#variable {kill_id} {$lead_en's ttask};
+			#variable {ttask} {%3};
+			#variable epochStamp @get_epoch_time{};
+			#variable {idle_threshold} {40};
+			#undelay {ttask_missing};
+			walk.stop;
+			#variable target_bfind 1;
+			follow1 $lead_en's ttask;
+			#echo $kill_id;
+			#if {"$task_wx" == "unknown"} {get_task_wx $l_title};
+			#if  {"%5" == " <战斗中>"} {#undelay {lookttask};kill $lead_en's ttask};
+			#elseif {"$me[ename]" == "$lead_en"} {#delay {1} {kill $lead_en's ttask}};
+			#else {#echo 没在战斗;#delay {lookttask} {look} {0.3}};
+		};
+	};
+	#unvariable l_ename;
+	#unvariable l_title;
+}
+
+
+#action {^%?%?{$lead_cn对着$ttask喝道：「%*」|$ttask对著%*大喝一声：%*|$ttask瞪大眼，对着%*大声喊道|$ttask对%*冷笑道：%* |$ttask喝道}}
+{   
+	wlak.stop;
+	#variable target_bfind 1;
+	#echo 又见面了;
+	#undelay visit_task;
+	te fight;
+    #variable {kill_id} {$lead_en's ttask};
+	l;
+}
+
+#action {$team_ask_cn身行向后一跃，跳出战圈不打了。} {
+	#if {$target_bfind == 1} {
+		#showme 你已经一副头重脚轻的模样，正在勉力支撑著不倒下去;
+	}
+}
+
+
+#action {^%?%?可是$ttask看破了%*的企图}
+{
+  #variable {cmd} {busy_pfm};  
+}
+
+#action {^%?%?$ttask往%*离开} {
+	#if {"$ttask" != ""} {
+		#variable l_dir {@get_escape_way{%3}};
+		$l_dir;ask $kill_id about die;l;
+		#unvariable l_dir;
+		#delay {visit_task} {ttask_traversal} {2};
+	}
+}
+
+#action {^%?%?%s$ttask正坐在地下运功疗伤。} {
+	#undelay visit_task;
+	#if {"$ttask" != ""} {
+		walk.stop;
+		#variable {target_bfind} {1};
+		#if {"$me[ename]" == "$lead_en"} {kill $kill_id};
+		#variable epochStamp @get_epoch_time{};
+	}
+}
+
+#action {^%?%?$ttask{往|身行一闪，飞一样地向}{.*}{落荒而逃|逃去}} {
+	#if {"$ttask" != ""} {
+		#variable escape_way {@get_escape_way{%4}};
+		scmd {$escape_way;kill $kill_id};
+	}
+}
+
+#action {^%?%?{这里没有这个人|你想偷袭谁？}} {
+	#delay {ttask_missing} {#variable target_bfind 0;#showme Target Missing!!!} {1};
+}
+
+#action {^%?%?你一回头，正好发现%*的手正抓着你身上的} {
+	#if {"%3" == "$ttask"} {		
+		prefight;
+		attack_pfm;
+		#variable {cmd} {busy_pfm};
+		#ticker {busy_test} {$status_test} {1};
+	} {halt;l};
+}
+
+#action {^%?%?$ttask向后一纵，恨恨地说道：君子报仇，十年不晚！} {
+	#if {"$ttask" != ""} {#if {"$me[ename]" == "$lead_en"} {kill $kill_id}};
+}
+
+#action {^%?%?$ttask说道：最近风紧，我还是去避一避的好。} {
+	#if {"$ttask" != ""} {
+		#unticker {walk};
+		fight.end;
+		#variable {ttask} {};
+		#line log {$LOG/$me[ename].log} {@get_current_time{} ttask is failed };
+		scmd {halt;mission_ttask.end}
+	}
+}
+
+
+#action {^%?%?你对$task造成%d点伤害} {
+	#delay {ttask_antiidle} {#variable epochStamp @get_epoch_time{}} {0.5};
+}
+
+#action {^%?%?你今日已完成了%s%d/%d%s次TeamTask任务} {
+	#unticker {walk};
+	fight.end;
+	tt 今日已完成了%4次TeamTask任务;
+	#variable {mission_complete} {1};
+	#variable {mission_status[mission_ttask][total]} {%5};
+	#variable {mission_status[mission_ttask][done]} {1};
+	#variable {ttask} {};
+	#line log {$LOG/$me[ename]_tt.log} {@get_current_time{} ttask is killed};
+	#if {1 == $target_bfind}{
+		#delay {1} {
+			scmd {
+				halt;
+				#if {"$me[ename]" == "$lead_en"} {get all from corpse;eat yaowan;drink yaoshui};
+				#if {$xuedaoClass == 1} {#showme 血刀模式;xuedao.prepare;kantou corpse;drop head};
+				#if {("$me[family]" == "密宗") && (0 != &skill_list[密宗心法])} {get corpse;fly xs;n;w;s;ask fawang about fashi;give fawang corpse;drop corpse};
+			}
+		}	
+	};
+	#delay {5} {mission_ttask.end};
+} {4}
+
+#action {^%?%?【队伍】%*：今日已完成了%*次TeamTask任务} {
+	#variable {mission_status[mission_ttask][done]} {1};
+	#if {&mission_status[mission_ttask][complete] == 0} {#variable {mission_status[mission_ttask][complete]} {%4}};
+	#elseif {%4 == 1} {#variable {mission_status[mission_ttask][complete]} {1}};
+	#elseif {%4 > $mission_status[mission_ttask][complete]} {#variable {mission_status[mission_ttask][complete]} {%4}};
+}
+
+#action {^%?%?可惜你未在规定的时间之内完成任务，下次加油哦！} {
+	tt 任务超时;
+}
+
+#action {^%?%?【队伍】%*：任务超时} {
+	#unticker {walk};
+	fight.end;
+	#variable {ttask} {};
+	#line log {$LOG/$me[ename]_tt.log} {@get_current_time{} ttask is failed};
+	scmd {halt;mission_ttask.end}
+} {4};
+
+#action {^%?%?你得到了一级%*。} {
+	#line log {$LOG/$me[ename]_tt.log} {@get_current_time{} : %0};
+}
+
+#action {^%?%?李四对着你叹了一口气：哎，我就再给你一次机会吧。} {
+	#variable {ttask_round} {0};
+}
+
+#action {^%?%?【谣言】%*：$lead_cn纠集了一群废物想对付%*，真是太愚昧了！} {
+	#format {l_time} {%t} {%Y_%m_%d_%H_%M};
+	#format {l_log} {%s_%s_tt.log} {$me[ename]} {$l_time};
+	#buffer write {$LOG/$l_log};
+	#unvariable l_time;
+	#unvariable l_log;
+	#line log {$LOG/$me[ename]_tt.log} {@get_current_time{} :%0};
+	mission_ttask.end;
+}
+
+#nop ===========================Ticker===========================
+#ticker {mission_ttask_end} {#if {@get_epoch_time{} > $epochStamp+$idle_threshold+60} {#echo {%c#60S到!} {cyan};mission_ttask.end}} {60};
+
+#class {mission_ttask} close

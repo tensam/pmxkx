@@ -1,0 +1,159 @@
+#class {jingzuo} open
+#nop ==========================Variable==========================
+#variable {jingzuoClass} {1};
+#variable {find_xinmo} {0};
+#variable {bInDream} {0};
+
+#nop ===========================Alias============================
+#alias {jingzuo.start} {
+	updatedolist jingzuo;
+	#variable mission_complete 0;
+	#class fight read $MOD/fight.tin;
+	fly wm;w;
+	#2 give fire to $bag_id;
+	#2 give xionghuang to $bag_id;
+	#if {$me[comb_exp]>2000000 && $me[yl_exp]>50000} {give shan pai to $bag_id};
+	#if  {$hmling} {give heimu ling to $bag_id}; 
+	#if {$bUseMudao == 1} {
+		give mu dao to $bag_id;
+		give mu tou to $bag_id;
+	};
+	fly tls;n;w;s;s;e;#6 s;jingzuo;
+}
+
+#alias {jingzuo.kill} {
+	#unticker {walk};
+	#unticker {jingzuo_end};
+	#class fight kill;
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class jingzuo kill;
+}
+
+#alias {jingzuo.end} {
+	#unticker {walk};
+	#unticker {jingzuo_end};
+	#class fight kill;	
+	scmd {halt;fly wm;w;#showme {jingzuo finished!!!}};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?jingzuo finished!!!} {
+	tell $bag_id #2 give fire to $me[ename] ;
+	tell $bag_id #2 give xionghuang to $me[ename];
+	#if {$me[comb_exp]>2000000 && $me[yl_exp]>50000} {tell $bag_id give shan pai to $me[ename]};
+	#if  {$hmling} {tell $bag_id give heimu ling to $me[ename]}; 
+	#if {$bUseMudao == 1} {
+		tell $bag_id give mu dao to $me[ename];
+		tell $bag_id give mu tou to $me[ename];
+	};
+	#class jingzuo kill;
+	#delay {1} {l};
+}
+
+#action {^%?%?$dazuo_end} {
+	#variable epochStamp @get_epoch_time{};
+}
+
+#action {^%?%?你席地而坐，双目微闭，口中轻声诵起了经文} {
+	#variable epochStamp @get_epoch_time{};
+	#delay {jingzuo_avoid} {
+		#if {$jingzuo_intact} {scmd {fly wm}} {jingzuo.end}
+	} {8};	
+}
+
+#action {^%?%?你缓缓睁开眼睛，长舒一口气站了起来。} {
+	scmd {fly tls;n;w;s;s;e;#6 s;jingzuo};
+}
+
+#action {^%?%?你刚刚才静坐过，现在头脑一片空白。} {
+	dazuo 100;
+	#delay {3} {
+		exert recover;
+		tuna 100;
+		#delay {3} {
+			exert regenerate;
+			jingzuo;
+		}
+	}
+}
+			  
+#action {^    这里没有任何{明显的出路|出口}} {
+	#variable find_xinmo 1;
+	#unticker {walk};		
+	wakeup;
+}
+
+#action {^%?%?你{清|终于}醒了过来．．．} {	
+	#unticker {jingzuo_end};
+	#variable bInDream 0;
+	#variable mission_complete 1;
+	#delay {2} {jingzuo.end};
+}
+
+#action {^#PATH WALK: #END OF PATH.} {		
+	#if {$find_xinmo != 1} {
+		#path load {u;e;n;w;s;d};	
+	}		
+}
+
+#action {^%?%?%s$me[cname]的心魔(%*)} {		
+	#echo {找到我的心魔了~~~~};
+	#variable epochStamp @get_epoch_time{};
+	#unticker {walk};
+	exert powerup;
+	#if {0 == &skill_list[双手互博]} {wi} {uw};
+	follow $me[ename]'s xinmo;
+	#delay {1} {kill $me[ename]'s xinmo};
+}
+
+#action {^%?%?%?%?你思维一阵混乱，禅心不定，随即陷入心魔幻境之中。} {	
+	#undelay {jingzuo_avoid};
+	#echo {进入幻境了~~~~~~~~};
+	#line log {$LOG/$me[ename].log} {@get_current_time{} : %0};
+	#variable bInDream 1;
+	#variable {find_xinmo} {0};	
+	#path load {u;e;n;w;s;d};
+	#ticker {walk} {#path walk} {0.4};	
+	#ticker {jingzuo_end} {
+		#unticker {walk};
+		#unticker {jingzuo_end};
+		wakeup;
+	} {600};
+}
+
+#action {^%?%?%?%?$me[cname]的心魔往%*落荒而逃了。} {
+	#delay {1} {$cpathdir[%5];follow $me[ename]'s xinmo;kill $me[ename]'s xinmo};
+}
+
+#action {^%?%?这里没有这个人} {
+	#if {$bInDream} {
+		#variable find_xinmo 0;
+		#path load {u;e;n;w;s;d};
+		#ticker {walk} {#path walk} {0.4};	
+	};
+}
+
+#action {^%?%?%?%?$me[cname]的心魔往%*离开。} {
+	#unticker walk;
+	#delay {1} {$cpathdir[%5];follow $me[ename]'s xinmo;kill $me[ename]'s xinmo};
+}
+
+#action {^%?%?%?%?$me[cname]的心魔%*走了过来。} {
+	#unticker walk;
+	#if {0 == &skill_list[双手互博]} {wi} {uw};
+	follow $me[ename]'s xinmo;
+	kill $me[ename]'s xinmo;
+}
+
+#action {^%?%?看起来$me[cname]的心魔想杀死你！} {
+	#unticker walk;
+	#variable {find_xinmo} {1};
+	follow $me[ename]'s xinmo;
+	#if {0 != &skill_list[双手互博]} {hubo}		
+}
+
+#action {^%?%?你得到了一级%*。} {
+	#line log {$LOG/$me[ename].log} {@get_current_time{} : %0};
+}
+
+#class {jingzuo} close

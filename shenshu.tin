@@ -1,0 +1,419 @@
+#class {shenshu} open
+#nop ==========================Variable==========================
+#variable {shenshuClass} {1};
+#variable {valid_idx} {1};
+#variable {ss} {};
+#variable {ss_npc} {};
+#variable {ss_task} {};
+#variable {ss_stage} {0};
+#variable {ss_area} {};
+#variable {ss_room} {};
+#variable {ss_escape_way} {};
+#variable {ss_dummy} {breakadm};
+
+#variable {shenshu_info} {
+	{飞狐外传 上册}{{id}{fhwz1}{npc}{胡斐}} 
+	{飞狐外传 中册}{{id}{fhwz2}{npc}{胡斐}}
+	{飞狐外传 下册}{{id}{fhwz3}{npc}{胡斐}}
+	{雪山飞狐 上册}{{id}{xsfh1}{npc}{胡斐}}
+	{雪山飞狐 下册}{{id}{xsfh2}{npc}{胡斐}}
+	{连城诀 上册}{{id}{lcjue1}{npc}{金庸}} 
+	{连城诀 下册}{{id}{lcjue2}{npc}{金庸}} 
+	{天龙八部 第一册}{{id}{tlbb1}{npc}{段誉}}
+	{天龙八部 第二册}{{id}{tlbb2}{npc}{萧峰}}
+	{天龙八部 第三册}{{id}{tlbb3}{npc}{虚竹}}
+	{天龙八部 第四册}{{id}{tlbb4}{npc}{段誉}}
+	{天龙八部 第五册}{{id}{tlbb5}{npc}{萧峰}}
+	{射雕英雄传 第一册}{{id}{sdyxz1}{npc}{郭靖}}
+	{射雕英雄传 第二册}{{id}{sdyxz2}{npc}{郭靖}}
+	{射雕英雄传 第三册}{{id}{sdyxz3}{npc}{郭靖}}
+	{射雕英雄传 第四册}{{id}{sdyxz4}{npc}{郭靖}}	
+	{鹿鼎记 第一册}{{id}{ldji1}{npc}{韦小宝}}
+	{鹿鼎记 第二册}{{id}{ldji2}{npc}{韦小宝}}
+	{鹿鼎记 第三册}{{id}{ldji3}{npc}{韦小宝}}
+	{鹿鼎记 第四册}{{id}{ldji4}{npc}{韦小宝}}
+	{鹿鼎记 第五册}{{id}{ldji5}{npc}{韦小宝}}
+	{笑傲江湖 第一册}{{id}{xajh1}{npc}{令狐冲}}
+	{笑傲江湖 第二册}{{id}{xajh2}{npc}{令狐冲}}
+	{笑傲江湖 第三册}{{id}{xajh3}{npc}{令狐冲}}
+	{笑傲江湖 第四册}{{id}{xajh4}{npc}{令狐冲}}
+	{书剑恩仇录 上册}{{id}{sjec1}{npc}{金庸}}
+	{书剑恩仇录 中册}{{id}{sjec2}{npc}{金庸}}
+	{书剑恩仇录 下册}{{id}{sjec3}{npc}{金庸}}
+	{神雕侠侣 第一册}{{id}{sdxl1}{npc}{杨过}}
+	{神雕侠侣 第二册}{{id}{sdxl2}{npc}{杨过}}
+	{神雕侠侣 第三册}{{id}{sdxl3}{npc}{杨过}}
+	{神雕侠侣 第四册}{{id}{sdxl4}{npc}{杨过}}
+	{侠客行 上册}{{id}{xkx1}{npc}{石破天}}
+	{侠客行 中册}{{id}{xkx2}{npc}{石破天}}
+	{侠客行 下册}{{id}{xkx3}{npc}{石破天}}
+	{倚天屠龙记 第一册}{{id}{yttlj1}{npc}{张无忌}}
+	{倚天屠龙记 第二册}{{id}{yttlj2}{npc}{张无忌}}
+	{倚天屠龙记 第三册}{{id}{yttlj3}{npc}{张无忌}}
+	{倚天屠龙记 第四册}{{id}{yttlj4}{npc}{张无忌}}
+	{碧血剑 上册}{{id}{bxsword1}{npc}{金庸}}
+	{碧血剑 中册}{{id}{bxsword2}{npc}{金庸}}
+	{碧血剑 下册}{{id}{bxsword3}{npc}{金庸}}	
+	{白马啸西风}{{id}{bmxxfeng}{npc}{李文秀}}
+	{鸳鸯刀}{{id}{yyblade}{npc}{金庸}}	
+};
+
+#variable {combined_book} {
+	{飞狐外传}{fhwz} 
+	{雪山飞狐}{xsfh}	
+	{连城诀}{lcjue} 	
+	{天龙八部}{tlbb}
+	{射雕英雄传}{sdyxz}	
+	{鹿鼎记}{ldji}
+	{笑傲江湖}{xajh}
+	{书剑恩仇录}{sjec}
+	{神雕侠侣}{sdxl}
+	{侠客行}{xkx}
+	{倚天屠龙记}{yttlj}
+	{碧血剑}{bxsword}		
+};
+
+#variable {ss_npc_id} {
+	{胡斐}{hu fei} 	
+	{金庸}{jin yong} 	
+	{段誉}{duan yu}
+	{萧峰}{xiao feng}
+	{虚竹}{xu zhu}
+	{郭靖}{guo jing}
+	{韦小宝}{wei xiaobao}
+	{令狐冲}{linghu chong}
+	{杨过}{yang guo}
+	{石破天}{shi potian}
+	{张无忌}{zhang wuji}
+	{李文秀}{li wenxiu}	
+};
+
+#nop ===========================Alias============================
+#alias {shenshu.start} {
+	#if {!$robot || ($robot && "$dolist[-1]" != "shenshu")} {
+		#if {$xw[ss] >= 120} {
+			#list {valid_shenshu} {clr};
+			#variable {shenshu_stage} {3};
+			#variable {mission_complete} {1};
+			shenshu.end;
+		};
+		#else {			
+			updatedolist shenshu;
+			#variable {mission_complete} {0};
+			#list {trapslist} {find} {{fhwz|xsfh|lcjue|tlbb|sdyxz|ldji|xajh|sjec|sdxl|xkx|yttlj|bxsword|bmxxfeng|yyblade}%*} {l_find};
+			fly wm;w;			
+			#if {0 != $l_find} {give $trapslist[$l_find] to $ss_dummy};
+			#unvariable {l_find};
+			tell $ss_dummy shenshu;
+			#class walk read $MOD/walk.tin;
+			#if {2 == $shenshu_stage} {#echo 状态是2;#delay {shenshu_end} {#variable {shenshu_stage} {3};shenshu.end} {2}};
+			#else {
+				#if {0 == $shenshu_stage} {isstask};
+				#delay {shenshu_start} {
+					#if {&valid_shenshu[] > 0} {
+						#class fight read $MOD/fight.tin;
+						#variable {ss} {$valid_shenshu[$valid_idx]};
+						findbook $ss;
+					} {#echo 可用为0;#variable {shenshu_stage} {3};shenshu.end};
+				} {6};		
+			}
+		}
+	};
+}
+
+#alias {shenshu.kill} {
+	#if {$walkClass == 1} {walk.kill};
+	#if {$fightClass == 1} {fight.kill};
+	#class {shenshu} kill;
+	#echo {%c#class shenshu killed!} {cyan};
+}
+
+#alias {shenshu.end} {	
+	#if {"$ss_area" == "sl"} {
+		#map get {roomname} {l_roomname};
+		#if {"$l_roomname" == "金刚伏魔圈"} {out};
+		#if {"$l_roomname" == "达摩院二楼"} {d};
+		#if {"$l_roomname" == "聚贤庄门"} {sw};
+		#unvariable l_roomname;
+	};	
+	#if {1 == $mission_complete} {
+		scmd {
+			halt;fly wm;e;#3 s;e;u;jicun yin dan;
+			fly wm;west;give $ss to $me[ename];
+			shenshu.kill;
+			#delay {0.5} {l}
+		};
+	};
+	#else {
+		shenshu.kill;
+		scmd {halt;fly wm;west}
+	}
+}
+
+#alias {arrive_cmd} {
+	#if {2 == $shenshu_stage} {give $ss to $ss_npc_id[$ss_npc];#variable {shenshu_stage} {1};shenshu.end};	
+	#else {l;#showme $shenshu_stage;#showme arrived!!!};	
+}
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "$ss_task"} {		
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	}
+}
+
+#alias {isstask} {
+	#action {^%?%?─────────── ★  神书榜  ★ ───────────} {
+		#action {^%s%S的%*(%*)$}
+		{			
+			#list {valid_shenshu} {add} {%%%4};
+		};		
+	};
+	#action {^%?%?──────────── 飘渺侠客行 ────────────} {
+		#undelay {isstask_remove};
+		#unaction {^%?%?─────────── ★  神书榜  ★ ───────────}; 
+		#unaction {^%s%S的%*(%*)$};
+		#unaction {^%?%?──────────── 飘渺侠客行 ────────────}; 		
+		#math {l_shift} {@get_epoch_time{} % &valid_shenshu[]};
+		#echo 现在神书是&valid_shenshu[];
+		#if {0 != $l_shift} {
+			#list {l_list} {clr};
+			#math {l_idx} {$l_shift + 1};
+			#loop {1} {&valid_shenshu[]} {l_loop} {				
+				#list {l_list} {add} {$valid_shenshu[$l_idx]};
+				#math {l_idx} {$l_idx+1};
+				#if {$l_idx > &valid_shenshu[]} {#variable {l_idx} {1}};
+			};
+			#variable {valid_shenshu} {$l_list};
+			#unvariable {l_idx};
+			#unvariable {l_loop};
+			#unvariable {l_list};
+		};
+		#unaction {^%?%?─────────── ★  神书榜  ★ ───────────}; 
+		#unaction {^%s%S的%*(%*)$};
+		#unaction {^%?%?──────────── 飘渺侠客行 ────────────}; 
+		#unvariable {l_shift};
+	};
+	#list {valid_shenshu} {clr};	
+	sstask;	
+	#variable {shenshu_stage} {1};
+}
+
+#nop ===========================Action===========================
+#action {^%*给你一本%*。} {
+	#regex {%1} {%*：%*} {kick} {
+		#if {0 != &combined_book[%2]} {chayue $combined_book[%2];eat jin dan};
+		#elseif {0 != &shenshu_info[%2]} {
+			#undelay {shenshu_end};			
+			#variable {ss} {$shenshu_info[%2][id]};
+			#variable {ss_npc} {$shenshu_info[%2][npc]};
+			#variable shenshu_stage 2;
+			gotonpc $ss_npc;
+		}
+	}	
+}
+
+
+
+
+#action {^%?%?『%*』似乎在%*的%*附近。} {
+	#variable epochStamp @get_epoch_time{};		
+	#if {"%5" == "武庙%*"} {
+		#list {valid_shenshu} {delete} {$valid_idx};
+		#math {valid_idx} {$valid_idx-1};	
+		#showme {Cancel this Shenshu!!!}
+	};
+	#elseif {0 == $ss_stage} {
+		#variable {ss_area} {%4};		
+		#variable {ss_room} {%5};		
+		#variable {target_bfind} {0};
+		#variable {neighbor} {0};
+		#variable {ss_stage} {1};
+		#map goto 9;	
+		#variable {vnum_list} {@gen_location_vnumlist{$ss_area;$ss_room}};
+		#if {&vnum_list[] == 0} {shenshu.end} {scmd {#delay fight_ready;halt;vnum_list_go}};
+	};
+	#else {
+		#map get {roomname} {l_roomname};
+		#if {"$l_roomname" == "%5"} {
+			#if {"$doubt_name" != ""} {
+				#variable {target_bfind} {1};
+				#variable {ss_task} {$doubt_name};
+				#variable {kill_id} {$doubt_id};			
+				scmd {touxi $kill_id};	
+			};
+			#else {
+				#list {valid_shenshu} {delete} {$valid_idx};
+				#math {valid_idx} {$valid_idx-1};
+				#showme {Cancel this Shenshu!!!}
+			};
+		};
+		#else {
+			#variable {doubt_name} {};
+			#variable {doubt_id} {};			
+			#variable {l_area} {@get_area{%4;%5}};
+			#if {"$l_area" == "$ss_area"} {scmd {walk.continue}};
+			#else {
+				#list {valid_shenshu} {delete} {$valid_idx};
+				#math {valid_idx} {$valid_idx-1};
+				#showme {Cancel this Shenshu!!!}
+			};
+			#unvariable {l_area};	
+		}		
+	}
+}
+
+#action {^%?%?『%*』似乎在某个地方的%*附近,出口数为：%*的地方。} {
+	#if {"%4" == "巫师%*"} {
+		#list {valid_shenshu} {delete} {$valid_idx};
+		#math {valid_idx} {$valid_idx-1};
+	};
+	#delay {shenshu_cancel} {#showme {Cancel this Shenshu!!!}} {1};
+}
+
+#action {^%?%?确定不了$ss的大概位置.} {
+	#list {valid_shenshu} {delete} {$valid_idx};
+	#math {valid_idx} {$valid_idx-1};
+	#delay {shenshu_cancel} {#showme {Cancel this Shenshu!!!}} {1};
+}
+
+#action {^%?%?Cancel this Shenshu!!!} {
+	#math {valid_idx} {$valid_idx+1};
+	#if {$valid_idx > &valid_shenshu[]} {#variable {shenshu_stage} {3};shenshu.end};
+	#else {
+		#variable {ss} {$valid_shenshu[$valid_idx]};
+		#variable {ss_task} {};
+		#variable {ss_stage} {0};
+		#delay {2} {scmd {halt;fly wm;findbook $ss}};
+	};
+}
+
+#action {~^    \e[%d;%dm%D\e[0m %S(%w %w)$} {
+	#if {1 == $ss_stage} {		
+		#if {("%3" == "{少林|武当|峨嵋|华山|丐帮|桃花|星宿|白驼|神龙|雪山|明教|云龙|六脉|神雕|日月|全真|梅庄|铁掌|灵鹫|逍遥|昆仑|大燕}%*") && 
+			("%5" != "{Jiansi|Dadizi|Zhangmen|Zhangjiao|Longtou|Shenghuoshi|Shouling|Shoutu|Shaozhu|Chuanren|Shenseng|Fawang|Jieyin|Ren}")} {
+			walk.stop;	
+			#variable epochStamp @get_epoch_time{};			
+			#regex {$ss_task} {^$} {
+				#variable {ss_task} {%4};
+				#format {kill_id} {%l} {%5 %6};					
+				#variable {target_bfind} {1};
+			};	
+			#showme $ss_task;		
+			touxi $kill_id;	
+		};		
+	};
+	#else {		
+		#if {"%4" == "$ss_task"} {
+			walk.stop;			
+			#variable epochStamp @get_epoch_time{};
+			#variable {target_bfind} {1};
+			touxi $kill_id;
+		}
+	}
+}
+	
+
+#action {^%?%?$ss_task%*向「{.*}{☆|◇|◎}%s%S」处} {
+	walk.stop;
+	fight.end;	
+	#variable {ss_area} {%4};	
+	#variable {ss_room} {%7};		
+	#variable {target_bfind} {0};
+	#variable {neighbor} {0};
+	#variable {ss_stage} {2};
+	#variable {vnum_list} {@gen_location_vnumlist{$ss_area;$ss_room}};
+	#if {&vnum_list[] == 0} {shenshu.end} {scmd {fight_ready;halt;#map goto 9;fly wm;vnum_list_go}};
+}
+
+#action {^%*说道：不好，我被识破了!!} {
+	grin;
+}
+
+#action {^%?%?你想偷袭谁？} {
+	#delay {sstask_missing} {#variable target_bfind 0;#showme Target Missing!!!} {1};
+}
+
+#action {$ss_task正坐在地下运功疗伤。} {
+	#if {"$ss_task" != ""} {
+		walk.stop;
+		#variable {target_bfind} {1};		
+		touxi $kill_id;
+	}
+}
+
+#action {^%?%?$ss_task往%*离开} {
+	#if {"$ss_task" != ""} {
+		#variable l_dir {@get_escape_way{%3}};
+		$l_dir;
+		#unvariable l_dir;		
+	}
+}
+
+#action {^%?%?$ss_task{往|身行一闪，飞一样地向}{.*}{落荒而逃|逃去}} {
+	fight.end;	
+	#if {"$ss_task" != ""} {
+		#variable ss_escape_way {@get_escape_way{%4}};
+		scmd {$ss_escape_way;touxi $kill_id};
+	}
+}
+
+#action {^%?%?$ss_task%*死了} {
+	#if {"" != "$ss_task"} {
+		fight.end;	
+		scmd {
+			halt;
+			#if {$xuedaoClass == 1} {xuedao.prepare;kantou corpse;drop head};
+			get all from corpse;
+			#delay {find_shenshu_again} {
+				#variable {ss_task} {};
+				#variable {ss_stage} {0};
+				halt;fly wm;findbook $ss;
+			} {2};
+		};
+	}	
+}
+				   
+#action {^%?%?$ss_task%*说道：看来情况不妙，还是先找个安全的地方避避} {
+	fight.end;
+	#delay {shenshu_cancel} {#showme {Cancel this Shenshu!!!}} {1};
+}
+
+#action {^%?%?你从$ss_task的%*尸体身上搜出一本%*。} {
+	#undelay {find_shenshu_again};
+	#variable {mission_complete} {1};
+	#variable {ss} {$shenshu_info[%4][id]};
+	#variable {ss_npc} {$shenshu_info[%4][npc]};
+	#variable shenshu_stage 2;
+	#list {valid_shenshu} {find} {$ss} {l_find};
+	#if {0 != $l_find} {#list {valid_shenshu} {delete} {$l_find}};
+	#unvariable {l_find};
+	#delay {2} {gotonpc $ss_npc};
+}
+
+#action {^%?%?这里不能使用月光宝盒。} {
+	fight.end;
+	walk.stop;
+	halt;sw;d;out;
+	#if {&vnum_list[] == 0} {
+		scmd {#showme {Cancel this Shenshu!!!}};
+	};
+	#else {
+		scmd {halt;walk.to $vnum_list[$vnum_idx]};
+	};
+}
+
+#action {桃花岛弟子留言板} {
+	shenshu.end;
+}
+
+#nop ===========================prompt===========================
+
+#nop ===========================Ticker===========================
+#ticker {shenshu_end_ticker} {#if {@get_epoch_time{} > $epochStamp+90} {shenshu.end}} {30};
+
+#class {shenshu} close

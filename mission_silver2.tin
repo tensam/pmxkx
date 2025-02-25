@@ -1,0 +1,138 @@
+#class {mission_silver2} open
+#nop ==========================Variable==========================
+#variable {mission_silver2Class} {1};
+
+
+#nop 当前要去杀的对象
+#variable {curTarget} {}
+
+#nop 本轮已经执行劫杀的数量，没人也算一次
+#nop #variable {killedCount} {1}
+
+#nop  一轮要劫杀的数量
+#variable {numToKill} {10}
+
+#variable {gotodp} {
+	{1} {{city}{hs}{path}{fly wm;e;s;s;s;s;s;w;w;w;w;n;move stone;nw}}
+	{2} {{city}{hs}{path}{fly wm;e;s;s;s;s;s;w;w;w;w;n;move stone;nw}}
+	{3} {{city}{hs}{path}{fly wm;e;s;s;s;s;s;w;w;w;w;n;move stone;nw}}
+}
+
+#variable {dp_idx} {1};
+
+
+#nop ===========================Alias============================
+#alias {mission_silver2.start}
+{
+	#variable {killedCount} {0};
+	#if {&robot ==0 || (&robot != 0 && "$dolist[-1]" != "mission_silver2")} {
+		#variable mission_complete 0;
+		updatedolist mission_silver2;
+		#class {npc_list} read $MOD/silvernpc_list.tin;
+		#showme {goto get silver !!!!!!};
+		wi.money;
+		gotokill_target;
+	};
+}
+
+
+#alias {mission_silver2.kill} {
+	#class {mission_silver2} kill;
+	#echo {%c#class mission_silver2 killed!} {cyan};
+}
+
+#alias {mission_silver2.end}
+{
+	mission_silver2.kill;
+	#delay {1} {halt;fly wm;w};
+}
+
+
+#alias {gotokill_target} {
+	#math silvernpc_idx {$silvernpc_idx+1};
+	#if {$silvernpc_idx > &silvernpc_list[]  ||  $silvernpc_idx > $silvernpc_end} {#variable {silvernpc_idx} {$silvernpc_start}};
+	#variable {curTarget} {${silvernpc_list[+$silvernpc_idx]}};
+	#showme {gotokill_target $silvernpc_idx};
+	#delay {1} {halt;$curTarget[path];kill $curTarget[id]};
+}
+
+#alias {sell_spoils} {
+	#showme {go to sell spoils!!!!!};
+	#list {spoils} {clear};
+	#foreach $curTarget[spoils] {item} {#list {spoils} {add} {$item}};
+	#math sell_idx 1;
+	#delay {1} {halt;$gotodp[$dp_idx][path];
+				#math {dp_idx} {$dp_idx+1};
+				#if {$dp_idx>&gotodp[]} {#variable {dp_idx} {1}};
+				#echo {sell $spoils[$sell_idx]}; 
+				sell $spoils[$sell_idx]};
+}
+
+
+
+#nop ===========================Action===========================
+#action {^{>?}看起来%*想杀死你111！} {
+	#if {"%2" != "$curTarget[name]"} {
+		halt;fly wm;mission_silver2.end;
+	};
+	#else {yun shenyuan};
+}
+
+
+#action {^{>?}你一次输入太多命令了} {
+	#echo {命令太多触发};
+	#delay {10} {gotokill_target}
+}
+
+#action {^{>?}战斗中无法飞行。}
+{	
+	#delay {2} {sell_spoils;};
+}
+
+
+#action {^{>?}%*扑在地上挣扎了几下，口中喷出几口鲜血，死了！} {
+	#showme {get $curTarget[name] msg!!!!!!!!!!};
+	#foreach {$curTarget[spoils]} {item} {get $item from corpse};
+	#math killedCount {$killedCount+1};
+	sell_spoils;
+}
+
+
+
+#action {^{>?}%*往%*落荒而逃了}
+{	
+	#math killedCount {$killedCount+1};
+	#if {$killedCount <= $numToKill} {gotokill_target};
+}
+
+#action {^{>?}这里没有这个人。}
+{
+	#math killedCount {$killedCount+1};
+	#if {$killedCount <= $numToKill} {gotokill_target};
+	#else {mission_silver2.end};
+}
+
+
+#action {^{>?}{你要卖断什么物品？}} {
+	#math sell_idx {$sell_idx+1};
+	#delay {1} {sell $spoils[$sell_idx]};
+}
+
+#action {^{>?}{掌柜的唱道}} {
+	#math sell_idx {$sell_idx+1};
+	#delay {1} {sell $spoils[$sell_idx]};
+}
+
+#action {^{>?}{你要卖「钱|掌柜的说：我们这不收此类装备和宝石！}} {
+	#delay {checkNext} {
+				#if {$killedCount <= $numToKill} {gotokill_target;};
+				#else {#showme mission_silver2 over!!!;#delay {1} {mission_silver2.end}}
+				}  {1};
+}
+
+
+
+#nop ===========================Ticker===========================
+#ticker {mission_silver2_end} {#echo time is over!;mission_silver2.end} {120};
+
+#class {mission_silver2} close

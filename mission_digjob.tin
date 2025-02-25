@@ -1,0 +1,140 @@
+#class {mission_digjob} open
+#nop ==========================Variable==========================
+#variable {mission_digjobClass} {1};
+#variable {dig_area} {};
+#variable {room_desc} {};
+#variable {vnum_list} {};
+#variable {vnum_idx} {1};
+
+#nop ===========================Alias============================
+#alias {mission_digjob.start} {
+	#if {$me[comb_exp] < 1000000} {
+		#variable mission_complete 0;
+		updatedolist mission_digjob;
+		#class walk read $MOD/walk.tin;
+		fly wm;e;e;ask qu qing about job;
+		#delay {ask_failure} {mission_digjob.end} {3};
+	};
+	#else {mission_digjob.end};
+}
+
+#alias {mission_digjob.kill} {
+	#if {$walkClass == 1} {walk.kill};
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_digjob} kill;
+}
+
+#alias {mission_digjob.end} {
+	mission_digjob.kill;
+	scmd {halt;fly wm;w};
+}
+
+#alias {mission_digjob.fail} {
+	#list {trapslist} {find} {bao wu} {l_baowu};
+	#if {$l_baowu == 0} {scmd {halt;fly wm;e;e;ask qu qing about fail;ask qu qing about job}};
+	#else {scmd {halt;fly wm;e;e;give baowu to qu qing;mission_digjob.end}};
+	#unvariable {l_baowu};
+}
+
+#alias {arrive_cmd} {
+	dig;
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你向曲清打听有关『job』的消息} {
+	#undelay {ask_failure};
+	#action {^%?%?曲清说道:拿好这个通天镜} {		
+		#unaction {^%?%?曲清说道:拿好这个通天镜};
+		#unaction {^%?%?曲清说道：%*休息吧}; 
+		#unaction {^%?%?曲清说道：%*怎么还不去挖宝？};
+		#variable {dig_area} {};
+		#variable {room_desc} {};
+		detect;
+	};
+	#action {^%?%?曲清说道：%*休息吧} {		
+		#unaction {^%?%?曲清说道：%*休息吧}; 
+		#unaction {^%?%?曲清说道:拿好这个通天镜};
+		#unaction {^%?%?曲清说道：%*怎么还不去挖宝？};
+		mission_digjob.end;
+	};
+	#action {^%?%?曲清说道：%*怎么还不去挖宝？} {
+		#unaction {^%?%?曲清说道：%*怎么还不去挖宝？};
+		#unaction {^%?%?曲清说道：%*休息吧}; 
+		#unaction {^%?%?曲清说道:拿好这个通天镜};
+		ask qu qing about fail;
+		ask qu qing about job;
+	};
+}
+
+#action {^%?%?宝物的地点似乎在%*。} {
+	#variable {dig_area} {$area_map[%3]};
+	#action {^%%0} {	
+		#regex {%%0} {%*■%*} {
+			#format {append} {%p} {%%0};
+			#variable {room_desc} {${room_desc}${append}};
+		} {
+			#delay {1} {#showme 开始寻宝};		
+			#unvariable append;
+			#unaction {^%%%0};
+		};
+	};
+}
+
+#action {^%?%?开始寻宝} {
+	#replace {room_desc} {■} {%*};
+	#variable room_desc {%*$room_desc%*};
+	#map goto 14;
+	#map list {roomarea} {$dig_area} {roomdesc} {$room_desc} {variable} {l_dig_mapList};
+	#if {&l_dig_mapList[] == 0} {
+		#line log {$LOG/error.log} {dig err: [$dig_area]--[$room_desc]};
+		halt;mission_digjob.fail;
+	};
+	#else {
+		#list {vnum_list} clr;
+		#foreach {*l_dig_mapList[%*]} {l_vnum} {#list {vnum_list} {add} {$l_vnum}};
+		#unvariable l_vnum;
+		#variable {vnum_idx} {1};
+		#if {"$dig_area" == "jx"} {
+			#if {$vnum_list[$vnum_idx] == 1239} {#math vnum_idx {$vnum_idx+1}};
+			#if {$vnum_idx <= &vnum_list[]} {run.to $vnum_list[$vnum_idx]};
+			#else {halt;mission_digjob.fail};
+		};
+		#else {
+			#if {$vnum_idx <= &vnum_list[]} {walk.to $vnum_list[$vnum_idx]};
+			#else {halt;mission_digjob.fail};
+		};
+	};
+	#unvariable l_dig_mapList;
+}
+
+#action {^%?%?你忙着呢，等下再挖吧} {
+	#delay {1} {dig};
+}
+
+#action {^%?%?你找到了一件宝物。} {
+	#variable mission_complete 1;
+	scmd {halt;fly wm;e;e;give baowu to qu qing;mission_digjob.end};
+}
+
+#action {^%?%?你挖了半天，发现什么都没有，似乎找错地方了} {
+	#math vnum_idx {$vnum_idx+1};
+	#if {"$dig_area" == "jx"} {
+		#if {$vnum_list[$vnum_idx] == 1239} {#math vnum_idx {$vnum_idx+1}};
+		#if {$vnum_idx <= &vnum_list[]} {scmd {halt;run.to $vnum_list[$vnum_idx]}};
+		#else {scmd {halt;mission_digjob.fail}};
+	};
+	#else {
+		#if {$vnum_idx <= &vnum_list[]} {scmd {halt;walk.to $vnum_list[$vnum_idx]}};
+		#else {scmd {halt;mission_digjob.fail}};
+	};
+}
+
+#action {^%?%?只听“铛”的一声，铁铲断成两节!} {
+	scmd {halt;mission_digjob.fail}
+}
+
+#nop ===========================Ticker===========================
+#ticker {mission_digjob_end} {mission_digjob.end} {90};
+
+#class {mission_digjob} close
+

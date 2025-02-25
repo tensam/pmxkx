@@ -1,0 +1,117 @@
+#class {mission_biao} open
+#nop ==========================Variable==========================
+#variable {mission_biaoClass} {1};
+#variable {biao_loc} {
+	{乱石坡}{fly bj;#7 w;sw}
+	{终南山口}{fly zns}
+	{闽江}{fly fz;#5 w;nw}
+	{函古关}{fly zns;#2 e}
+	{汉水南岸}{fly wm;e;#5 n}
+	{平定州}{fly bj;#6 w}
+	{天山脚下}{fly xx;su;s;ed}
+	{华山脚下}{fly ws1}
+	{中条山密林}{fly zns;e;#2 n;ne;#2 e;eu;su}
+};
+#variable {biao_position} {};
+
+#nop ===========================Alias============================
+#alias {mission_biao.start} {
+	#if {!$robot || ($robot && "$dolist[-1]" != "mission_biao")} {
+		updatedolist mission_biao;
+		#variable {mission_complete} {0};		
+		#if {$me[shen]>10000} {
+			fly xi;#2 e;n;e;ask guo xu about job;			
+		};
+		#elseif {$me[shen]<-10000} {
+			fly xi;#6 s;w;sw;s;
+			#list {trapslist} {find} {prize} {l_find};
+			#if {0 != $l_find} {give prize to ma chou};
+			#else {ask ma chou about rob;w;ask ma chou about rob};
+			#unvariable {l_find}; 	
+		};
+		#else {mission_biao.end};	
+	}
+}
+
+#alias {mission_biao.kill} {	
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_biao} kill;
+	#echo {%c#class mission_biao killed!} {cyan};
+}
+
+#alias {mission_biao.end} {
+	mission_biao.kill;
+	scmd {halt;fly wm;w};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?这里没有这个人。} {
+	mission_biao.end;
+};
+
+#action {^%?%?你向郭旭打听有关『job』的消息} {	
+	#action {^%?%?郭旭说道：%*$} {
+		#regex {%%3} {现在有一趟镖运往%*，} {
+			#variable {biao_position} {&1};
+			#delay {1} {fly wm};			
+		} {
+			mission_biao.kill;
+			#if {$robot && (&mission_list[]>0)} {mission.do};
+			#else {halt;fly wm;w};
+		};
+		#unaction {^%?%?郭旭说道：%*$};
+	};
+}
+
+#action {^%?%?郭旭把一个包裹塞在你怀里} {
+	#delay {1} {
+		$biao_loc[$biao_position];
+		finish;		
+	}
+}
+
+#action {^%?%?你向马仇打听有关『rob』的消息。} {
+	#action {^%?%?马仇说道：我还有些事要办，你先去%*等我。} {
+		#variable {biao_position} {%%3};
+		#unaction {^%?%?马仇说道：我还有些事要办，你先去%*等我。};
+		#unaction {^%?%?马仇说道：{我现在还没有得到任何消息，你等会儿再来吧|嘿嘿，你来晚了，等下一次吧}};
+		#delay {1} {$biao_loc[$biao_position]};
+	};
+	#action {^%?%?马仇说道：{我现在还没有得到任何消息，你等会儿再来吧|嘿嘿，你来晚了，等下一次吧}} {
+		#unaction {^%?%?马仇说道：我还有些事要办，你先去%*等我。};
+		#unaction {^%?%?马仇说道：{我现在还没有得到任何消息，你等会儿再来吧|嘿嘿，你来晚了，等下一次吧}};
+		mission_biao.kill;		
+		#if {$robot && &mission_list[] > 0} {mission.do};
+		#else {halt;fly wm;w};
+	};
+	#delay {2} {
+		#unaction {^%?%?马仇说道：我还有些事要办，你先去%*等我。};
+		#unaction {^%?%?马仇说道：{我现在还没有得到任何消息，你等会儿再来吧|嘿嘿，你来晚了，等下一次吧}};	
+	}
+}
+
+#action {^%?%?马仇对着你大声命令道：你快抢(qiang)镖队，我来对付其他人！} {
+	qiang;
+}
+
+#action {^%?%?突然从车队后窜出一个护镖镖师，二话不说就扑向了你！} {
+	halt;fly wm;
+	#delay {jiebiao} {$biao_loc[$biao_position];qiang} {2};
+}
+
+#action {^%?%?你见已经无人保护，将所带的财物全都拿在怀里！} {
+	fly xi;#6 s;w;sw;s;
+	give prize to ma chou;	
+}
+
+#action {^%?%?你今日已完成了%s%d/%d%s次job/{保|劫}镖任务} {
+	#variable {mission_complete} {1};
+	#variable {mission_status[mission_biao][complete]} {%4};
+	#variable {mission_status[mission_biao][total]} {%5};
+	#delay {1} {mission_biao.end};
+}
+
+#nop ===========================Ticker===========================
+#ticker {mission_biao_end} {mission_biao.end} {90};
+
+#class {mission_biao} close

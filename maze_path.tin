@@ -1,0 +1,259 @@
+#class {maze_path} OPEN;
+
+#nop BFS寻路;
+#function {find_path} {
+    #local start_x %1;
+    #local start_y %2;
+    #local end_x %3;
+    #local end_y %4;
+    
+    #list queue clr;
+    #list visited clr;
+    #list parent clr;
+    
+    #nop 找到起点和终点对应的房间;
+    #local start_found 0;
+    #local end_found 0;
+    #foreach {$maze[rooms][%*]} {room} {
+        #if {$room[x] == $start_x && $room[y] == $start_y} {
+            #local start_found 1;
+        };
+        #if {$room[x] == $end_x && $room[y] == $end_y} {
+            #local end_found 1;
+        };
+    };
+    
+    #if {!$start_found || !$end_found} {
+        #return {起点或终点不是有效房间};
+    };
+    
+    #list queue add {{x}{$start_x}{y}{$start_y}};
+    #list visited add {{x}{$start_x}{y}{$start_y}};
+    
+    #while {&queue[] > 0} {
+        #local current $queue[1];
+        #list queue del 1;
+        
+        #if {$current[x] == $end_x && $current[y] == $end_y} {
+            #return @build_path{$parent[] $current};
+        };
+        
+        #nop 检查所有可能的连接;
+        #foreach {$maze[connections][%*]} {conn} {
+            #if {$conn[from_x] == $current[x] && $conn[from_y] == $current[y]} {
+                #local next {{x}{$conn[to_x]}{y}{$conn[to_y]}};
+                #local found 0;
+                #foreach {$visited[%*]} {v} {
+                    #if {$v[x] == $next[x] && $v[y] == $next[y]} {
+                        #local found 1;
+                        #break;
+                    };
+                };
+                #if {!$found} {
+                    #list queue add {$next};
+                    #list visited add {$next};
+                    #list parent add {{node}{$next}{from}{$current}};
+                };
+            };
+            #elseif {$conn[to_x] == $current[x] && $conn[to_y] == $current[y]} {
+                #local next {{x}{$conn[from_x]}{y}{$conn[from_y]}};
+                #local found 0;
+                #foreach {$visited[%*]} {v} {
+                    #if {$v[x] == $next[x] && $v[y] == $next[y]} {
+                        #local found 1;
+                        #break;
+                    };
+                };
+                #if {!$found} {
+                    #list queue add {$next};
+                    #list visited add {$next};
+                    #list parent add {{node}{$next}{from}{$current}};
+                };
+            };
+        };
+    };
+    
+    #return {未找到路径};
+};
+
+#function {build_path} {
+    #local parent %1;
+    #local current %2;
+    #local path {};
+    
+    #while {"$current" != ""} {
+        #list path ins 1 {$current};
+        #foreach {$parent[%*]} {p} {
+            #if {"$p[node]" == "$current"} {
+                #local current $p[from];
+                #break;
+            };
+        };
+    };
+    
+    #return $path;
+};
+
+#alias {maze_path} {
+    #if {"%1" == ""} {
+        #showme 用法: maze_path <目标x> <目标y>;
+        #return;
+    };
+    
+    #if {"$maze[current][x]" == "0"} {
+        #showme [错误] 当前位置未知;
+        #return;
+    };
+    
+    #var target_pos[x] %1;
+    #var target_pos[y] %2;
+    
+    #showme [调试] 当前位置: $maze[current][x],$maze[current][y];
+    #showme [调试] 目标位置: $target_pos[x],$target_pos[y];
+    
+    #var path @find_path{$maze[current][x] $maze[current][y] $target_pos[x] $target_pos[y]};
+    
+    #if {"$path" == "未找到路径" || "$path" == "起点或终点不是有效房间"} {
+        #showme [路径] $path;
+    } {
+        #showme [路径] 找到路径:;
+        #local step_count 1;
+        #foreach {$path[%*]} {step} {
+            #showme   步骤 $step_count: ($step[x],$step[y]);
+            #math step_count {$step_count + 1};
+        };
+    };
+};
+
+#var {maze} {
+    /* ... 其他结构保持不变 ... */
+    {type}{}         /* 迷宫类型：金/木/水/火/土 */
+    {exit_dir}{}     /* 出口大致方向：n/s/e/w/ne/nw/se/sw */
+};
+
+#function {get_explore_target} {
+    #local current_x %1;
+    #local current_y %2;
+    
+    #nop 根据出口方向确定优先探索方向;
+    #switch {"$maze[exit_dir]"} {
+        #case {"n"} {
+            #foreach {$maze[boundary][points][%*]} {point} {
+                #if {$point[direction] == "n" && $point[y] < $current_y} {
+                    #return $point;
+                };
+            };
+        };
+        #case {"s"} {
+            #foreach {$maze[boundary][points][%*]} {point} {
+                #if {$point[direction] == "s" && $point[y] > $current_y} {
+                    #return $point;
+                };
+            };
+        };
+        #case {"e"} {
+            #foreach {$maze[boundary][points][%*]} {point} {
+                #if {$point[direction] == "e" && $point[x] > $current_x} {
+                    #return $point;
+                };
+            };
+        };
+        #case {"w"} {
+            #foreach {$maze[boundary][points][%*]} {point} {
+                #if {$point[direction] == "w" && $point[x] < $current_x} {
+                    #return $point;
+                };
+            };
+        };
+        #case {"ne"} {
+            #foreach {$maze[boundary][points][%*]} {point} {
+                #if {($point[direction] == "n" && $point[y] < $current_y) ||
+                     ($point[direction] == "e" && $point[x] > $current_x)} {
+                    #return $point;
+                };
+            };
+        };
+        #case {"nw"} {
+            #foreach {$maze[boundary][points][%*]} {point} {
+                #if {($point[direction] == "n" && $point[y] < $current_y) ||
+                     ($point[direction] == "w" && $point[x] < $current_x)} {
+                    #return $point;
+                };
+            };
+        };
+        #case {"se"} {
+            #foreach {$maze[boundary][points][%*]} {point} {
+                #if {($point[direction] == "s" && $point[y] > $current_y) ||
+                     ($point[direction] == "e" && $point[x] > $current_x)} {
+                    #return $point;
+                };
+            };
+        };
+        #case {"sw"} {
+            #foreach {$maze[boundary][points][%*]} {point} {
+                #if {($point[direction] == "s" && $point[y] > $current_y) ||
+                     ($point[direction] == "w" && $point[x] < $current_x)} {
+                    #return $point;
+                };
+            };
+        };
+    };
+    
+    #nop 如果没找到合适的方向，选择最接近目标方向的边界点;
+    #local best_score -999999;
+    #local best_point {};
+    
+    #foreach {$maze[boundary][points][%*]} {point} {
+        #local score 0;
+        #switch {"$maze[exit_dir]"} {
+            #case {"n"}  {#math score {$current_y - $point[y]}};
+            #case {"s"}  {#math score {$point[y] - $current_y}};
+            #case {"e"}  {#math score {$point[x] - $current_x}};
+            #case {"w"}  {#math score {$current_x - $point[x]}};
+            #case {"ne"} {#math score {($current_y - $point[y]) + ($point[x] - $current_x)}};
+            #case {"nw"} {#math score {($current_y - $point[y]) + ($current_x - $point[x])}};
+            #case {"se"} {#math score {($point[y] - $current_y) + ($point[x] - $current_x)}};
+            #case {"sw"} {#math score {($point[y] - $current_y) + ($current_x - $point[x])}};
+        };
+        
+        #if {$score > $best_score} {
+            #var best_score $score;
+            #var best_point $point;
+        };
+    };
+    
+    #if {"$best_point" != ""} {
+        #return $best_point;
+    };
+    
+    #return {未找到探索目标};
+};
+
+#alias {maze_explore} {
+    #if {"%1" != ""} {
+        #var maze[exit_dir] %1;
+    };
+    
+    #if {"$maze[exit_dir]" == ""} {
+        #showme [错误] 未指定出口方向，用法: maze_explore <n/s/e/w/ne/nw/se/sw>;
+        #return;
+    };
+    
+    #if {"$maze[current][x]" == "0"} {
+        #showme [错误] 当前位置未知;
+        #return;
+    };
+    
+    #local target @get_explore_target{$maze[current][x] $maze[current][y]};
+    
+    #if {"$target" == "未找到探索目标"} {
+        #showme [探索] 未找到可探索的方向;
+        #return;
+    };
+    
+    #showme [探索] 选择目标: ($target[x],$target[y]) -> $target[direction];
+    maze_path $target[x] $target[y];
+};
+
+#class {maze_path} CLOSE; 
+#class {maze_path} CLOSE; 

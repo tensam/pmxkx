@@ -1,0 +1,76 @@
+#class {biwu} open
+#nop ==========================Variable==========================
+#variable {biwuClass} {1};
+
+#nop ===========================ALIAS============================
+#alias {biwu.start} {
+	updatedolist biwu;
+	fly wm;e;#2 s;#4 w;s;	
+	#if {&{biwu_mate} != 0} {
+		#format {biwu_winner} {%t} {%u};
+		#math {biwu_winner} {$biwu_winner % 2};
+		#delay {biwu_askfail} {tell $biwu_mate biwu.end;biwu.end} {3};
+		ask gongping zi about 下战书
+	};
+	#else {ask gongping zi about 接战书};
+	leitai;
+}
+
+#alias {biwu.kill} {
+	#class {biwu} {kill};
+}
+
+#alias {biwu.end} {
+	biwu.kill;
+	#variable robot 1;
+	#if {&{biwu_winner} != 0} {#unvariable {biwu_winner}};
+	#if {&{biwuepoch} != 0} {#unvariable {biwuepoch}};
+	#if {&{biwu_asker} != 0} {#unvariable {biwu_asker}};
+	halt;fly wm;w;
+}
+
+#nop ===========================Action===========================
+#action {^%?%?【闲聊】公平子(Gongping zi)：%*与%*，现在擂台上开始比武夺帅} {
+	#if {"%3" == "$me[cname]" || "%4" == "$me[cname]"} {
+		#undelay {biwu_failure};
+		#if {&{biwu_mate} != 0} {			
+			#if {$biwu_winner == 1} {tell $biwu_mate halt} {halt};
+			#delay {2} {ask gongping zi about 下战书;leitai};			
+		}
+	}
+}
+
+#action {^%?%?你向公平子打听有关『下战书』的消息。} {
+	#undelay {biwu_askfail};
+	#action {^%?%?公平子说道：你今天的比武次数已用完} {					
+		#unaction {^%?%?公平子说道：你今天的比武次数已用完};
+		#unaction {^%?%?公平子说道：已有玩家正在挑战天下英雄};
+		#unaction {^%?%?【闲聊】公平子(Gongping zi)：%*$me[cname]在扬州武道场向天下各路英};
+		#format {biwuStamp} {%t} {%d};
+		tell $biwu_mate te biwu;
+		tell $biwu_mate biwu.end;
+		biwu.end;
+	};
+	#action {^%?%?公平子说道：已有玩家正在挑战天下英雄} {		
+		#unaction {^%?%?公平子说道：已有玩家正在挑战天下英雄};
+		#unaction {^%?%?公平子说道：你今天的比武次数已用完};		
+		#unaction {^%?%?【闲聊】公平子(Gongping zi)：%*$me[cname]在扬州武道场向天下各路英};
+		tell $biwu_mate te biwu;
+		tell $biwu_mate biwu.end;
+		nd;biwu.end;
+	};
+	#action {^%?%?【闲聊】公平子(Gongping zi)：%*$me[cname]在扬州武道场向天下各路英} {
+		#unaction {^%?%?【闲聊】公平子(Gongping zi)：%*$me[cname]在扬州武道场向天下各路英};
+		#unaction {^%?%?公平子说道：已有玩家正在挑战天下英雄};
+		#unaction {^%?%?公平子说道：你今天的比武次数已用完};	
+		#delay {biwu_failure} {nd;tell $biwu_mate biwu.end;biwu.end} {60};	
+		tell $biwu_mate te biwu;
+		tell $biwu_mate biwu.start;		
+	};
+}
+
+#action {^%?%?你没报名参加比武，不能上擂台。} {	
+	biwu.end;
+}
+
+#class {biwu} close

@@ -1,0 +1,674 @@
+#nop  class name: init. To set the character's score info, and set the character's skills'' description
+#nop  global variable: me,dazuo_start,dazuo_end,busy_success,busy_fail. 
+#class {init} open
+
+#nop ==========================Variable==========================
+#variable {force_desc} {
+	{taiji-shengong} {
+		{dazuo_start} {你盘膝而坐，双目紧闭，深深吸一口气引入丹田，慢慢让一股内息在周身大穴流动，渐入忘我之境。}
+	 	{dazuo_end} {你将内息在体内运行十二周天，返回丹田，只觉得全身暖洋洋的。}
+	}
+	{bibo-shengong} {
+		{dazuo_start} {你盘腿坐下，双目微闭，双手掌心相向成虚握太极，天人合一，练气入虚。}
+	 	{dazuo_end} {你将内息又运了一个小周天，缓缓导入丹田，双臂一震，站了起来。}
+	}
+	{longxiang} {
+		{dazuo_start} {你盘膝入定，凝聚体内真气，摧动内息将腹中一丝丝游气慢慢增厚。}
+	 	{dazuo_end} {你一周天行将下来，顿时浑身发暖，感到腹中内劲又增加一分。}
+	}
+	{yujian-xinfa} {
+		{dazuo_start} {你随意坐下，双手平放在双膝，指捏剑诀，运转御剑心经。}
+	 	{dazuo_end} {你默念心诀，真气运转渐缓，慢慢收功，松开剑指站了起来。}
+	}
+	{yunv-xinfa} {
+		{dazuo_start} {你轻轻的吸一口气，闭上眼睛，运起玉女心经，内息在脉络中开始运转。}
+	 	{dazuo_end} {你慢慢收气，归入丹田，睁开眼睛，轻轻的吐了一口气。}
+	}
+	{shenyuan-gong} {
+		{dazuo_start} {你随意一站，双手缓缓抬起，深吸一口气，真气开始在体内运转。}
+	 	{dazuo_end} {你将真气在体内沿脉络运行了一圈，缓缓纳入丹田，放下手，长吐了一口气。}
+	}
+	{hunyuan-yiqi} {
+		{dazuo_start} {你五心向天，成五心向天的姿势，排除一切杂念，内息顺经脉缓缓流动。}
+	 	{dazuo_end} {你将内息走了个小周天，流回丹田，收功站了起来。}
+	}
+	{yijinjing} {
+		{dazuo_start} {你五心向天，排除一切杂念，内息顺经脉缓缓流动。}
+	 	{dazuo_end} {你将内息走了个小周天，流回丹田，收功站了起来。}
+	}
+	{huntian-qigong} {
+		{dazuo_start} {你随意坐下，双手平放在双膝，默念口诀，开始运起独门心法。}
+	 	{dazuo_end} {你吸气入丹田，真气运转渐缓，慢慢收功，双手抬起，站了起来。}
+	}
+	{bahuang-gong} {
+		{dazuo_start} {你盘膝坐下，右手食指指天，左手食指指地，口中嘿的一声，自鼻孔中喷出两条淡淡的白气。}
+	 	{dazuo_end} {你将头上白雾吸尽，睁开双眼，缓缓站起。}
+	}
+	{linji-zhuang} {
+		{dazuo_start} {你席地而坐，五心向天，脸上红光时隐时现，内息顺经脉缓缓流动。}
+	 	{dazuo_end} {你将内息走了个小周天，流回丹田，收功站了起来。}
+	}
+	{kurong-changong} {
+		{dazuo_start} {你盘膝坐下，垂目合什，默运枯荣禅功，只觉冷热两股真气开始在体内缓缓游动。}
+	 	{dazuo_end} {你真气在体内运行了一个周天，冷热真气收于丹田，慢慢抬起了眼睛。}
+	}
+	{huagong-dafa} {
+		{dazuo_start} {你气运丹田，将体内毒素慢慢逼出，控制着它环绕你缓缓飘动。你感觉到内劲开始有所加强了。}
+	 	{dazuo_end} {你感觉毒素越转越快，就快要脱离你的控制了！你连忙收回毒素和内息，冷笑一声站了起来。}
+	}
+	{wuzheng-xinfa} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{jiuyang-shengong} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{hamagong} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{beiming-shengong} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{xiantian-qigong} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{xixing-dafa} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{kuihua-xinfa} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{shenlong-xinfa} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{yunlong-shengong} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{zixia-shengong} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{guiyuan-tunafa} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{xuantian-wuji} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+	{jiuyin-shengong} {
+		{dazuo_start} {你盘腿坐下，双目微闭，双手掌心相向成虚握太极，天人合一，练气入虚。}
+	 	{dazuo_end} {你将内息又运了一个小周天，缓缓导入丹田，双臂一震，站了起来。}
+	}
+	{xiaowuxiang} {
+		{dazuo_start} {你坐下来运气用功，一股内息开始在体内流动。}
+	 	{dazuo_end} {你运功完毕，深深吸了口气，站了起来。}
+	}
+};
+
+#variable {busy_desc} {
+	{lonely-sword} {
+		{success} {气海穴上微微一痛}
+		{fail} {}
+	}
+	{yunlong-bian} {
+		{success} {结果.*被你攻了个措手不及!}
+	 	{fail} {可是.*看破了你的企图}
+	}
+	{lanhua-shou} {
+		{success} {结果.*被你点个正着，顿时手足无措，呆立当地}
+	 	{fail} {可是.*看破了你的企图，轻轻一跃，跳了开去}
+	}
+	{anying-fuxiang} {
+		{success} {结果.*心中一迷，只觉腾云一般，不知走到哪里去了}
+	 	{fail} {}
+	}
+	{shenkong-xing}	{
+		{success} {结果.*被你绕得不知所措}
+	 	{fail} {}
+	}
+	{shexing-diaoshou} {
+		{success} {结果.*被你点个正着，顿时手足无措，呆立当地}
+	 	{fail} {可是.*看破了你的企图，轻轻一跃，跳了开去}
+	}
+	{lingshe-zhangfa} {
+		{success} {结果.*被你杖头小蛇一口喷中！}
+	 	{fail} {可是.*急忙闪在一旁，躲了开去。}
+	}
+	{qiufeng-chenfa} {
+		{success} {结果.*被你攻了个措手不及}
+	 	{fail} {可是.*看破了你的企图}
+	}
+	{xiaoyaoyou} {
+		{success} {结果.*被你绕得不知所措}
+	 	{fail} {}
+	}
+	{dagou-bang} {
+		{success} {结果.*被你攻的蹦跳不停，手忙脚乱}
+	 	{fail} {可是.*看破了你的企图，镇定解招，一丝不乱}
+	}
+	{piaoyibu} {
+		{success} {结果.*被你绕得不知所措}
+	 	{fail} {}
+	}
+	{yueying-wubu} {
+		{success} {结果.*被你绕得不知所措}
+	 	{fail} {结果你自己绕了个头晕眼花}
+	}
+	{tianyu-qijian}	{
+		{success} {.*只觉一股热流穿心而过，喉头一甜，鲜血狂喷而出}
+	 	{fail} {可是.*猛地向前一跃,跳出了你的攻击范围。}
+	}
+	{lingboweibu} {
+		{success} {结果.*被你围着转得头晕眼花！}
+	 	{fail} {.*只是勉强的逃了开去。}
+	}
+	{xuantian-zhi} {
+		{success} {结果.*被你攻了个措手不及，全身冰凉，好象被冻住了一样}
+	 	{fail} {}
+	}
+	{xunlei-sword} {
+		{success} {又如和风阵阵拂过。.*眼花缭乱，被攻了个措手不及}
+	 	{fail} {可.*镇定自若，丝毫不为所动！}
+	}
+	{tiangang-zhi} {
+		{success} {结果.*被你指力点中几处穴道}
+	 	{fail} {.*情急智生，狠力一跃，退出老远}
+	}
+	{sun-finger} {
+		{success} {结果.*被你攻了个措手不及! 只觉周身麻木。胸口气血翻涌}
+	 	{fail} {可是.*看破了你的企图，并没有上当}
+	}
+	{taiji-jian} {
+		{success} {结果.*被你闹个手忙脚乱，惊慌失措，呆在当场，不知如何应对}
+	 	{fail} {可是.*看破了你的企图，镇定逾恒，全神应对自如。}
+	}
+	{taiji-quan} {
+		{success} {这左圈右圈登时便套得.*跌跌撞撞，身不由主的立足不稳，犹如中酒昏迷}
+	 	{fail} {.*只觉在你太极拳笼罩之下，无可抵御，只得只得运劲于足，飘然闪开}
+	}
+	{qishang-quan}	{
+		{success} {.*正在奇怪间，已被你的真气制住，神情恍恍忽忽的}
+	 	{fail} {只见.*不慌不忙，轻轻一闪，躲过了你的必杀一击}
+	}
+	{sougu-yingzhao} {
+		{success} {结果.*被你点中要穴，立时动弹不得}
+	 	{fail} {可是.*看破了你的企图，并没有上当}
+	}
+	{shenghuo-ling}	{
+		{success} {结果.*被你攻了个措手不及}
+	 	{fail} {可是.*看破了你的企图，并没有上当}
+	}
+	{qingfu-shenfa}	{
+		{success} {结果.*被你绕得不知所措}
+	 	{fail} {结果你自己绕了个头晕眼花}
+	}
+	{shaolin-shenfa} {
+		{success} {结果.*被你绕得不知所措}
+	 	{fail} {结果你自己绕了个头晕眼花}
+	}
+	{pixie-jian} {
+		{success} {.*只看到寒尖一点，双目一阵剧痛，眼前一黑就什么也看不见了，顿时长声痛极而呼}
+	 	{fail} {.*情急智生，抬手也你右眼刺去，迫得你回剑跃开。}
+	}
+	{feiyan-huixiang} {
+		{success} {结果.*被你绕得不知所措}
+	 	{fail} {可是.*看破了你的企图}
+	}
+	{duanyun-fu} {
+		{success} {结果.*只觉得眼前一黑，双眼一阵剧痛，接着什么也看不见了}
+	 	{fail} {可是.*看破了你的企图，并急忙躲开了。}
+	}
+	{canhe-zhi}	{
+		{success} {.*的肩关节一酸，双臂立时失去知觉，动弹不得。}
+	 	{fail} {.*早已看出了你的企图，纵身一跃，敏捷地躲过了你的这一招！}
+	}
+	{tanzhi-shentong} {
+		{success} {.*只觉得眼前一花，气海穴上微微一痛，全身真气狂泄而出！}
+	 	{fail} {可是.*的看破了你的企图，立刻采取守势，使你的「弹指惊雷」没有起到作用。}
+	}
+	{fenglei-jianfa} {
+		{success} {结果.*被你闹个手忙脚乱，惊慌失措，呆在当场，不知如何应对！}
+	 	{fail} {可是.*看破了你的企图，镇定逾恒，全神应对自如。}
+	}
+	{hujia-daofa} {
+		{success} {.*被此胡家刀法之「无形幻影」所迷惑，手足无措，不知哪个你是真，哪个是假。}
+	 	{fail} {.*镇定自若，不会所动。}
+	}
+	{quanzhen-jian}	{
+		{success} {.*看到你这气拔千钧的一击，竟不知如何招架！}
+	 	{fail} {可是.*看破了你的企图，斜跃避开。}
+	}
+	{haotian-zhang}	{
+		{success} {结果.*被你的气势所摄，一惊之下，竟然忘了抵挡！}
+	 	{fail} {可是.*识破了你这一招，斜斜一跃避开。}
+	}
+	{jiuyin-shengong} {
+		{success} {.*脑海里顿时一片空白，双眼茫然，不知不觉的学起你的动作。}
+	 	{fail} {不管你怎么变化表情，.*总是无动于衷。}
+	}
+	{yunv-jian}	{
+		{success} {.*看到你双剑飞舞，招式中所有破绽都为另一剑补去，竟不知如何是好！}
+	 	{fail} {可是.*看破了你的企图，将自己的全身上下护得密不透风，令你无计可施。}
+	}
+	{nianhua-zhi} {
+		{success} {结果.*被你攻了个措手不及}
+	 	{fail} {可是.*看破了你的企图，并没有上当。}
+	}
+	{yizhi-chan} {
+		{success} {结果.*被你攻了个措手不及}
+	 	{fail} {可是.*看破了你的企图，并没有上当}
+	}
+	{riyue-bian} {
+		{success} {结果.*被你攻了个措手不及}
+	 	{fail} {可是.*看破了你的企图，并没有中招}
+	}
+	{qianye-shou} {
+		{success} {.*只觉得四周都是你的身影，不由得慌乱起来}
+	 	{fail} {}
+	}
+	{huagu-mianzhang} {
+		{success} {结果只听扑的一声，.*被你一掌拍中！}
+	 	{fail} {可是.*急忙闪在一旁，躲了开去。}
+	}
+	{shedao-qigong}	{
+		{success} {.*金星乱冒，犹如有万条金龙在眼前舞动。。}
+	 	{fail} {可是.*急忙闪在一旁，躲了开去。}
+	}		
+	{murong-jianfa} {
+		{success} {结果.*被你攻了个措手不及}
+	 	{fail} {}
+	}	
+	{qiankun-danuoyi} {
+		{success} {.*忽然如中魔一般，招招击向自己！}
+	 	{fail} {}
+	}		
+	{longxiang} {
+		{success} {你看到.*随着你的歌声手舞足蹈，十分可笑。}
+		{fail} {可是.*不为你歌声所动，定力果然不同凡响！}
+ 	} 
+	{feixing-shu} {
+		{success} {结果.*被你攻了个措手不及}
+	 	{fail} {}
+ 	} 
+};
+
+#nop ===========================Action===========================
+#nop -------------------------score info-------------------------				
+#action {^┃%s姓    名：%S%s┃%s力量：「%s%d/%d%s」%s才智：「%s%d/%d%s」%s┃} {
+	#variable me[cname] %2;
+	#variable me[str] %6;
+	#variable me[eff_str] %7;
+	#variable me[int] %11;
+	#variable me[eff_int] %12;
+}
+
+#action {^┃%s门    派：%S%s┃%s体质：「%s%d/%d%s」%s身法：「%s%d/%d%s」%s┃} {	
+	#variable me[family] %2;
+	#variable me[con] %6;
+	#variable me[eff_con] %7;
+	#variable me[dex] %11;
+	#variable me[eff_dex] %12;
+}	
+
+#action {^┃级    别：%S%s潜} {
+	#variable {me[lvl]} {@ctoi{%1}};
+}
+				
+#action {授业恩师：{[\x80-\xff]+}%*┃} {
+	#if {"$me[cmaster]" != "%1"} {
+		#variable me[cmaster] %1;
+		#if {"%1" != "尚未拜师"} {
+			#action {$me[cmaster](%*)}	{
+				#regex {$me[cmaster]} {^$} {} {
+					#format {me[emaster]} {%l} {%%1};
+					pat $me[emaster];
+					#regex {$master} {^$} {#variable master $me[emaster]};
+					#unaction {$$me[cmaster](%*)}
+				}
+			}
+		}
+	}
+}
+
+#action {^┃性    别：%*性%s┗} {
+	#if {"%1" == "女"} {#variable me[gender] {female}};
+	#elseif {"%1" == "男"} {#variable me[gender] {male}};
+	#else {#variable me[gender] {none}};
+}
+
+#action {^${me[cname]}%s=%s%+} {
+	#regex {$me[cname]} {^$} {} {
+		#variable me[ename] %3;
+		#unaction {^$${me[cname]}%s=%s%+};
+	};
+}
+	
+#nop -------------------------skills info------------------------
+#action {^%?%?你目前所掌握的技能［共%*种］} {
+	#list {skill_list} clr;
+	#variable cnt 0;
+	#action {^%%0} {
+		#regex {%%0} {{★|}%S (%*)%s- %S%s%d/} {
+			#variable skill_list[&2][name] &3;
+			#variable skill_list[&2][level] &7;
+			#variable skill_e2c[&3] &2;
+		};
+		#regex {%%0} {%*──────%*} {
+			#math {cnt} {$cnt+1};
+			#if {$cnt >= 2} {
+				#unaction {^%%%0};
+				#unvariable cnt;
+			};
+		};
+	};
+}
+
+
+#nop --------------------jingjie info------------------------
+#action {^%?%?你当前武学境界：【 %1 】}{
+	#echo %1;
+	#switch {"%1"} {
+		#case {"炼体养精"} {#var jingjie 0};
+		#case {"炼精化气"} {#var jingjie 1};
+		#case {"炼气化神"} {#var jingjie 2};
+		#default {#var jingjie 3}
+	};
+}
+
+#nop ------------------------向阳老宅铜钱------------------------
+#action {^%?%?林震南低声说：先祖去世前，曾给家父留下%*个} {
+	#variable {xy_coins} {@ctoi{%3}};
+	#showme $xy_coins;
+}
+
+#nop -------------------------stage info-------------------------
+#action {^%?%?Force setting is done!} {
+	#if {&{dummy} == 0} {
+		set_busy_desc;
+		#if {&{sx_go} == 0} {set_sx_go};
+		#if {&{xy_coins} == 0} {ask_coin};		
+		#delay {1} {
+			#format {conWeekday} {%t} {%u};
+			#if {$conWeekday != $zapWeekday} {#echo a new day,all status reset;mission_status.reset;#var mission_status};
+			#else {#echo the same day~keep status};
+			#if {&{biwu_mate} != 0} {#math {biwu_delay} {$xy_coins * 24 * 36 / 100}};
+			#if {$bInit == 0} {
+				ask_ghost;
+				#delay {1} {ask_gcmap};
+				#if {$me[comb_exp]>2000000 && $me[yl_exp]>50000} {
+					#delay {4} {ask_shanpai}
+				};
+				#delay {7} {
+					#class init kill;
+					#if {$bYaopai} {
+						fly lz;w;#2 n;e;ask nu erhai about 腰牌;
+						#delay {init_finish} {fly wm;w} {2};
+					};
+					#if {"$me[family]" == "华山派" && $me[comb_exp]>3700000} {
+						fly ws;sd;#2 su;enter;
+						wield sword;break wall;
+						enter;#2 wu;bai feng;
+						#delay {init_finish} {fly wm;w} {2};
+					};
+					#else {fly wm;w};
+					#variable bInit 1;
+				}
+			};
+			#else {
+				#class init kill;
+				#if {$bDrunk == 1} {#delay {20} {fly wm;w}} {fly wm;w};
+			};
+		}
+	};
+	#else {
+		#class init kill;
+	};
+}
+
+#action {^%?%?Please set force description in variable:} {
+	#delay {2} {
+		skills;
+		ienable;
+		#delay {1} {
+			set_force_desc;
+			#variable epochStamp @get_epoch_time{};
+		};
+	}
+}
+
+#action {%*凌空虚渡%*(%*/1)} {#if {"%3" == "1"} {#var wx_lkxd 1} {#var wx_lkxd 0}}
+
+#nop ===========================Alias============================
+#alias {map_init} {
+	#if {"$me[gender]" == "female"} {
+		#map goto 865;
+		#map unlink n;
+	};
+	#if {&skill_enable[dodge][level] == 0 || &skill_enable[move]][level] == 0 || &skill_enable[parry][level] == 0} {
+		#map goto 862;
+		#map unlink out;
+	};
+	#if {&skill_list[九阳神功] == 0} {
+		#map goto 3736;
+		#map unlink u;
+	};		
+	#nop #map goto 5;
+	#nop #map unlink u;
+	#nop #map leave;
+	#showme {map initial is done!};
+}
+
+#alias {set_force_desc} {
+	#list {l_startlist} {clear};
+	#list {l_endlist} {clear};
+	#foreach {$skill_list[%*]} {l_skill} {
+		#if {&{force_desc[$l_skill[name]]} != 0} {
+			#list {specialforce} {add} {$l_skill[name]};
+			#variable l_start {$force_desc[$l_skill[name]][dazuo_start]};				
+			#variable l_end {$force_desc[$l_skill[name]][dazuo_end]};
+			#list {l_startlist} {find} {$l_start} {l_find};
+			#if {$l_find == 0} {#list {l_startlist} {add} {$l_start}};
+			#list {l_endlist} {find} {$l_end} {l_find};
+			#if {$l_find == 0} {#list {l_endlist} {add} {$l_end}};
+		};
+	};
+	#if {&specialforce[] == 0} {#showme {Please set force description in variable: dazuo_start and dazuo_end, or add force_desc in init.tin}};
+	#else {
+		#if {&{dazuo_start} != 0 && "$dazuo_start" != ""} {
+			#echo {Inherit variable dazuo_start from character's tin!!!};
+		};
+		#else {
+			#variable dazuo_start {$l_startlist};
+			#list dazuo_start simplify; 
+			#if {&l_startlist[]>1} {
+				#replace {dazuo_start} {;} {|};
+				#variable dazuo_start {{$dazuo_start}};
+			};
+		};
+		#if {&{dazuo_end} != 0 && "$dazuo_end" != ""} {
+			#echo {Inherit variable dazuo_end from character's tin!!!};
+		};
+		#else {
+			#variable dazuo_end {$l_endlist};
+			#list dazuo_end simplify; 
+			#if {&l_endlist[]>1} {
+				#replace {dazuo_end} {;} {|};
+				#variable dazuo_end {{$dazuo_end}};
+			};
+		};
+		#showme {Force setting is done!};
+	};
+	#unvariable l_%*;
+}
+
+#alias {set_busy_desc} {
+	#list {l_successlist} {clear};
+	#list {l_faillist} {clear};
+	#foreach {$skill_list[%*]} {l_skill} {
+		#if {&busy_desc[$l_skill[name]] != 0} {
+			#variable l_success {$busy_desc[$l_skill[name]][success]};				
+			#variable l_fail  {$busy_desc[$l_skill[name]][fail]};
+			#list {l_successlist} {find} {$l_success} {l_find};
+			#if {0 == $l_find} {#list {l_successlist} {add} {$l_success}};
+			#regex {$l_fail} {^$} {
+			} {
+				#list {l_faillist} {find} {$l_fail} {l_find};
+				#if {0 == $l_find} {#list {l_faillist} {add} {$l_fail}};
+			};
+		};
+	};
+	#if {&l_successlist[] == 0} {#showme {Please set busy description in variable: busy_success and busy_fail, or add busy_desc in init.tin}};
+	#else {
+		#if {&{busy_success} !=0 && "$busy_success" != ""} {
+			#echo {Inherit variable busy_success from character's tin!!!};
+		};
+		#else {
+			#variable busy_success {$l_successlist};
+			#list busy_success simplify;
+			#if {&l_successlist[] == 1} {#replace busy_success {.} {%}};
+			#else {
+				#replace {busy_success} {;} {|};
+				#variable {busy_success} {{$busy_success}};
+			};
+		};
+		#if {&{busy_fail} !=0 && "$busy_fail" != ""} {
+			#echo {Inherit variable busy_fail from character's tin!!!};
+		};
+		#else {
+			#if {&l_faillist[]>0} {
+				#variable busy_fail {$l_faillist};
+				#list busy_fail simplify;
+				#if {&l_faillist[] == 1} {#replace busy_fail {.} {%}};
+				#else {
+					#replace {busy_fail} {;} {|};
+					#variable {busy_fail} {{$busy_fail}};
+				};
+			};
+			#else {#variable busy_fail {}};
+		};
+		#showme {Busy setting is done!};
+	};
+	#unvariable l_%*;
+}
+
+#alias {set_sx_go} {
+	#if {"$me[family]" == "梅庄"} {#variable sx_go {fly mz;#2 n}};
+	#elseif {"$me[family]" == "逍遥派"} {#variable sx_go {fly xyl;s}};
+	#elseif {"$me[family]" == "明教"} {#variable sx_go {fly mj;s};#variable sx_esc w};
+	#elseif {"$me[family]" == "日月神教"} {#variable sx_go {fly hmy;#2 ed}};
+	#elseif {"$me[family]" == "桃花岛"} {#variable sx_go {fly thd;#2 n}};
+	#elseif {"$me[family]" == "武当派"} {#variable sx_go {fly wds;s}};
+	#elseif {"$me[family]" == "铁掌帮"} {#variable sx_go {fly tzf;#2 n}};
+	#elseif {"$me[family]" == "少林派"} {#variable sx_go {fly sl;s}};
+	#elseif {"$me[family]" == "密宗"} {#variable sx_go {fly xs;#2 n}};
+	#elseif {"$me[family]" == "铁剑门"} {#variable sx_go {fly ws1;#2 w}};
+	#elseif {"$me[family]" == "峨嵋派"} {#variable sx_go {fly em;#2 n}};
+	#elseif {"$me[family]" == "丐帮"} {#variable sx_go {fly ws1;#3 w}};
+	#elseif {"$me[family]" == "神龙教"} {#variable sx_go {fly sld;#2 n}};
+	#elseif {"$me[family]" == "大理"} {#variable sx_go {fly dl;s;w}};
+	#elseif {"$me[family]" == "灵鹫宫"} {#variable sx_go {fly lj;#4 n}};
+	#elseif {"$me[family]" == "白驼山派"} {#variable sx_go {fly bt;#2 n}};
+	#elseif {"$me[family]" == "姑苏慕容"} {#variable sx_go {fly yzw;#2 s}};
+	#elseif {"$me[family]" == "古墓派"} {#variable sx_go {fly gm;#2 n}};
+	#elseif {"$me[family]" == "云龙门"} {#variable sx_go {fly ss}};
+	#elseif {"$me[family]" == "昆仑派"} {#variable sx_go {fly kl;#2 n}};
+	#elseif {"$me[family]" == "全真教"} {#variable sx_go {fly qzj;knock gate;#3 e;n}};
+	#else {#variable sx_go {fly qc;n}};
+}
+
+#alias {ask_coin} {
+	fly fz;w;n;enter;n;ask lin zhennan about 福威镖局;ask lin zhennan about 远图公;ask lin zhennan about 辟邪剑法;ask lin zhennan about 铜钱;
+}
+
+#alias {ask_shanpai} {
+	fly hy;n;#4 w;n;s;n;s;ask zhang san about 赏善;n;ask zhang san about 赏善;s;w;ask zhang san about 赏善;halt;e;e;ask zhang san about 赏善;halt;
+}
+
+#alias {ask_gcmap} {
+	fly gw;#3 n;#2 e;fly xx;su;s;ed;ask li wenxiu about 苏普;ask li wenxiu about 父母;
+	bandage $me[ename];remove shou juan;bandage $me[ename];remove shou juan;#20 l shou juan;
+}
+
+#alias {ask_ghost} {
+	fly tzf;sd;ask qiu qianzhang about 闹鬼;e;ask qiu qianzhang about 闹鬼;se;ask qiu qianzhang about 闹鬼;
+}
+
+#alias {add_option_traps} {
+	#if {$bUseMudao == 1} {#variable {traps[mudao]} {0};#variable {traps[mutou]} {0}};
+	#if {$bUseJiudai == 1} {#variable {traps[nJiudai]} {0}};
+	#if {$bUseBilin == 1} {#variable {traps[nBilin]} {0}};
+	#if {$bUseDagger == 1} {#variable {traps[nDagger]} {0}};
+}
+
+#alias {load_option_mods} {
+	#if {$bDrunk == 1} {#class {drunk} read $MOD/drunk.tin};
+	#if {&skill_list[血刀刀法] != 0} {
+		#class {xuedao} read $MOD/xuedao.tin;
+		xuedao.init;
+	};		
+}
+
+
+#alias {init.do} {
+	updatedolist init;
+	#class {cVariables} {read} {$MOD/cVariables.tin};	
+	#if {"$me[ename]" != ""} {#class {cVariables} {read} {$VAR/${me[ename]}_Vars.tin}};
+	#var mission_status;
+	#if {&weapons[] > 0} {
+		#foreach {$weapons[%*]} {l_item} {
+			#list {keep_equips} {add} {$l_item};
+		}
+	};
+	#if {&{int_weapon} != 0} {
+		#list {keep_equips} {find} {$int_weapon} {l_find};
+		#if {$l_find == 0} {#list {keep_equips} {add} {$int_weapon}};
+	};
+	#if {&equips[] > 0} {
+		#foreach {$equips[%*]} {l_item} {
+			#list {keep_equips} {add} {$l_item};
+		}
+	};
+	#if {&int_equips[] > 0} {
+		#foreach {$int_equips[%*]} {l_item} {
+			#list {keep_equips} {find} {$l_item} {l_find};
+			#if {$l_find == 0} {#list {keep_equips} {add} {$l_item}};
+		}
+	};
+	#if {&keep_equips[] > 0} {
+		#list {keep_equips} {find} {piaomiao xunzhang} {l_find};
+		#if {$l_find != 0} {ixunzhang};
+	};	
+	#unvariable l_find;
+	add_option_traps;
+	score;
+	jingjie;
+	id here;
+	#class {status} read $MOD/status.tin; 
+	hp;
+	iskills;
+	wuxue;
+	#delay {5} {
+		#class {cVariables} {read} {$MOD/cVariables.tin};	
+		#if {"$me[ename]" != ""} {#class {cVariables} {read} {$VAR/${me[ename]}_Vars.tin}};
+		#var mission_status;
+	};
+	#delay {3} {
+		load_option_mods;
+		#if {&skill_list[基本内功] == 0} {#variable {noforce} {1}};
+		#if {$skill_list[本草术理][level] > 30} {#variable {me[healable]} {1}};
+		#if {$dummy} {#showme Enter dummy initial!!!};
+		#else {ienable;map_init};
+		#if {&{noforce} == 0} {#variable epochStamp @get_epoch_time{};set_force_desc} {fly wm;w};			
+	};
+}
+
+#class {init} close

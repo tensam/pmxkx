@@ -1,0 +1,26 @@
+#class nop open
+
+#alias {nop.start} {
+    updatedolist nop;
+	fly wm;e;#3 s;e;u;
+		#variable jicunlist $trapslist;
+		#list {jicunlist} {filter} {{jin dan|yin dan|bailian jinggang}};
+		#if {&jicunlist[]>0} {
+			#foreach {$jicunlist[%*]} {l_item} {jicun $l_item};
+			#unvariable l_item;
+		};
+		#unvariable jicunlist;
+    mission.do;
+}
+
+#alias {nop.kill} {
+	#class {nop} kill;
+	#echo {%c#class nop killed!} {cyan};
+}
+
+#alias {nop.end} {
+	nop.kill;
+	scmd {halt;fly wm;#2 w};
+}
+
+#class nop close

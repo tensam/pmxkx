@@ -1,0 +1,226 @@
+#class {map_trigger_test} OPEN;
+
+#var {maze} {
+    {map}{}           /* 二维数组存储原始地图 */
+    {rooms}{}         /* 存储所有房间的坐标，格式: "x,y" */
+    {connections}{}   /* 存储房间间的连接，格式: "x1,y1:x2,y2" */
+    {size}{
+        {min_x}{999}  /* 记录最小x坐标 */
+        {max_x}{0}    /* 记录最大x坐标 */
+        {min_y}{999}  /* 记录最小y坐标 */
+        {max_y}{0}    /* 记录最大y坐标 */
+        {width}{0}    /* 实际宽度 */
+        {height}{0}   /* 实际高度 */
+    }
+    {current}{        /* 当前位置 */
+        {x}{0}
+        {y}{0}
+    }
+    {entrance}{       /* 入口位置 */
+        {x}{0}
+        {y}{0}
+    }
+    {exits}{}        /* 已发现的出口位置列表，格式: "x,y" */
+    {first_enter}{1} /* 是否首次进入迷宫 */
+};
+
+#alias {trigger_test_init} {
+    #var maze[map] {};
+    #var maze[rooms] {};
+    #var maze[connections] {};
+    #var maze[size][min_x] 999;
+    #var maze[size][max_x] 0;
+    #var maze[size][min_y] 999;
+    #var maze[size][max_y] 0;
+    #var maze[size][width] 0;
+    #var maze[size][height] 0;
+    #var maze[current][x] 0;
+    #var maze[current][y] 0;
+    #var maze[entrance][x] 0;
+    #var maze[entrance][y] 0;
+    #list maze[exits] clr;
+    #var maze[first_enter] 1;
+    #showme [初始化] 地图触发测试初始化完成;
+    #showme 【更新地图】;
+};
+
+#action {^【更新地图】} {
+    #var maze[map] {};
+    #var maze[rooms] {};
+    #var maze[connections] {};
+    #list maze[exits] clr;
+    
+    #var test_count 0;
+    #action {^%%0} {
+        #regex {%%0} {^当前坐标：%d %d} {
+            #var maze[current][x] &1;
+            #var maze[current][y] &2;
+            
+            #if {$maze[first_enter]} {
+                #var maze[entrance][x] &1;
+                #var maze[entrance][y] &2;
+                #var maze[first_enter] 0;
+            };
+            
+            #unaction {^%%%0};
+            #buffer get {raw_matrix} {$test_count} {-1};
+            
+            #nop 处理原始数据;
+            #var y 1;
+            #var max_width 0;
+            
+            #foreach {$raw_matrix[%*]} {line} {
+                #if {"$line" != ""} {
+                    #var processed_line $line;
+                    #replace {processed_line} {\e[0m} {};
+                    #replace {processed_line} {\e[1;36m○} {o};  /* 普通房间 */;
+                    #replace {processed_line} {\e[1;33m○} {y};  /* 黄色圆点(当前位置) */;
+                    #replace {processed_line} {\e[1;34m●} {b};  /* 蓝色实心圆点(入口/出口) */;
+                    #replace {processed_line} {\e[1;36m─} {h};  /* 水平墙 */;
+                    #replace {processed_line} {\e[1;36m│} {v};  /* 垂直墙 */;
+                    
+                    #var x 1;
+                    #parse {$processed_line} {char} {
+                        #if {"$char" != " "} {
+                            #var maze[map][$y][$x] $char;
+                            #if {"$char" == "o" || "$char" == "y" || "$char" == "b"} {
+                                #showme [调试-添加] 正在添加房间: x=$x y=$y char=$char;  /* 添加调试输出 */;
+                                #list maze[rooms] add {$x,$y};
+                                #if {"$char" == "b"} {
+                                    #list maze[exits] add {$x,$y};
+                                };
+                            };
+                        };
+                        #math x {$x + 1};
+                    };
+                    #math y {$y + 1};
+                };
+            };
+            #math maze[size][height] {$y - 1};
+            #math maze[size][width] {$max_width - 1};
+            
+            #nop 分析房间连接;
+            #var connection_debug 0;  /* 调试计数器 */;
+            #var room_index 1;
+            #showme [调试-开始] 房间总数: &maze[rooms][];
+            #while {$room_index <= &maze[rooms][]} {
+                #showme [调试-外循环] 当前room_index: $room_index;
+                #var room1 $maze[rooms][$room_index];
+                #regex {$room1} {%d,%d} {
+                    ##showme [调试-房间1] 坐标: $room1 -> (%1,%2);
+                    #var r1_x %1;
+                    #var r1_y %2;
+                    
+                    #math next_index {$room_index + 1};
+                    #showme [调试-内循环] next_index: $next_index;
+                    #while {$next_index <= &maze[rooms][]} {
+                        #var room2 $maze[rooms][$next_index];
+                        #regex {$room2} {%d,%d} {
+                            #var r2_x %1;
+                            #var r2_y %2;
+                            
+                            #if {$connection_debug < 5} {
+                                #nop #showme [连接-比较] 房间[$room_index]($r1_x,$r1_y) vs 房间[$next_index]($r2_x,$r2_y);
+                            };
+                            
+                            #nop 检查垂直连接;
+                            #if {$r1_x == $r2_x} {
+                                #var y_diff {$r2_y - $r1_y};
+                                #if {$y_diff == 2} {
+                                    #var check_y $r1_y;
+                                    #math check_y {$check_y + 1};
+                                    #if {$connection_debug < 5} {
+                                        #showme [连接-垂直] 检查[$room_index->$next_index]: ($r1_x,$r1_y)->($r2_x,$r2_y) 中间:$maze[map][$check_y][$r1_x];
+                                    };
+                                    #if {"$maze[map][$check_y][$r1_x]" == "v"} {
+                                        #list maze[connections] add {$r1_x,$r1_y:$r2_x,$r2_y};
+                                        #showme [连接-成功] 垂直[$room_index->$next_index]: $r1_x,$r1_y -> $r2_x,$r2_y;
+                                        #math connection_debug {$connection_debug + 1};
+                                    };
+                                };
+                            };
+                            
+                            #nop 检查水平连接;
+                            #if {$r1_y == $r2_y} {
+                                #var x_diff {$r2_x - $r1_x};
+                                #if {$x_diff == 2} {
+                                    #var check_x $r1_x;
+                                    #math check_x {$check_x + 1};
+                                    #if {$connection_debug < 5} {
+                                        #showme [连接-水平] 检查[$room_index->$next_index]: ($r1_x,$r1_y)->($r2_x,$r2_y) 中间:$maze[map][$r1_y][$check_x];
+                                    };
+                                    #if {"$maze[map][$r1_y][$check_x]" == "h"} {
+                                        #list maze[connections] add {$r1_x,$r1_y:$r2_x,$r2_y};
+                                        #showme [连接-成功] 水平[$room_index->$next_index]: $r1_x,$r1_y -> $r2_x,$r2_y;
+                                        #math connection_debug {$connection_debug + 1};
+                                    };
+                                };
+                            };
+                        };
+                        #math next_index {$next_index + 1};
+                        #showme [调试-内循环] next_index增加到: $next_index;
+                    };
+                };
+                #math room_index {$room_index + 1};
+                #showme [调试-外循环] room_index增加到: $room_index;
+            };
+            
+            #showme [地图] 大小: $maze[size][width]x$maze[size][height];
+            #showme [地图] 范围: ($maze[size][min_x],$maze[size][min_y]) -> ($maze[size][max_x],$maze[size][max_y]);
+            #showme [地图] 房间数量: &maze[rooms][];
+            #showme [地图] 连接数量: &maze[connections][];
+            #showme [位置] 当前: ($maze[current][x],$maze[current][y]);
+            #showme [位置] 入口: ($maze[entrance][x],$maze[entrance][y]);
+            
+            #if {&maze[exits][] > 0} {
+                #showme [出口] 已发现:;
+                #foreach {$maze[exits][%*]} {exit} {
+                    #showme   -> $exit;
+                };
+            };
+            
+            #if {&maze[connections][] > 0} {
+                #showme [连接] 示例:;
+                #var count 0;
+                #foreach {$maze[connections][%*]} {conn} {
+                    #if {$count < 5} {
+                        #showme   -> $conn;
+                        #math count {$count + 1};
+                    };
+                };
+            };
+        } {#math test_count {$test_count-1}};
+    };
+};
+
+#alias {trigger_test} {
+    trigger_test_init;
+    map1;
+};
+
+#class {map_trigger_test} CLOSE; 
+#showme [探索] 边界点信息:;
+#foreach {$maze[boundary][points][%*]} {point} {
+    #showme   房间($point[x],$point[y]) -> $point[direction] 方向可探索;
+}; 
+
+#nop 显示连接信息;
+#if {&maze[connections][] > 0} {
+    #showme [连接] 列表:;
+    #foreach {$maze[connections][%*]} {conn} {
+        #showme   ($conn[from_x],$conn[from_y]) -> ($conn[to_x],$conn[to_y]);
+    };
+}; 
+
+#foreach {$maze[map][%*]} {row} {
+    #foreach {$row[%*]} {cell} {
+        #if {"$cell" == "h" || "$cell" == "v"} {
+            #showme [调试-地图] 发现连接: $cell;
+        };
+    };
+}; 
+
+#showme [调试-房间列表] 所有房间坐标:;
+#foreach {$maze[rooms][%*]} {room} {
+    #showme [调试-房间] $room;
+}; 

@@ -1,0 +1,866 @@
+#class {walk} open
+#nop ========================= Aided mod ==========================
+#if {&{npc_limits} == 0} 
+{
+	#class {npc_limits} read $MOD/npc_limits.tin;
+}
+
+#nop ==========================Variable==========================
+#variable {walkClass} {1};
+#variable {walk_area} {};
+#variable {walk_terrain} {};
+#variable {walk_room} {};
+#variable {block_npc[bjzjc]} {
+	{1}{{cname}{武将}{ename}{wu jiang}}
+	{2}{{cname}{官兵}{ename}{guan bing}}
+};
+#variable {block_npc[qzj]} {
+	{1}{{cname}{丘处机}{ename}{qiu chuji}}
+	{2}{{cname}{刘处一}{ename}{liu chuxuan}}
+};
+#variable {block_npc[wds]} {
+	{1}{{cname}{张松溪}{ename}{zhang songxi}}
+	{2}{{cname}{莫声谷}{ename}{mo shenggu}}
+	{3}{{cname}{朱冠巨蟒}{ename}{ju man}}
+};
+#variable {block_npc[ws]} {
+	{1}{{cname}{高根明}{ename}{gao genming}}
+	{2}{{cname}{施戴子}{ename}{shi daizi}}
+	{3}{{cname}{陆大有}{ename}{lu dayou}}
+};
+#variable {block_npc[xs]} {
+	{1}{{cname}{嘉木活佛}{ename}{jiamu huofo}}
+	{2}{{cname}{萨木活佛}{ename}{samu huofo}}
+};
+#variable {block_npc[kl]} {
+	{1}{{cname}{西华子}{ename}{xi huazi}}
+};
+#variable {block_npc[xx]} {
+	{1}{{cname}{摘星子}{ename}{zhaixing zi}}
+	{2}{{cname}{出尘子}{ename}{chuchen zi}}
+	{3}{{cname}{采花子}{ename}{caihua zi}}
+	{4}{{cname}{巴依}{ename}{bayi}}
+};
+#variable {block_npc[bj]} {
+	{1}{{cname}{女官家}{ename}{guan jia}}
+	{2}{{cname}{侍卫}{ename}{shi wei}}
+	{3}{{cname}{官兵}{ename}{guan bing}}
+};
+#variable {block_npc[yz]} {
+	{1}{{cname}{衙役}{ename}{ya yi}}
+	{2}{{cname}{崔员外}{ename}{cui yuanwai}}
+	{3}{{cname}{鲁有脚}{ename}{lu youjiao}}
+};
+#variable {block_npc[sz]} {
+	{1}{{cname}{刘好弈}{ename}{liu haoyi}}
+};
+#variable {block_npc[hz]} {
+	{1}{{cname}{老虎}{ename}{laohu}}
+	{2}{{cname}{安健刚}{ename}{an jiangang}}
+	{3}{{cname}{孟健雄}{ename}{meng jianxiong}}
+	{4}{{cname}{心砚}{ename}{xin yan}}
+	{5}{{cname}{周绮}{ename}{zhou yi}}
+	{6}{{cname}{蒋四根}{ename}{jiang sigen}}
+	{7}{{cname}{石双英}{ename}{shi shuangying}}
+	{8}{{cname}{卫春华}{ename}{wei chunhua}}
+	{9}{{cname}{杨成协}{ename}{yang chengxie}}
+	{10}{{cname}{徐天宏}{ename}{xu tianhong}}
+	{11}{{cname}{常赫志}{ename}{chang hezhi}}
+	{12}{{cname}{常伯志}{ename}{chang bozhi}}
+	{13}{{cname}{赵半山}{ename}{zhao banshan}}
+	{14}{{cname}{周仲英}{ename}{zhou zhongying}}
+	{15}{{cname}{陆菲青}{ename}{lu feiqing}}
+	{16}{{cname}{无尘道长}{ename}{wuchen daozhang}}
+};
+#variable {block_npc[dl]} {
+	{1}{{cname}{锦衣卫士}{ename}{wei shi}}
+	{2}{{cname}{黄衣卫士}{ename}{wei shi}}
+	{3}{{cname}{素衣卫士}{ename}{wei shi}}
+	{4}{{cname}{傅思归}{ename}{fu sigui}}
+};
+#variable {block_npc[lz]} {
+	{1}{{cname}{一品堂武士}{ename}{wu shi}}
+	{2}{{cname}{校尉}{ename}{xiao wei}}
+	{3}{{cname}{卫士}{ename}{wei shi}}
+};
+#variable {block_npc[lj]} {
+	{1}{{cname}{蒙面女郎}{ename}{nv lang}}
+	{2}{{cname}{竹剑}{ename}{zhu jian}}
+	{3}{{cname}{菊剑}{ename}{ju jian}}
+	{4}{{cname}{石嫂}{ename}{shi sao}}
+};
+#variable {block_npc[yzw]} {
+	{1}{{cname}{阿碧}{ename}{a bi}}
+	{2}{{cname}{管家}{ename}{guan jia}}
+	{3}{{cname}{家丁}{ename}{jia ding}}
+};
+#variable {block_npc[tzf]} {
+	{1}{{cname}{麻衣长老}{ename}{mayi zhanglao}}
+	{2}{{cname}{黑衣帮众}{ename}{heiyi bangzhong}}
+};
+#variable {block_npc[bt]} {
+	{1}{{cname}{门卫}{ename}{men wei}}
+	{2}{{cname}{蟒蛇}{ename}{mang she}}
+	{3}{{cname}{山贼头}{ename}{shanzei tou}}
+};
+#variable {block_npc[ns]} {
+	{1}{{cname}{定逸师太}{ename}{dingyi shitai}}
+};
+#variable {block_npc[em]} {
+	{1}{{cname}{静心师太}{ename}{jingxin shitai}}
+};
+#variable {block_npc[es]} {
+	{1}{{cname}{江百胜}{ename}{jiang baisheng}}
+};
+#variable {block_npc[sld]} {
+	{1}{{cname}{无根道长}{ename}{wugen daozhang}}
+};
+#variable {block_npc[xi]} {
+	{1}{{cname}{宋兵}{ename}{song bing}}
+};
+#variable {block_npc[cd]} {
+	{1}{{cname}{亲兵}{ename}{qin bing}}
+};
+#variable {block_npc[xkd]} {
+	{1}{{cname}{侠客岛弟子}{ename}{di zi}}
+	{2}{{cname}{谢烟客}{ename}{xie yanke}}
+};
+#variable {block_npc[thd]} {
+	{1}{{cname}{黄药师}{ename}{huang yaoshi}}
+};
+#variable {block_npc[bhd]} {
+	{1}{{cname}{雪狼}{ename}{wolf}}
+};
+#variable {block_npc[gcmg]} {
+	{1}{{cname}{孤魂野鬼}{ename}{ghost}}
+};
+
+#variable {stopnpc} {};
+#variable {target_bfind} {0};
+#variable {vnum_list} {};
+#variable {vnum_idx} {1};
+#variable {neighbor} {0};
+#variable {maze} {
+	{sl}{{竹林}{mfly sl;walk.to 3709}}
+	{sl}{{松树林}{mfly sl;walk.to 3719}}
+	{gcmg}{{高昌迷宫}{mfly xx;walk.to 2492}}
+};
+#variable {need_carry} {0};
+
+#nop special flag
+#variable {gyzFlag} {0};
+
+#variable {area_airport} {
+	{yz}{wm}
+	{hh}{wm}
+	{gb}{wm}
+	{bjzjc}{bj}
+	{zns}{qzj}
+	{xkd}{fs}
+	{gcmg}{xx}
+}
+
+#nop ===========================Alias============================
+#nop  run.to <vnum> ;
+#alias {run.to} {
+	#map get {roomarea} {l_area} {%1};
+	#map get {roomterrain} {walk_terrain} {%1};
+	#if {"$l_area" != "$walk_area"} {
+		#if {"$l_area" == "sl"} {#map leave;slling};
+		#if {"$l_area" == "qzj"} {#map leave;qzling};
+		#if {0 != &area_airport[$l_area]} {mfly $area_airport[$l_area]} {mfly $l_area};
+		#variable {walk_area} {$l_area};
+	};
+	#variable {walk_room} {%1};
+	#map run $walk_room;
+	#if {$mission_digjobClass == 1} {dig};
+	#else {l;#showme arrived!!!};
+	#unvariable {l_%*};
+}
+
+#nop  walk.to <vnum>;
+#alias {walk.to} {
+	#map get {roomarea} {l_area} {%1};
+	#map get {roomterrain} {l_terrain} {%1};
+	#if {"$l_terrain" != "$walk_terrain"} {
+		#if {"$l_terrain" == "{yz|bj|ws|zns}"} {#variable {l_area} {$l_terrain}};
+		#if {"$l_area" != "$walk_area"} {
+			#if {%1 == 1065} {mfly ws1;#map run 1027;ask punk about 王小二};
+			#elseif {"$l_area" == "{yz|hh|gb}"} {mfly wm};
+			#elseif {"$l_area" == "bjzjc"} {mfly bj};
+			#elseif {"$l_area" == "zns"} {mfly qzj};
+			#elseif {"$l_area" == "gcmg"} {mfly xx};
+			#elseif {"$l_area" == "sl"} {#map leave;slling;mfly sl};
+			#elseif {"$l_area" == "qzj"} {#map leave;qzling;mfly qzj};
+			#elseif {"$l_area" == "xkd"} {
+				#if {"$l_terrain" != "xkd3"} {mfly fs} {mfly hy};
+			};
+			#elseif {"$l_area" == "gyz"} {
+				#if {"$l_terrain" == "gyz1"} {mfly gyz} {mfly sz};
+			};
+			#elseif {"$l_area" == "hmy"} {
+				#if {"$l_terrain" != "hmy2"} {mfly hmy} {mfly bj};
+			};
+			#elseif {"$l_area" == "yzw"} {
+				#if {"$l_terrain" == "{yzw1|yzw2}"} {mfly yzw} {mfly sz};
+			};
+			#elseif {"$l_area" == "xyl"} {
+				#if {"$me[family]" != "逍遥派" && "$l_terrain" == "xyl2" && &{xy_carry} != 0 && $xunzhang_level<25 } {
+					#variable {need_carry} {1};
+				};
+				#else {mfly xyl}
+			};
+			#elseif {"$l_area" == "mj"} {
+				#if {"$me[family]" == "明教" && "$l_terrain" == "mj2"} {
+					#map leave;
+					fly mj;enter;#map goto 明教内室;
+					ask xiao zhao about 乾坤大挪移;
+					ask xiao zhao about 乾坤大挪移;
+				};
+				#elseif {"$me[family]" != "明教" && "$l_terrain" == "mj2" && &{mj_carry} != 0} {
+					#variable {need_carry} {1};
+				};
+				#else {mfly mj}
+			};
+			#elseif {"$l_area" == "kl"} {
+				#if {"$l_terrain" != "kl2" && &{kl_carry} != 0} {
+					#variable {need_carry} {1};
+				};
+				#else {mfly kl}
+			};
+			#else {mfly $l_area};
+		};
+		#else {
+			#if {%1 == 1065} {#map run 1027;ask punk about 王小二};
+			#elseif {"$l_terrain" == "gyz1"} {mfly gyz};
+			#elseif {"$l_terrain" == "xkd3"} {mfly hy};
+		};
+		#variable {walk_area} {$l_area};
+		#variable {walk_terrain} {$l_terrain};
+	};
+	#variable walk_room %1;
+	#if {$need_carry} {
+		#map leave;
+		fly xyl;e;
+		#if {"$walk_terrain" == "xyl2"} {tell ${xy_carry} carry xy};
+		#if {"$walk_terrain" == "mj2"} {tell ${mj_carry} carry mj};
+		#if {"$walk_terrain" == "kl2"} {tell ${kl_carry} carry kl};
+		#variable {need_carry} {0};
+	};
+	#else {
+		#map find $walk_room;
+		#if {"$dolist[-1]" == "shenshu"} {
+			#delay {0.5} {#echo 开启path;#ticker {walk} {#path walk} {0.3}};
+		} {#ticker {walk} {#path walk} {0.3}};
+	};
+	#unvariable {l_%*};
+}
+
+#alias {walk.stop} {
+	#unticker {walk};
+}
+
+#alias {walk.continue} {
+	#map find $walk_room;
+	#ticker {walk} {#path walk} {0.3};
+}
+
+#alias {walk.kill} {
+	#map leave;
+	#unticker {walk};
+	#class {walk} {kill};
+}
+
+#alias {walk.end} {
+	walk.kill;
+	halt;fly wm;w;
+}
+
+#alias {vnum_list_go} {
+	#variable {vnum_idx} {1};
+	uw;
+	walk.to $vnum_list[$vnum_idx];
+}
+
+
+
+#alias {vnum_list_go_rnd} {
+	#variable {vnum_idx} {@rnd{1;&vnum_list[]}};
+	#echo {$vum_idx};
+	#echo {$vum_list[$vnum_idx]};
+	walk.to $vnum_list[$vnum_idx];
+}
+
+#alias {vnum_list_continue} {
+	#math {vnum_idx} {$vnum_idx+1};
+	#echo {$vnum_idx};
+	#if {$vnum_idx <= &vnum_list[]} {walk.to $vnum_list[$vnum_idx]};
+	#else {
+		#if {1 == $mission_taskClass} {#variable {taskCancel} {1}};
+		#regex {$dolist[-1]} {^$} {fly wm;w} {$dolist[-1].end};
+	};
+}
+
+#alias {ensure_fly} {
+	#map get {roomname} {l_roomname};
+	#if {"$l_roomname" == "金刚伏魔圈"} {out};
+	#if {"$l_roomname" == "达摩院二楼"} {d};
+	#if {"$l_roomname" == "聚贤庄门"} {sw};	
+	#if {"$l_roomname" == "戒律院"} {sd};	
+	#unvariable l_roomname;
+}
+
+#nop  params:  %1  area (e_id)
+#alias {area_travel} {
+	#if {"%1" == "sl"} {#map leave;slling};
+	#if {"%1" == "qzj"} {#map leave;qzling};
+	#if {0 != &area_airport[%1]} {mfly $area_airport[%1]} {mfly %1};
+	#variable {vnum_list} {@gen_area_vnumlist{%1}};
+	vnum_list_go;
+}
+
+#nop ===========================Action===========================
+#action {^#PATH WALK: #END OF PATH.} {
+	walk.stop;
+	#showme 到达位置;
+	arrive_cmd;
+}
+
+#action {^%?%?{雪狼挡者路口|%*上前拦住你，朗声说道：皇宫重地|衙役喝道：“威……武……。”|宋兵向你喝道|卫士对你大吼一声|张松溪喝道：你不是武当弟子|.*喝道：“到慕容山庄不要乱闯|巴依说: 我把阿凡提关在我的客厅里了|摘星子喝道：.*休走|嘉木活佛说道: 你非密宗弟子|萨木活佛说道：你非密宗弟子|施戴子喝道：上面是两位长老清修之处|无根道长喝道：后面是本教重地|麻衣长老喝道：此乃铁掌帮禁地|高根明喝道：后面是本派重地|丘处机喝道：“后面是本教重地|山贼头操起拳头：你想占我老婆的便宜|门卫把手一拦|陆大有喝道：后面是家师寝室，这位.*请止步}} {
+	walk.stop;
+	#map undo;
+	#map get roomarea {l_area};
+	#foreach {$block_npc[$l_area][%*]} {bnpc} {
+		#regex {%0} {^$bnpc[cname]%*} {
+			#break;
+			#if {"$l_area" == "lz" && "$bnpc[cname]" == "卫士"} {#variable {stopnpc} {皇宫卫士}};
+			#else {#variable {stopnpc} {$bnpc[cname]}};
+			#if {1 == @is_safe_npc{$bnpc[cname]}} {uw;kill $bnpc[ename]};
+			#else {#showme {Fail to pass by! block_npc: $stopnpc}};
+		};
+	};
+	#unvariable bnpc;
+	#unvariable {l_area};
+}
+
+#action {^%?%?{心砚哈哈一笑：这里还没打过呢|周绮俏眼一瞪：没看见本姑娘在这里吗|蒋四根大喝一声：哪里走|石双英冷哼一声：想走？|卫春华大吼一声：我有九条命，你有几条？|杨成协大吼一声，执鞭拦在楼梯口|常赫志扭身挡住，脸上没有一点笑容|周仲英吹着白胡子，挡在楼梯口|陆菲青用冷森森的眼光扫了你一眼}} {
+	walk.stop;
+	#map undo;
+	#map get roomarea {l_area};
+	#foreach {$block_npc[$l_area][%*]} {bnpc} {
+		#regex {%0} {^$bnpc[cname]%*} {
+			#break;
+			#variable {stopnpc} {$bnpc[cname]};
+			#if { 1 == @is_safe_npc{$bnpc[cname]} } {uw;kill $bnpc[ename]};
+			#else {#showme {Fail to pass by! block_npc: $stopnpc}};		
+		};
+	};
+	#unvariable bnpc;
+	#unvariable {l_area};
+}
+
+#action {^%?%?无尘长剑电闪，一下就刺到了楼梯口。} {
+	walk.stop;
+	#map undo;
+	#variable {stopnpc} {无尘道长};
+	uw;kill wuchen daozhang; 
+}
+
+#action {^{.*}{挡|拦}{\W{0,6}}你} {
+	#regex {%1} {%*：%*} {kick} {
+		walk.stop;
+		#map undo;
+		#variable {stopnpc} {};		
+		#map get roomarea {l_area};
+		#foreach {$block_npc[$l_area][%*]} {bnpc} {
+			#regex {%0} {^$bnpc[cname]%*} {
+				#variable {stopnpc} {$bnpc[cname]};
+				#if {"$stopnpc" == "女官家"} {#variable {stopnpc} {女管家}};
+				#if {"$stopnpc" == "刘处一"} {#variable {stopnpc} {刘处玄}};
+				#if {"$stopnpc" == "朱冠巨蟒"} {#variable {stopnpc} {赤冠巨蟒}};
+				#if {"$stopnpc" == "侠客岛弟子"} {#variable {stopnpc} {弟子}};
+				#if {1 == @is_safe_npc{$stopnpc}} {uw;kill $bnpc[ename]};
+				#else {#showme {Fail to pass by! block_npc: $stopnpc}};
+				#break;
+			};
+		};
+		#unvariable {bnpc};
+		#unvariable {l_area};
+		#regex {$stopnpc} {^$} {
+			#map get roomvnum {l_vnum};		
+			#if {"$l_vnum" == "{2402|3090|1106}"} {
+				#if {$l_vnum == 2402} {flatter 星宿老仙};
+				#if {$l_vnum == 3090} {kneel 天山童姥};
+				#if {$l_vnum == 1106} {fealty 光复大燕};
+				#map find $walk_room;
+				scmd {halt;#ticker {walk} {#path walk} {0.3}};
+			};
+			#if {"$l_vnum" == "{1831|1951|2373|2995|3708|3138}"} {
+				#regex {%1} {%*{伸手|上前|一跃}} {#variable {stopnpc} {&1}} {#variable {stopnpc} {%1}};
+				#if {$l_vnum == 1831} {uw;kill jushi};
+				#if {$l_vnum == 1951} {uw;kill zhangmen};
+				#if {$l_vnum == 2373} {uw;kill bangzhu};
+				#if {$l_vnum == 2995} {uw;kill zhangjiao};
+				#if {$l_vnum == 3708} {uw;kill jiansi};
+				#if {$l_vnum == 3138} {uw;kill houye};				
+			};
+			#unvariable {l_vnum};
+		}		
+	}
+}
+
+#action {^%?%?你刚爬上树干，没留神流氓头暗地里踢了你一脚，你一个倒栽葱又从树上掉了下来} {
+	walk.stop;
+	#map undo;
+	#variable {stopnpc} {流氓头};
+	uw;kill liumang tou;
+}
+
+#action {^%?%?船夫在旁边拿眼瞪着你看。{|冰面化冻，还是乘船吧！}} {
+	walk.stop;
+	#map undo;
+	#if {$traps[nSilver] >= 100} {give 100 silver to chuan fu};
+	#elseif {$traps[nGold] >= 1} {give 1 gold to chuan fu};
+}
+
+#action {^%?%?夫人吩咐没有重要的事情不要打扰小姐休息。} {
+	walk.stop;
+	#map undo;
+	#variable {stopnpc} {丫鬟};
+	uw;kill ya huan; 
+}
+
+#action {^%?%?%?%?$stopnpc%*死了} {
+	#if {"$stopnpc" != ""} {
+		#unticker {recover_kee};
+		#unticker {pfm};
+		#map find $walk_room;
+		scmd {halt;#ticker {walk} {#path walk} {0.3}};
+		#variable stopnpc {};
+	}
+}
+
+#action {^%?%?%?%?$stopnpc往%*落荒而逃} {
+	#if {"$stopnpc" != ""} {
+		#unticker {recover_kee};
+		#unticker {pfm};
+		#map find $walk_room;
+		scmd {halt;#ticker {walk} {#path walk} {0.3}};
+		#variable stopnpc {};
+	}
+}
+
+#action {^%*只听一声轰响，石壁被捅穿了，原来里面有一个大洞。！} {
+	#regex {%1} {%*：%*} {kick} {
+		enter;
+		#map goto 密洞;
+		#map find $walk_room;
+		#ticker {walk} {#path walk} {0.3};
+	}
+}
+
+#action {^%?%?店小二跑到门边拦住：%*已经付了银子} {
+	walk.stop;
+	#map undo;
+	#map get roomvnum {l_vnum};
+	#if {"$l_vnum" == "{509|3332}"} {
+		#action {^%?%?你一觉醒来，只觉精力充沛。该活动一下了。}	{
+			#unaction {^%?%?你一觉醒来，只觉精力充沛。该活动一下了。};
+			d;#map return;
+			walk.continue;		
+		};
+		#map leave;
+		up;sleep;
+	};
+	#else {
+		#map leave;
+		up;enter;out;d;
+		#map return;
+		walk.continue;
+	};
+	#unvariable {l_vnum};
+}
+
+
+#action {^%?%?店小二跑到门边拦住：%*已经付了银子} {
+	walk.stop;
+	#map undo;
+	#map leave;
+	#if {"$walk_area" == "hh"} {u;enter;out;d;#map return};
+	#else {fly wg;u;d;mfly $walk_area};
+	walk.continue;
+}
+
+#action {^%?%?苏星河说道：{想要知道密道就得加入逍遥派。|本派的密道在华山之上，很是艰险。你有兴趣可以去看看。}} {
+	walk.stop;
+	#if {&{xy_carry} != 0} {
+		#map undo;
+		#map leave;
+		fly xyl;e;
+		tell ${xy_carry} carry xy;
+	};
+	#else {$dolist[-1].end};
+}
+
+#action {^%?%?你翻过石栏，一个纵身，跳了下去。} {
+	#if {"$walk_area" == "bjzjc"} {
+		walk.stop;
+		#map leave;
+	};
+}
+
+#action {^%?%?一股潜流把你冲回岸边} {
+	#if {"$walk_area" == "bjzjc"} {
+		#delay {4} {mfly bj;n;out};
+	};
+}
+
+#action {^%?%?井底 -} {
+	#if {"$walk_area" == "bjzjc"} {
+		#map goto 882;
+		#map get roomvnum l_vnum;
+		#if {"$walk_room" == "井底" || $walk_room == $l_vnum} {
+			#if {$mission_digjobClass == 1} {dig};
+			#else {l;#showme arrived!!!};
+		};
+		#else {
+			#map leave;
+			scmd {jump mutong;climb string;#map goto 清和殿后院;#map find $walk_room;scmd {#ticker {walk} {#path walk} {0.3}}};
+		};
+		#unvariable l_vnum;
+	};
+}
+
+#action {^%?%?你%*离瀑布顶} {
+	#if {"$walk_area" == "cs"} {
+		walk.stop;
+		#map undo;
+		#map find $walk_room;
+		scmd {halt;#ticker {walk} {#path walk} {0.3}};
+	}
+}
+
+#action {^%?%?{一叶扁舟缓缓地驶了过来，艄公将一块踏脚板搭上堤岸|岸边一只小舟上的老艄公说道：正等着你呢，上来吧。}} {
+	enter
+}
+			       
+#action {^%?%?只听得%*面%*隐隐传来：“%s别急嘛，这儿正忙着呐} {    
+	#delay {yell_boat} {yell boat} {3};
+}
+
+#action {^%?%?{船很快停靠彼岸。你抬脚跨出船来|大船终于停在了一个小岛边。你走下船来}} {
+	#map goto $aim;
+	#map find $walk_room;
+	#ticker {walk} {#path walk} {0.3};
+}
+
+#action {^%?%?你{走了半天，终于走出了桃花迷阵|踩动了机关，掉进僧监}。} {
+	#unticker {walk};
+	#map goto $aim;
+	#map find $walk_room;
+	#ticker {walk} {#path walk} {0.3};
+}
+
+
+#action {^%?%?{艄公说“到啦，上岸吧”，随即把一块踏脚板搭上堤岸|艄公轻声说道：“都下船吧，我也要回去了。”|终于到了小岛边|终于到了岸边|船夫把小舟靠在岸边，快下船吧。}} {
+	out;
+	#map goto $aim;
+	#map find $walk_room;
+	#ticker {walk} {#path walk} {0.3};
+}
+
+#action {^%?%?战船在一阵阵{喊杀声中撞上了另一艘大船|风浪声中靠上了码头}} {
+	#regex {%0} {%*码头} {#variable {gyzFlag} {0}} {#variable {gyzFlag} {1}};
+	out;
+	#map goto $aim;
+	#map find $walk_room;
+	#ticker {walk} {#path walk} {0.3};
+}
+
+#action {^%*终于抵达了%*。你走下船来。} {
+	#regex {%1} {%*：%*} {kick} {
+		#map goto $aim;
+		#map find $walk_room;
+		#ticker {walk} {#path walk} {0.3};
+	}
+}
+
+#action {^%?%?{苏星河把你送到石室的门口，转身便离开了|你眼前一亮，一幢幢白色建筑屹立眼前，霎是辉煌}} {
+	#map goto $aim;
+	#map find $walk_room;
+	scmd {#ticker {walk} {#path walk} {0.3}};
+}
+
+#action {^%?%?家丁做了个揖，说道：尊驾与敝庄素无往来，庄主不见外客，还是请回吧。} {
+	walk.stop;
+	mfly gyz;
+	#map find $walk_room;
+	#ticker {walk} {#path walk} {0.3};
+}
+
+#action {^%?%?{突然轰隆一声巨响，你脚下踏了个空，... 啊...雪崩了！|你脚下一滑，全身都埋进了厚厚的松针中！}} {
+	scmd {mfly $walk_area;walk.continue};
+}
+
+#action {^%?%?你定了定神，觉得身轻气爽，脚底飘浮，急忙收住轻功。} {
+	walk.stop;
+	scmd {#ticker {walk} {#path walk} {0.3}};
+}
+
+#action {^%?%?{你脚下一滑，在桥上晃了晃．．桥下是汹涌的澜沧江！|你在独木桥上前仰后合地晃着|你被挡了回来}} {
+	walk.stop;
+	#map undo;
+	#map find $walk_room;
+	scmd {#ticker {walk} {#path walk} {0.3}};
+}
+
+#action {^%?%?这个方向没有出路。} {
+	#map get roomvnum {l_vnum};
+	#if {$l_vnum == 655 || $l_vnum == 1242} {
+		walk.stop;
+		#map undo;
+		#if {$l_vnum == 655} {circle wan};
+		#else {push stone};
+		#map find $walk_room;
+		scmd {#ticker {walk} {#path walk} {0.3}};
+	};
+	#unvariable {l_vnum};
+}
+
+#action {^%?%?玄贞笑道：这位%*，我带你去香堂吧。} {
+	walk.stop;
+	#delay {2} {
+		#map goto 852;
+		#map find $walk_room;
+		scmd {#ticker {walk} {#path walk} {0.3}};
+	}
+}
+
+#action {^%?%?黄衣使者不接受这样东西。} {
+	drop shan pai;
+	#math traps[shanpai] {$traps[shanpai]-1};
+	#if {$traps[shanpai]>0} {give shan pai to shi zhe};
+	#else {
+		#delay {1} {
+			#regex {$dolist[-1]} {^$} {fly wm;w} {$dolist[-1].end}
+		}
+	};
+}
+
+#action {^%?%?你现在动弹不得，没法走动。} {
+	walk.stop;
+	#map undo;
+	#delay {walk_freeze_delay} {
+		#map find $walk_room;
+		halt;#ticker {walk} {#path walk} {0.3};
+	} {1};	
+}
+
+#action {^%1在你的耳边悄声说道：action~} {
+	whisper $xy_carry go!go!go!;
+}
+
+#action {^%?%?你在%*的耳边悄声说道：go!go!go!} {
+	kill mengmian ren;jiasi;
+}
+
+#action {^%?%?你在地上悄悄地翻了个身，小心翼翼地睁开了眼} {
+	#if {"$walk_terrain" == "xyl2"} {#map goto 1849};
+	#if {"$walk_terrain" == "hmy3"} {#map goto 653};
+	#if {"$walk_terrain" == "mj2"} {#map goto 1};
+	#if {"$walk_terrain" == "kl2"} {#map goto 1};
+	walk.continue;
+}
+
+#action {^%?%?arrived!!!} {
+	#delay {arrived_do} {
+		#if {$target_bfind == 0} {
+			#math vnum_idx {$vnum_idx+1};
+			#if {"$walk_area" == "jx" && $vnum_idx <= &vnum_list[]} {
+				#if {$me[comb_exp]<4000000 &&  $vnum_list[$vnum_idx] == 1239} {#math vnum_idx {$vnum_idx+1}};
+			};
+			#if {$vnum_idx <= &vnum_list[]} {
+				#if {"$walk_area" == "jx" && $me[comb_exp]<10000000} {run.to $vnum_list[$vnum_idx]};
+				#else {walk.to $vnum_list[$vnum_idx]};
+			};
+			#elseif {$neighbor == 0} {
+				#delay {neighbor_search} {
+					uw;
+					#echo {Start to search neighbor rooms!!!};
+					#variable neighbor {@expand_neighbor{}};
+					#echo {Obtain neighbor =$neighbor rooms!!!};
+					#variable vnum_idx 1;
+					walk.to $vnum_list[$vnum_idx];
+				} {3};
+			};
+			#elseif {$mission_shenshuClass == 1} {#showme {Cancel this Shenshu!!!}};
+			#else {$dolist[-1].end};
+		}
+	} {0.5};
+}
+
+#action {^%?%?Target Missing!!!} {
+	#map get roomvnum {l_orig};
+	#list {vnum_list} clr;	
+	#map list {distance} {5} {variable} {l_neighbors};
+	#foreach {*l_neighbors[]} {l_neighbor} {
+		#if {$l_neighbor == $l_orig} {#continue};
+		#list {vnum_list} {add} {$l_neighbor};
+	};
+	#unvariable {l_%*};
+	#echo {Obtain 3-neighbor rooms, start to search!!!};
+	vnum_list_go;
+}
+
+#action {^%?%?Fail to pass by!{| block_npc: .*}$} {
+	walk.stop;
+	#delay {0.5} {
+		#if {"%3" == ""} {#map undo};
+		#showme {Cancel the destination: [$vnum_list[$vnum_idx]]};
+		scmd {halt;vnum_list_continue};
+	};
+}
+
+#nop ==========================Function==========================
+#function {expand_neighbor} {
+	#map get roomvnum {l_orig};
+	#list {l_list} clr;
+	#loop {&vnum_list[]} {1} {l_idx} {
+		#map goto $vnum_list[$l_idx];
+		#variable {l_exits} {};
+		#map get {roomexits} {l_exits};
+		#foreach {$l_exits[%*]} {l_vnum} {			
+			#list {l_list} {find} {$l_vnum} {l_find};
+			#if {$l_find == 0} {#list {l_list} {add} {$l_vnum}}			 
+		};
+	};
+	#unvariable {l_idx};
+	#unvariable {l_find};
+	#unvariable {l_exits};	
+	#list {vnum_list} clr;
+	#foreach {$l_list[%*]} {l_vnum} {#list {vnum_list} {add} {$l_vnum}};
+	#unvariable {l_vnum};
+	#unvariable {l_list};	
+	#map goto $l_orig;
+	#unvariable {l_orig};
+	#if {&{neighbor} == 0} {#variable result 1};
+	#else {#math result {$neighbor+1}};
+}
+
+/*  
+	function: get_area 
+	input: %1 area 	%2 roomname(c_name)
+	output: area(e_id)
+*/
+#function {get_area} {
+	#if {"%1" == "{桃花岛|thd}" && "%2" == "大院"} {#variable result {yz}};
+	#elseif {"%1" == "{雪山寺|xs}" && "%2" == "雪山别院"} {#variable result {bj}};
+	#elseif {"%1" == "{古墓|gm}" && "%2" == "山洞"} {#variable result {zns}};
+	#elseif {"%1" == "{逍遥林|逍遥派|xyl}" && "%2" == "瀑布"} {#variable result {ws}};
+	#elseif {"%1" == "大理国"} {#variable result {dl}};
+	#elseif {"%1" == "皇宫大内"} {#variable result {bjzjc}};
+	#elseif {"%1" == "逍遥派"} {#variable result {xyl}};
+	#elseif {"%1" == "大雪山"} {#variable result {xs}};
+	#else {
+		#regex {%1} {{[\x80-\xff]+}} {
+			#if {0 != &area_map[%1]} {#variable result $area_map[%1]};
+			#else {
+				#foreach {*area_map[%*]} {l_area} {
+					#regex {%1} {$l_area%*} {
+						#variable result $area_map[$l_area];
+						#break;
+					};
+				};
+				#unvariable {l_area};
+			}			
+		} {#variable result %1};
+	};
+}
+
+/*  
+	function: gen_area_vnumlist 
+	input: %1 area(e_area)
+	output: vnum list
+*/
+#function {gen_area_vnumlist} {
+	#list {result} clr;
+	#list {l_mapList} clr;
+	#map list {roomarea} {%1} {variable} {l_mapList};
+	#if {&l_mapList[] > 0} {
+		#foreach {*l_mapList[%*]} {l_vnum} {#list {result} {add} {$l_vnum}};
+	};	
+	#unvariable l_%*;	
+}
+
+/*  
+	function: gen_location_vnumlist 
+	input: %1 area(e_area or c_area) 	%2 roomname(c_name)
+	output: vnum list
+*/
+#function {gen_location_vnumlist} {
+	#list {result} clr;
+	#list {l_mapList} clr;
+	#map list {roomarea} {@get_area{%1;%2}} {roomname} {%2} {variable} {l_mapList};
+	#if {0 == &l_mapList[]} {#map list {roomname} {%2} {variable} {l_mapList}};
+	#if {&l_mapList[] > 0} {
+		#foreach {*l_mapList[%*]} {l_vnum} {#list {result} {add} {$l_vnum}};
+	};
+	#else {#line log {$LOG/error.log} {Fail to location: [%1]--[%2]}};		
+	#unvariable l_%*;	
+}
+
+/*  
+	function: gen_note_vnumlist 
+	input: %1 npc or item
+	output: vnum list
+*/
+#function {gen_note_vnumlist} {
+	#list {result} clr;
+	#list {l_mapList} clr;
+	#map list {roomnote} {%*%1%*} {variable} {l_mapList};
+	#if {&l_mapList[] > 0} {
+		#foreach {*l_mapList[%*]} {l_vnum} {#list {result} {add} {$l_vnum}};
+	};
+	#else {#line log {$LOG/error.log} {npc/item is missing: [%1]}};		
+	#unvariable l_%*;	
+}
+
+/*  
+	function: get_escape_way 
+	input: %1 逃跑方向描述 
+	output: 逃跑方向命令
+*/
+#function {get_escape_way} {
+	#variable result {};
+	#regex {%1} {%*边} {
+		#map get roomexits {l_exits};
+		#foreach {*l_exits[%*]} {l_exit} {
+			#if {"&1" == "东"} {
+				#regex {$l_exit} {{eu|ed}} {#variable result $l_exit};
+			};
+			#if {"&1" == "南"} {
+				#regex {$l_exit} {{su|sd}} {#variable result $l_exit};
+			};
+			#if {"&1" == "西"} {
+				#regex {$l_exit} {{wu|wd}} {#variable result $l_exit};
+			};
+			#if {"&1" == "北"} {
+				#regex {$l_exit} {{nu|nd}} {#variable result $l_exit};
+			};
+		};
+	} {
+		#if {"$walk_area" == "gcmg"} {
+			#variable l_escape $cpathdir[%1];
+			#map get roomexits {l_exits};
+			#foreach {*l_exits[%*]} {l_exit} {
+				#if {"$l_exit" == "$l_escape"} {#variable result $l_escape;#break}; 
+			};
+		};
+		#else {#variable result $cpathdir[%1]};
+	};
+	#unvariable l_%*;
+}
+
+#nop ===========================Event============================
+
+#class {walk} close

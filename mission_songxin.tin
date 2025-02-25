@@ -1,0 +1,269 @@
+#class {mission_songxin} open
+#nop ==========================Variable==========================
+#nop   variable sx_go should be setting in <player_id>.tin
+#nop ============================================================
+#variable {mission_songxinClass} {1};
+#variable {killer_list} {};
+#variable {killer_idx} {1};
+#variable {killer_name} {};
+#variable {npc_name} {};
+#variable {sx_npc} {};
+#variable {sx_vnum} {};
+#variable {bGetletter} {0};
+
+#nop ===========================Alias============================
+#alias {mission_songxin.start} {
+	#if {!$robot || ($robot && "$dolist[-1]" != "mission_songxin")} {
+		#variable mission_complete 0;
+		updatedolist mission_songxin;
+		#class fight read $MOD/fight.tin;
+		fly wm;u;s;ask you chai about job;
+		#delay {ask_failure} {mission_songxin.end} {3};
+	};
+}
+
+#alias {mission_songxin.kill} {
+	#if {$fightClass == 1} {fight.kill};
+	#if {$walkClass == 1} {walk.kill};
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_songxin} kill;
+	#echo {%c#class mission_songxin killed!} {cyan};
+}
+
+#alias {mission_songxin.end} {
+	mission_songxin.kill;
+	halt;fly wm;w;
+}
+
+#alias {arrive_cmd} {
+	l;
+	#delay {1} {
+		scmd {halt;#2 drop shashou fu;mission_songxin.end}	
+	}
+}
+
+#alias {fight_cmd_under_attack} {
+	#list {killer_list} {find} {%1} {l_find};
+	#if {$l_find != 0} {
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};
+	};
+	#unvariable l_find;
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你向绿林邮差打听有关『job』的消息。} {
+	#undelay {ask_failure};
+	#action {^%?%?绿林邮差%*你%*送到「%*」的「%*」手上。$} {
+		#variable {sx_npc} {%%6};
+		#unaction {^%?%?绿林邮差%*你%*送到「%*」的「%*」手上。$}; 
+		#unaction {^%?%?绿林邮差说道：%*$};		
+		#variable {l_sx_go} {$sx_go};
+		#replace {l_sx_go} {fly} {mfly};
+		$l_sx_go;
+		fight_ready;
+		#unvariable l_sx_go;
+	};
+	#action {^%?%?绿林邮差说道：%*$} {
+		#unaction {^%?%?绿林邮差说道：%*$};
+		#unaction {^%?%?绿林邮差%*你%*送到「%*」的「%*」手上。$}; 
+		#if {"%%3" == "%*已经领了送信%*"} {
+			#list {trapslist} {find} {secret letter} {l_find};
+			#if {$l_find != 0} {kan letter} {mission_songxin.end};
+			#unvariable l_find;
+		};
+		#if {"%%3" == "%*暂时没有%*"} {
+			mission_songxin.kill;
+			#if {$robot && &mission_list[] > 0} {mission.do};
+			#else {halt;fly wm;w};
+		};		
+	};
+	#delay {2} {
+		#unaction {^%?%?绿林邮差%*你%*送到「%*」的「%*」手上。$}; 
+		#unaction {^%?%?绿林邮差说道：%*$};		
+	};
+}
+
+#action {^%?%?这是一封信件，上面写着「%*」亲启} {
+	#variable {sx_npc} {%3};
+	#variable {npc_name} {$sx_npc};
+	gotonpc $sx_npc	
+}
+
+#action {^%?%?这里没有 sha shou。} {
+	get all from corpse
+}
+
+#action {^{>?}%*说道：小子，你东西丢了,命也拿来吧} {
+	#map get roomvnum sx_vnum;
+	#list {killer_list} {add} {%2};
+	#variable {killer_name} {%2};
+	#variable {kill_id} {sha shou};
+	#if {$me[comb_exp]<2000000} {hit $kill_id;kill $kill_id};
+	#elseif {$me[comb_exp]<2500000} {#delay {start_kill} {kill $kill_id} {10}};
+	#unaction {^{>?}%*说道：小子，你东西丢了,命也拿来吧};
+}
+
+#action {^{>?}%*说道：师兄，点子硬的很，我来帮你！！！} {
+	#unaction {^{>?}%*说道：师兄，点子硬的很，我来帮你！！！};
+	#undelay {start_kill};
+	#list {killer_list} {add} {%2};
+	#variable {killer_name} {{$killer_name|%2}};
+	#action {^%?%?这里没有 killer} {
+		#unaction {^%?%?这里没有 killer};
+		walk.to $sx_vnum;
+	};
+	#map get roomexits {l_exits};
+	#foreach {*l_exits[%*]} {l_dir} {
+		#if {"$l_dir" == "{n|e|s|w}%?"} {#break} {#continue};
+	};
+	#map find $l_exits[$l_dir];
+	#ticker {walk} {#path walk} {0.3};
+	#unvariable l_exits;
+	#unvariable l_dir;
+	#delay {2} {#unaction {^%?%?这里没有 killer}};
+}
+
+#action {^%?%?你对著%*大喝一声：看招！，只见一个500kg的大锤} {
+	#if {&killer_list[] != 0} {
+		#list {killer_list} {find} {%3} {l_find};
+		#if {$l_find != 0} {kill $kill_id};
+		#else {			
+			#math killer_idx {$killer_idx+1};
+			#variable kill_id {sha shou $killer_idx};
+			hit $kill_id;
+		};
+		#unvariable l_find;
+	}
+}
+
+#action {^%?%?%s[%*]杀手 {.*}(Killer)} {
+	#if {&killer_list[] != 0} {
+		#list {killer_list} {find} {%5} {l_find};
+		#if {$l_find != 0} {
+			#undelay {sx_back};
+			#variable killer_idx 1;
+			#variable kill_id {sha shou};
+			hit $kill_id;
+		};
+		#unvariable l_find;
+	}
+}
+
+#action {^{>?}%*往%*落荒而逃了} {
+	#list {killer_list} {find} {%2} {l_find};
+	#if {$l_find != 0} {
+		fight.end;
+		#variable l_escape_way {@escape_way{%3}};
+		scmd {halt;$l_escape_way;l;hit killer;#unvariable l_escape_way};
+	};
+	#unvariable l_find;
+}
+
+#action {^{>?}%*脚下一个不稳，跌在地上一动也不动了。} {
+	#list {killer_list} {find} {%2} {l_find};
+	#if {$l_find != 0} {
+		#variable killer_idx 1;
+		#variable kill_id {sha shou};
+		hit $kill_id;
+	};
+	#unvariable l_find;
+}
+
+#action {^{>?}%*扑在地上挣扎了几下} {
+	#list {killer_list} {find} {%2} {l_find}; 
+	#if {$l_find != 0} {
+		fight.end;
+		#list {killer_list} {delete} {$l_find};
+		#if {$xuedaoClass == 1} {xuedao.prepare;kantou corpse;drop head};
+		#if {&killer_list[] == 0} {
+			fight.end;
+			scmd {get all from corpse;get all from corpse 2};
+		};
+		#else {
+			l;
+			#delay {sx_back} {scmd {get all from corpse}} {1};
+		}
+	};
+	#unvariable l_find;
+}
+
+#action {^%?%?你从%*的{无头|}尸体身上搜出%*。} {
+	#regex {%5} {一封信件} {#variable bGetletter {1}};	
+	#if {&killer_list[] == 0} {
+		#delay {sx_step3} {			
+			#if {$bGetletter == 1} {
+				halt;#variable {npc_name} {$sx_npc};
+				#if {"$sx_npc" == "大熊掌"} {#variable {npc_name} {世外高人}};
+				gotonpc $sx_npc
+			};
+			#else {mission_songxin.end};
+		} {3};
+	};
+	#else {
+		#delay {sx_step2} {#map find $sx_vnum;#ticker {walk} {#path walk} {0.3}} {1};
+	}
+}
+
+#action {$npc_name(%*)} {
+	#if {"$npc_name" != ""} 
+	{
+		#format {l_ename} {%l} {%1};
+		songxin $l_ename;		
+		#unvariable {l_ename};
+		#variable {npc_name} {};
+	}
+}
+
+#action {^%?%?你今日已完成了%s%d/%d%s次送信任务} {
+	#variable {mission_complete} {1};
+	#variable {mission_status[mission_songxin][complete]} {%4};
+	#variable {mission_status[mission_songxin][total]} {%5};
+}
+
+
+#action {^%?%?你时间已过，任务失效！} {
+	#delay {1} {
+		scmd {halt;#2 drop shashou fu;mission_songxin.end}	
+	}
+}
+
+#action {^#PATH WALK: #END OF PATH.} {
+	#unticker {walk};
+	l;#delay {1} {#variable killer_idx 1;hit killer};
+}
+
+#nop ==========================function==========================
+#function {escape_way} {
+	#variable result {};
+	#regex {%1} {%*边} {
+		#map get roomexits {l_exits};
+		#foreach {*l_exits[%*]} {l_exit} {
+			#if {"&1" == "东"} {
+				#regex {$l_exit} {{eu|ed}} {#variable result $l_exit};
+			};
+			#if {"&1" == "南"} {
+				#regex {$l_exit} {{su|sd}} {#variable result $l_exit};
+			};
+			#if {"&1" == "西"} {
+				#regex {$l_exit} {{wu|wd}} {#variable result $l_exit};
+			};
+			#if {"&1" == "北"} {
+				#regex {$l_exit} {{nu|nd}} {#variable result $l_exit};
+			};
+		};
+	} {#variable result $cpathdir[%1]};
+	#unvariable l_%*;
+}
+
+#nop ===========================prompt===========================
+#prompt {^%?%?绿林邮差%*你%*送到「%*」的「%*」手上。$} {送信：[%5]-[%6]} {2} {1};
+
+#nop ===========================Ticker===========================
+#ticker {mission_songxin_end} {mission_songxin.end} {180};
+
+#class {mission_songxin} close

@@ -1,0 +1,17 @@
+#class {pawnshop} open
+#nop ==========================Variable==========================
+#variable {pawnshops} {
+	{1}{fly xi;w;s}
+	{2}{fly bj;s;w}
+	{3}{fly wm;e;#3 s;e}
+	{4}{fly sz;w;#2 s;se;s}
+	{5}{fly fs;n;e;s}
+	{6}{fly wm;e;#5 s;#4 w;n;move stone;nw}
+};
+
+#nop ===========================Alias============================
+#alias {rand_pawn} {	
+	$pawnshops[@rnd{1;6}];#class {pawnshop} kill;	
+}
+
+#class {pawnshop} close

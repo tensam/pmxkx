@@ -1,0 +1,80 @@
+#class {jiuyin} open
+#nop ==========================Variable==========================
+#variable {jiuyinClass} {1};
+#variable {maxlevel} {0};
+#variable {bAutoAfterjiuyin} {0};
+
+#nop ===========================Alias============================
+#alias {jiuyin.start}
+{
+	updatedolist jiuyin;
+	#if {$skill_list[基本内功][level] < 200} {jiuyin.end};
+	#else {
+		#variable {maxlevel} {@skillmaxlevel{}};
+		fly lj;n;#2 e;#2 n;#3 w;climb ice;e;
+		remove all;unwield all;
+		weara int;wi int;
+		#ticker {jiuyin_act} {du zhenjing1 5;exert regenerate} {0.3};
+	}
+}
+
+
+#alias {jiuyin1.start} {
+	#variable {bAutoAfterjiuyin} {1};
+	jiuyin.start;
+}
+
+#alias {jiuyin.kill}
+{
+	#unticker {jiuyin_act};
+	#map leave;
+	unwield all;
+	remove all;
+	weara;
+	wi;
+	#if {1 == $bAutoAfterjiuyin} {robot start};
+	#class jiuyin kill;
+}
+
+#alias {jiuyin.end}
+{
+	halt;
+	scmd {fly wm;w};
+	jiuyin.kill;
+}
+
+
+
+#nop ===========================Action===========================
+#action {^%?%?你的内力不够}
+{
+	#unticker {jiuyin_act};
+	dazuo max;
+}
+
+
+#action {^%?%?$dazuo_end}
+{
+	#variable epochStamp @get_epoch_time{};
+	exert recover;
+	#ticker {jiuyin_act} {du zhenjing1 5;exert regenerate} {0.3};
+}
+
+#action {^%?%?你的「%*」进步了1！}
+{
+	#if {#math skill_list[基本内功][level] {$skill_list[基本内功][level]+1}};
+	#if {$skill_list[基本内功][level] > $maxlevel} {jiuyin.end};	
+}
+
+
+#action {^%?%?你现在精不够，无法控制内息的流动！}
+{
+	#delay {gin_wait} {exert regenerate;dazuo max} {2}
+}
+
+
+#action {^%?%?也许是缺乏实战经验，你对「九阴真经」上册上面所说的东西总是无法领会。} {
+	#unticker {jiuyin_act};
+	jiuyin.end;
+}
+#class {jiuyin} close

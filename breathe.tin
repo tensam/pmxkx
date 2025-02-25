@@ -1,0 +1,76 @@
+#class {breathe} open
+#nop ==========================Variable==========================
+#variable {breatheClass} {1};
+#variable {maxlevel} {0};
+#variable {bAutoAfterBreathe} {0};
+
+#nop ===========================Alias============================
+#alias {breathe.start}
+{
+	updatedolist breathe;
+	#class walk read $MOD/walk.tin;
+	#class fight read $MOD/fight.tin;	
+	#variable {maxlevel} {@skillmaxlevel{}};
+	walkto 2745;
+}
+
+
+#alias {breathe1.start} {
+	#variable {bAutoAfterBreathe} {1};
+	breathe.start;
+}
+
+#alias {breathe.kill}
+{
+	#unticker {breathe_act};
+	#map leave;
+	#if {1 == $bAutoAfterBreathe} {robot start};
+	#class breathe kill;
+}
+
+#alias {breathe.end}
+{
+	halt;breathe.kill;
+	scmd {halt;fly wm;w};
+}
+
+#alias {arrive_cmd} {wo stone};
+
+
+#nop ===========================Action===========================
+#action {^%?%?你的内力不够}
+{
+	#unticker {breathe_act};
+	dazuo max;
+}
+
+#action {^%?%?$dazuo_end}
+{
+	#variable epochStamp @get_epoch_time{};
+	exert recover;
+	#ticker {breathe_act} {#5 breathe;exert recover;exert regenerate} {1};
+}
+
+#action {^%?%?你的「%*」进步了！}
+{
+	#if {#math skill_list[%3][level] {$skill_list[%3][level]+1}};
+	#if {$skill_list[%3][level] > $maxlevel} {breathe.end};	
+}
+
+
+#action {^%?%?{你侧身躺于青石上|你已经躺在青石上了}} {
+	#ticker {breathe_act} {#5 breathe;exert recover;exert regenerate} {1}
+}
+
+#action {^%?%?你内功深厚，已经可以随意控制内息。}
+{
+	#unticker {breathe_act};
+	breathe.end;
+}
+
+
+#action {^%?%?你现在精不够，无法控制内息的流动！}
+{
+	#delay {gin_wait} {exert regenerate;dazuo max} {2}
+}
+#class {breathe} close

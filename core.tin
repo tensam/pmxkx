@@ -1,0 +1,147 @@
+#class {core} open
+#nop =======================Global variable======================
+#variable {me} {
+	{cname}{}
+	{ename}{}
+	{str}{}
+	{eff_str}{}
+	{int}{}
+	{eff_int}{}
+	{con}{}
+	{eff_con}{}
+	{dex}{}
+	{eff_dex}{}
+	{gender}{}
+	{family}{}
+	{cmaster}{}
+	{emaster}{}
+	{eff_gin}{0}
+	{gin}{0}
+	{gin_ratio}{100}
+	{eff_mana}{0}	
+	{max_mana}{0}
+	{eff_kee}{0}
+	{kee}{0}
+	{kee_ratio}{100}
+	{eff_force}{0}
+	{max_force}{0}
+	{upper_force}{0}
+	{shen}{0}
+	{eff_food}{0}
+	{food}{0}
+	{eff_water}{0}
+	{water}{0}
+	{pot}{0}
+	{max_pot}{0}
+	{yl_exp}{0} 
+	{comb_exp}{0} 
+	{deposit}{0} 
+	{deposit_pot}{0}
+	{healable}{0}  
+}
+
+#variable {stars} {
+	{mission_task}{0}
+	{mission_biao}{0}
+	{mission_guanfu}{0}
+	{mission_songxin}{0}
+	{mission_item}{0}
+	{mission_guojob}{0}
+	{mission_npc}{0}
+}
+
+#nop tzf ask qiu about ghost
+#variable {bAskGhost} {0};
+
+#nop  xiuwei info
+#variable {xw} {
+	{task}{0}
+	{ttask}{0}
+	{xf}{0}
+	{gf}{0}
+	{ss}{0}
+	{biwu}{15}
+	{event}{0}
+}
+
+#variable {traps} {
+	{nGold}{0}
+	{nSilver}{0}
+	{nCoin}{0}
+	{nFire}{0}
+	{nXionghuang}{0}
+	{slling}{0}
+	{qzling}{0}
+	{hmling}{0}
+	{shanpai}{0}
+	{gcmap}{0}
+	{nDan}{0}
+	{nBudai}{0}
+}
+
+#variable {dolist} {
+	{1}{}
+	{2}{} 
+	{3}{} 
+	{4}{} 
+	{5}{}
+}
+
+/* scmd  */
+#variable {cmd} {};
+
+/* time stamps  */
+#variable {current_day} {};
+#variable {epochStamp} {};
+
+/* skill info  */
+#list {skill_list} {clr};
+#list {skill_e2c} {clr};
+#list {skill_enable} {clr};
+#list {specialforce} {clr};
+
+/* equip info  */
+#variable {xunzhang_level} {0};
+#list {keep_equips} {clr};
+#list {gain_equips} {clr};
+#list {broken_equips} {clr};
+
+/* traps  list  */
+#list {trapslist} {clr};
+
+#nop next mission index
+#variable {next_idx} {1};
+
+#nop mission_guanfu
+#variable {gf_npc} {};
+#variable {gf_area} {};
+#variable {gf_room} {};
+
+#nop flee position
+#variable {flee_area} {};
+#variable {flee_room} {};
+
+#nop status variable
+#variable {flee_status} {0};
+
+#nop mission_shenshu
+#variable {shenshu_stage} {0};
+#variable {shenshu_epoch} {};
+#list {valid_shenshu} {clr};
+
+
+
+#nop ==========================Function==========================
+#function {get_epoch_time} {
+	#format {result} {%T};
+}
+
+#nop ===========================Event============================
+#event {SESSION DISCONNECTED} {
+	#if {&{dummy} == 0} {#format {zapWeekday} {%t} {%u};#class {cVariables} {write} {$VAR/%0_Vars.tin}};
+	#gts #delay {30} {connect %0}
+}
+
+#class common read $MOD/common.tin;
+
+#class {core} close

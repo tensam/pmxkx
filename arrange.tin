@@ -1,0 +1,42 @@
+#class {arrange} open
+#nop ==========================Variable==========================
+#variable {arrange} {1};
+#var {weapon_list} {
+    {1}{{type}{sword}}
+}
+
+
+#nop ===========================Alias============================
+#alias {arrange.start} {
+
+}
+
+#alias {arrange.kill} {}
+ 
+#alias {arrange.end} {}
+
+
+#nop ===========================Action===========================
+
+#action {id告诉你：开始上传装备信息} {
+    XXequip_list.clr;
+}
+
+#action {id传来一串装备编码信息 eg {{type}{sword}{attack}{11}...}} {
+    XXequip_list.add;
+}
+
+#action {id告诉你：装备信息更新完毕} {
+    XXequip_list.compute;   好像用不上
+} 
+
+#action {xxx给你一件xxx} {
+    l xxx;
+    MEequip_list.add;
+    @equip.programming
+}
+
+#nop ===================== function ========================
+#function equip.programming {
+    以一件装备遍历各id装备库数据，计算替换提升最大的
+}

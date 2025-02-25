@@ -1,0 +1,70 @@
+#class {looksky} open
+#nop ==========================Variable==========================
+#variable {lookskyClass} {1};
+#variable {maxlevel} {0};
+
+#nop ===========================Alias============================
+#alias {looksky.start}
+{
+	updatedolist looksky;
+	iskills;
+	#delay {1} {
+		#variable {maxlevel} {@skillmaxlevel{}};
+		#if {$skill_list[斗转星移][level]> 200 && $skill_list[斗转星移][level] < $maxlevel} {
+			fly ca;s;withdraw 50000 qn;
+			#delay {3} {
+				fly yzw;#4 s;e;s;#3 e;n;jump zhuang;
+				#ticker {looksky_act} {look sky;exert regenerate} {0.2};
+			}
+		};
+		#else {looksky.end};
+	}
+}
+
+#alias {looksky.kill}
+{
+	#unticker {looksky_act};
+	#class {looksky} kill;
+}
+
+#alias {looksky.end}
+{
+	looksky.kill;
+	halt;
+	exert recover;
+	exert regenerate;
+	scmd {halt;fly wm;w};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你的内力不够。}
+{
+	#unticker {looksky_act};
+	dazuo max;
+}
+
+#action {^%?%?$dazuo_end}
+{	
+	#variable epochStamp @get_epoch_time{};
+	exert recover;
+	#ticker {looksky_act} {look sky;exert regenerate} {0.2};
+}
+
+#action {^%?%?你仰首望天%*你觉得有些刺眼。}
+{
+	looksky.end;
+}
+
+#action {^%*实战经验不足}
+{
+	looksky.end;
+}
+
+#action {^%?%?你的「%*」进步了！}
+{
+	#if {&skill_list[%3] == 0} {#variable skill_list[%3][level] 1};
+	#else {#math skill_list[%3][level] {$skill_list[%3][level]+1}};
+	#if {$skill_list[%3][level] >= $maxlevel} {looksky.end}; 
+}
+
+#class {looksky} close

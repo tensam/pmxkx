@@ -1,0 +1,193 @@
+#class {guess} open
+#nop 猜数字游戏脚本;
+
+#var debug_mode 0
+#var current_guess 1234
+#var exact 0
+#var shelf 0
+#list possible_answers create
+
+#function debug {
+   #if {$debug_mode} {
+       #echo {<debug> %1};
+   };
+}
+
+#function init_possible_answers {
+   #list possible_answers clear;
+   #loop 1111 7777 tmp {
+       #format d1 %d {$tmp / 1000};
+       #format d2 %d {($tmp / 100) % 10};
+       #format d3 %d {($tmp / 10) % 10};
+       #format d4 %d {$tmp % 10};
+       
+       #if {$d1 > 0 && $d1 < 8 && 
+            $d2 > 0 && $d2 < 8 && 
+            $d3 > 0 && $d3 < 8 && 
+            $d4 > 0 && $d4 < 8 && 
+            $d1 != $d2 && $d1 != $d3 && $d1 != $d4 && 
+            $d2 != $d3 && $d2 != $d4 && 
+            $d3 != $d4} {
+           #list possible_answers add $tmp;
+       };
+   };
+}
+
+#function compare_numbers {
+   #local guess %1;
+   #local answer %2;
+   
+   #if {$debug_mode} {
+       #echo {<debug> 比较单个答案 - 猜测=$guess 当前测试=$answer};
+   };
+   
+   #local g1 #local g2 #local g3 #local g4;
+   #local a1 #local a2 #local a3 #local a4;
+   #local exact_count 0;
+   #local shelf_count 0;
+   
+   #math g1 {$guess / 1000};
+   #math g2 {($guess / 100) % 10};
+   #math g3 {($guess / 10) % 10};
+   #math g4 {$guess % 10};
+   
+   #math a1 {$answer / 1000};
+   #math a2 {($answer / 100) % 10};
+   #math a3 {($answer / 10) % 10};
+   #math a4 {$answer % 10};
+   
+   #if {$g1 == $a1} {#math exact_count {$exact_count + 1}};
+   #if {$g2 == $a2} {#math exact_count {$exact_count + 1}};
+   #if {$g3 == $a3} {#math exact_count {$exact_count + 1}};
+   #if {$g4 == $a4} {#math exact_count {$exact_count + 1}};
+   
+   #if {$g1 != $a1} {
+       #if {$g1 == $a2 || $g1 == $a3 || $g1 == $a4} {#math shelf_count {$shelf_count + 1}};
+   };
+   #if {$g2 != $a2} {
+       #if {$g2 == $a1 || $g2 == $a3 || $g2 == $a4} {#math shelf_count {$shelf_count + 1}};
+   };
+   #if {$g3 != $a3} {
+       #if {$g3 == $a1 || $g3 == $a2 || $g3 == $a4} {#math shelf_count {$shelf_count + 1}};
+   };
+   #if {$g4 != $a4} {
+       #if {$g4 == $a1 || $g4 == $a2 || $g4 == $a3} {#math shelf_count {$shelf_count + 1}};
+   };
+   
+   #if {$debug_mode} {
+       #echo {<debug> 比较结果: 全对=$exact_count 架对=$shelf_count};
+   };
+   
+   #return $exact_count|$shelf_count;
+}
+
+#function make_next_guess {
+   #if {$debug_mode} {
+       #echo {<debug> 开始计算下一次猜测};
+       #echo {<debug> 当前 exact=$exact, shelf=$shelf};
+   };
+   
+   #list new_list create;
+   #local found_count 0;
+   
+   #foreach {$possible_answers[]} {possible} {
+       #if {$debug_mode} {
+           #echo {<debug> 测试答案: $possible};
+       };
+       
+       #local result {@compare_numbers{$current_guess;$possible}};
+       #local e {};
+       #local s {};
+       #regexp {$result} {%d|%d} {#var e &1;#var s &2};
+       
+       #if {$e == $exact && $s == $shelf} {
+           #list new_list add $possible;
+           #math found_count {$found_count + 1};
+       };
+   };
+   
+   #if {$debug_mode} {
+       #echo {<debug> 找到 $found_count 个可能答案};
+   };
+   
+   #if {$found_count > 0} {
+       #var possible_answers $new_list;
+       #var current_guess $possible_answers[1];
+       
+       #if {$debug_mode} {
+           #echo {<debug> 下一次猜测: $current_guess};
+       };
+       
+       #delay 1 {guess 答案 $current_guess};
+   } {
+       #echo {错误：没有找到符合条件的答案！};
+   };
+}
+
+#action {^刘好弈说道：现在可以猜了} {
+   #if {$debug_mode} {
+       #echo {<debug> 游戏开始触发};
+   };
+   #delay 1 {
+       @init_possible_answers{};
+       guess 答案 $current_guess
+   };
+}
+
+#action {^刘好弈说道：你猜的是 %d  全对的有%*个，只有书架对的有%*} {
+   #if {$debug_mode} {
+       #echo {<debug> 完整匹配到的文本：%0};
+       #echo {<debug> 猜测数字：%1};
+       
+       #local exact_text %2;
+       #local shelf_text %3;
+       
+       #switch {"$exact_text"} {
+           #case {"零"} {#var exact 0};
+           #case {"一"} {#var exact 1};
+           #case {"二"} {#var exact 2};
+           #case {"三"} {#var exact 3};
+           #case {"四"} {#var exact 4};
+       };
+       
+       #switch {"$shelf_text"} {
+           #case {"零"} {#var shelf 0};
+           #case {"一"} {#var shelf 1};
+           #case {"二"} {#var shelf 2};
+           #case {"三"} {#var shelf 3};
+           #case {"四"} {#var shelf 4};
+       };
+       
+       #echo {<debug> 转换后 exact=$exact, shelf=$shelf};
+   };
+   
+   #delay 1 {
+       @make_next_guess{};
+   };
+}
+
+#action {^刘好弈笑道：阁下真是聪明，只用了%*次就猜出来了。} {
+   #echo {成功完成！用了%1次就猜出来了};
+}
+
+#action {^你还有%*次机会。} {
+   #echo {还剩%1次机会};
+}
+
+#action {^什么？$} {
+   #NOP;
+}
+
+#alias {guess_debug} {
+   #if {"%1" == "on"} {
+       #var debug_mode 1;
+       #echo {调试模式已开启};
+   } {
+       #var debug_mode 0;
+       #echo {调试模式已关闭};
+   };
+}
+
+#echo {猜数字脚本已加载，输入 start 开始游戏}
+
+#class {guess} close

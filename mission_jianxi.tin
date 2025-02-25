@@ -1,0 +1,142 @@
+#class {mission_jianxi} open
+
+
+#nop ==========================Variable==========================
+#variable {mission_jianxiClass} {1};
+#var get_job 0;
+#var jx_done 0;
+
+#nop ===========================Alias============================
+#alias {mission_jianxi.start} {
+	#if {!$robot || ($robot && "$dolist[-1]" != "mission_jianxi")} {
+		#if {0 != &{noforce}} {
+			#variable {bad_status} {1};
+			#echo {Bad status: dangerous in noforce mode!!!};
+		};
+		#variable mission_complete 0;
+		updatedolist mission_jianxi;
+		fly xi;w;#3 n;ask_job;
+	};
+}
+
+#alias {ask_job} {
+	#var get_job 1;
+	#var jx_done 0;
+	ask guo about 奸细;
+}
+
+#alias {mission_jianxi.kill} {
+	#unticker walk;
+	#if {$fightClass == 1} {fight.kill};
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_jianxi} kill;
+	#echo {%c#class mission_jianxi killed!} {cyan};
+}
+
+#alias {mission_jianxi.end} {
+	mission_jianxi.kill;
+	halt;fly wm;w;
+}
+
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "蒙%*"} {
+		alert;		
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	}
+}
+
+#nop ===========================Action===========================
+#action {你们赶快去%*设防阻截} {
+	#undelay jx_again;
+	#echo getjob~$get_job %1;
+	#if {"$me[ename]" == "$lead_en" && $get_job==1} {tt goto_%1};
+	#var get_job 0;
+}
+
+#action {^%?%?【队伍】%*：goto_%*} {
+	#switch {"%4"} {
+		#case {"玄武外门"} {fly xi;#2 w;#3 n;#2 e;#3 n};
+		#case {"朱雀外门"} {fly xi;#5 s};
+		#case {"白虎外门"} {fly xi;#5 w};
+		#case {"青龙外门"} {fly xi;#5 e};
+	};
+	weara;wi;fight_ready;
+	say 我来了;
+	#undelay jx_again;
+	#class fight read $MOD/fight.tin;
+}
+
+#action {打完了} {
+	yun heal;
+}
+
+#action {你运功完毕，站起身来，看上去气色饱满，精神抖擞。} {
+	#if {$jx_done == 1} {#delay {1} {er;dazuo max}} {er}
+}
+
+#action {^%?%?蒙面人扑在地上挣扎了几下，口中喷出几口鲜血，死了！} {
+	#echo 奸细死了！！！;
+	#unticker busy_test;
+	#ticker {get_mijian} {get_mijian} {2};
+} {4}
+
+#alias {get_mijian} {
+	#if {"$me[ename]" == "$lead_en"} {halt;get mi jian from corpse;get mi jian from corpse 2;get mi jian from corpse 3;get mi jian from corpse 4}
+}
+
+#action {你从蒙面人的尸体身上搜出一封军机密件。} {
+	#unticker get_mijian;
+	xiaohui mi jian;
+}
+
+#unaction {这里没有 %*'s task。}
+
+#action {^%?%?你获得奖励：} {
+	#var jx_done 1;
+	#var get_job 0;
+	yun heal;
+}
+
+#action {你并没有受伤！} {
+	#if {$jx_done == 1} {
+		#delay {1} {er;dazuo max};
+	}
+}
+
+#action {$dazuo_end} {
+	#delay {dz} {er;dazuo max} {1};
+}
+
+#action {你的内力修为似乎已经达到了瓶颈，无法再靠打坐来提升了。} {
+	#undelay dz;
+	#delay {1} {er;fly xi;w;#3 n;ask_job};
+}
+
+#action {奸细偷偷溜出了城，你任务失败！} {
+	#var get_job 0;
+	#delay {3} {fly wm};
+	#delay {jx_again} {fly xi;w;#3 n;ask_job} {30};
+}
+
+#action {只听「轰」的一声，密件在火中慢慢化为灰烬 。} {
+	#var get_job 0;
+	#delay {3} {fly wm};
+	#delay {jx_again} {fly xi;w;#3 n;ask_job} {30};
+}
+
+#action {郭靖说道：现在我可没有给你们的任务，等会再来吧} {
+	#var get_job 0;
+	#undelay jx_again;
+	fly wm;#delay {jx_again} {fly xi;w;#3 n;ask_job} {30};
+}
+
+#nop ===========================Ticker===========================
+#ticker {mission_jianxi_end} {mission_jianxi.end1} {180};
+
+#class {mission_jianxi} close

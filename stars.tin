@@ -1,0 +1,46 @@
+#class {stars} open
+#nop ==========================Variable==========================
+#variable {starsClass} {1};
+
+
+#nop ===========================Alias============================
+#alias {stars.start} {
+    #showme check 7stars status;
+}
+#alias {stars.reset} {
+    #variable stars[mission_task] {0};
+    #variable stars[mission_ttask] {0};
+    #variable stars[mission_biao] {0};
+    #variable stars[mission_guanfu] {0};
+    #variable stars[mission_songxin] {0};
+    #variable stars[mission_item] {0};
+    #variable stars[mission_guojob] {0};
+    #variable stars[mission_npc] {0};
+    #variable stars[mission_xiaojob] {1};
+}
+
+#nop ===========================stars info==========================
+#action {check 7stars status} {
+    stars.reset;
+    hp;
+}
+/*
+stars.reset;
+#config {convert meta} on;
+hp;
+#delay {0.1} {#config {convert meta} off};
+*/
+
+#action {~\e[1;36m≡\e[1;33m%*\e[1;36m≡} {
+    #regex {%1} {%*\e[1;31m★%*} {#variable stars[mission_task] {1}} {};
+    #regex {%1} {%*\e[1;31m★%*} {#variable stars[mission_ttask] {1}} {};
+    #regex {%1} {%*\e[1;32m★%*} {#variable stars[mission_biao] {1}} {};
+    #regex {%1} {%*\e[1;33m★%*} {#variable stars[mission_guanfu] {1}} {};
+    #regex {%1} {%*\e[1;34m★%*} {#variable stars[mission_songxin] {1}} {};
+    #regex {%1} {%*\e[1;35m★%*} {#variable stars[mission_item] {1}} {};
+    #regex {%1} {%*\e[1;36m★%*} {#variable stars[mission_guojob] {1}} {};
+    #regex {%1} {%*\e[1;37m★%*} {#variable stars[mission_npc] {1}} {};
+
+}
+
+#class {stars} close 

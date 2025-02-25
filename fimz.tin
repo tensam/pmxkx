@@ -1,0 +1,129 @@
+#class fimz open
+#nop ==========================Variable==========================
+#variable {fimzClass} {1};
+#var b_ered 0;
+#var bincombat 0;
+#alias kboss {kill she;kill emperor;kill fish;kill wang;kill elf;prefight};
+
+#alias {fimz.go} {
+    updatedolist fimz;
+    te fight;
+    #var kill_id {};
+    #if {0 == $long_pfm} {
+        prefight;
+        #if {"$me[family]" != "少林派"} {busy_pfm};
+        #ticker {busy_test} {$status_test} {1};
+        #variable {cmd} {busy_pfm};
+    };	
+}
+
+#alias {fimz.kill} {
+    #unticker busy_test;
+    ts fight;
+}
+
+#alias {itiaozhan} {
+	iskills;
+	fight_ready;
+	fimz.go;
+	tiaozhan;
+	#delay {kboss} {kboss} {3};
+}
+
+#action {看起来{九头蛇|秦始皇|%*王}想杀死你！} {
+	#var bincombat 1;
+	#undelay {kboss};
+}
+
+#action {你获得奖励} {
+	#echo 死了;
+	#var bincombat 0;
+	#var b_ered 0;
+	fight.end;
+	#delay {5} {get all from corpse;yun cure}
+}
+
+
+#action {你并未中毒。} {
+	yun heal;
+}
+
+
+#action {你身上的%*毒性消褪了！} {
+	#undelay {heal};
+	#delay {heal} {halt;yun heal} {4};
+}
+
+#action {( 你气息不匀，暂时不能施用内功。)} {
+	#undelay {heal};
+	#delay {heal} {halt;yun heal} {4};
+}
+
+#action {你并没有受伤！} {
+	#delay {1} {er;dazuo max}
+}
+
+#action {你运功完毕，站起身来，看上去气色饱满，精神抖擞。} {
+	#delay {1} {er;dazuo max}
+}
+
+#action {$dazuo_end} {
+	#delay {dz} {er;dazuo max} {1};
+}
+
+#action {你的内力修为似乎已经达到了瓶颈，无法再靠打坐来提升了。} {
+	#undelay dz;
+	#if {$bincombat == 1} {er;#delay {kboss} {kboss} {1}};
+	#else {#delay {1} {er;out;itiaozhan}};
+}
+
+#action {你本周当前迷宫Boss挑战次数已满，无法继续挑战。} {
+	fimz.kill;fly wm;ts fimz;
+}
+
+#action {侍卫们在周围布好阵势，将你团团保护住!} {
+	#var bincombat 0;
+	er;yun heal;
+}
+
+#action {^%?%?(%s你{已经一副头重脚轻的模样，正在勉力支撑著不倒下去|看起来已经力不从心了|摇头晃脑、歪歪斜斜地站都站不稳，眼看就要倒在地上|已经陷入半昏迷状态，随时都可能摔倒晕去}。%s)} {
+	#if {"$dolist[-1]" == "jingzuo"} {wakeup};
+	#elseif {"$dolist[-1]" == "tiaozhan"} {sigh};
+	#elseif {"$dolist[-1]" == "fimz"} {
+		#if {$skill_list[用人之技][level] > 300 && $skill_list[兵法][level] > 300} {halt;alert;kboss};
+		#else {#showme 该吃药了};
+	};
+	#else {
+		#variable {flee_status} {1};
+		#2 halt;fly thd;
+		#variable {cmd} {halt;fly thd;#unticker busy_test};
+	}
+} {1}
+
+#action {该吃药了} {
+	#undelay dan;
+	#delay {dan} {halt;eat dan;er;kboss} {1};
+}
+
+#action {你正忙着，没空吃药。} {
+	#var b_ered 0;
+	#delay {2} {eat dan};
+}
+
+#action {1你吃下一颗九转银丹，只觉得体内真力源源滋生，好像变了一个人似的!} {
+	#var b_ered 0;
+}
+
+#action {111^%?%?(%s你{气喘嘘嘘，看起来状况并不太好|似乎十分疲惫，看来需要好好休息了}。%s)} {
+	#if {"$dolist[-1]" == "jingzuo"} {exert recover;erg;erf};
+	#elseif {"$dolist[-1]" == "fimz" && $b_ered == 0} {#var b_ered 1;halt;exert recover;erg;erf;kboss;#delay {1} {#var b_ered 0}};
+	#elseif {$hardMode} {
+		#variable {bhurt} {1};
+		#variable {cmd} {busy_pfm};
+	};
+	#else {#variable {cmd} {exert recover;erg;erf}};
+} {1}
+
+#class fimz close
+
+

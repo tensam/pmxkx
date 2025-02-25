@@ -1,0 +1,792 @@
+#class {dummy} open
+#nop ==========================Variable==========================
+#variable {dummy} {1};
+#variable {heal_asker} {};
+#variable {xunzhang_asker} {};
+#variable {break_asker} {};
+#variable {carry_asker} {};
+#variable {dazuoing} {0};
+#variable {carry} {
+	{xy}{fly xyl;ask su xinghe about 秘密地道}
+	{kl}{fly kl;s;#3 sd;wd;sd;e;se;e;nw;wu;wu;wd;wu;nu;wu;jump down;#2 pa east;e;enter dong}
+};
+
+#nop shenshu return flag
+#variable {bReturnShenshu} {0}
+#nop combined shenshu
+#variable {s_list} {};
+#nop single shenshu
+#variable {ss_list} {};
+#nop shenshu giver
+#variable {ss_giver} {};
+#nop shenshu stamp
+#variable {ss_stamp} {};
+#nop shenshu xiuwei statistics
+#variable {ss_xw} {};
+
+#var bAskBag 0
+#variable {yao} {yao};
+#variable {job_status} {free};
+
+#var inprocess 0;
+
+#variable {drug_list} {
+	{1}{heshouwu}
+	{2}{renshen}
+};
+#variable {drug_idx} {1};
+
+#variable {ss_map} {
+	{飞狐外传 上册}{fhwz1} 
+	{飞狐外传 中册}{fhwz2}
+	{飞狐外传 下册}{fhwz3}
+	{雪山飞狐 上册}{xsfh1}
+	{雪山飞狐 下册}{xsfh2}
+	{连城诀 上册}{lcjue1} 
+	{连城诀 下册}{lcjue2} 
+	{天龙八部 第一册}{tlbb1}
+	{天龙八部 第二册}{tlbb2}
+	{天龙八部 第三册}{tlbb3}
+	{天龙八部 第四册}{tlbb4}
+	{天龙八部 第五册}{tlbb5}
+	{射雕英雄传 第一册}{sdyxz1}
+	{射雕英雄传 第二册}{sdyxz2}
+	{射雕英雄传 第三册}{sdyxz3}
+	{射雕英雄传 第四册}{sdyxz4}	
+	{鹿鼎记 第一册}{ldji1}
+	{鹿鼎记 第二册}{ldji2}
+	{鹿鼎记 第三册}{ldji3}
+	{鹿鼎记 第四册}{ldji4}
+	{鹿鼎记 第五册}{ldji5}
+	{笑傲江湖 第一册}{xajh1}
+	{笑傲江湖 第二册}{xajh2}
+	{笑傲江湖 第三册}{xajh3}
+	{笑傲江湖 第四册}{xajh4}
+	{书剑恩仇录 上册}{sjec1}
+	{书剑恩仇录 中册}{sjec2}
+	{书剑恩仇录 下册}{sjec3}
+	{神雕侠侣 第一册}{sdxl1}
+	{神雕侠侣 第二册}{sdxl2}
+	{神雕侠侣 第三册}{sdxl3}
+	{神雕侠侣 第四册}{sdxl4}
+	{侠客行 上册}{xkx1}
+	{侠客行 中册}{xkx2}
+	{侠客行 下册}{xkx3}
+	{倚天屠龙记 第一册}{yttlj1}
+	{倚天屠龙记 第二册}{yttlj2}
+	{倚天屠龙记 第三册}{yttlj3}
+	{倚天屠龙记 第四册}{yttlj4}
+	{碧血剑 上册}{bxsword1}
+	{碧血剑 中册}{bxsword2}
+	{碧血剑 下册}{bxsword3}	
+	{飞狐外传}{fhwz} 
+	{雪山飞狐}{xsfh}	
+	{连城诀}{lcjue} 	
+	{天龙八部}{tlbb}
+	{射雕英雄传}{sdyxz}
+	{白马啸西风}{bmxxfeng}
+	{鹿鼎记}{ldji}
+	{笑傲江湖}{xajh}
+	{书剑恩仇录}{sjec}
+	{神雕侠侣}{sdxl}
+	{侠客行}{xkx}
+	{倚天屠龙记}{yttlj}
+	{碧血剑}{bxsword}
+	{鸳鸯刀}{yyblade}	
+};
+
+#variable {ss_points} {
+	{fhwz}{3} 	
+	{xsfh}{2}	
+	{lcjue}{2} 	
+	{tlbb}{5}
+	{sdyxz}{4}
+	{ldji}{5}
+	{xajh}{4}
+	{sjec}{3}
+	{sdxl}{4}
+	{xkx}{3}
+	{yttlj}{4}
+	{bxsword}{3}
+};
+
+#nop ===========================Alias============================
+#alias {init} {
+	#class {init} read $MOD/init.tin;
+	#class superint read $MOD/superint.tin;
+	#class worldzb read $MOD/worldzb.tin;
+	#class equip read $MOD/equip.tin;
+	init.do;
+}
+
+#alias {ihp} {
+	#class {status} read $MOD/status.tin;
+	hp;
+	#delay {status_kill} {#class {status} kill} {0.5};
+}				
+
+#alias {scmd} {
+	#class {scmd} read $MOD/scmd.tin;
+	#variable cmd %0;suicide;
+}
+
+
+#nop --------------------------take over-------------------------
+#alias {takeover} {
+	#unevent {SESSION DISCONNECTED};
+}
+
+#alias {g} {fly %0};
+#alias {er} {exert recover};
+#alias {eh} {exert heal};
+#alias {erg} {exert regenerate};
+#alias {sb} {set brief 1};
+#alias {ub} {set brief 0};
+#alias {uw} {unwield all};
+
+#alias {gz} {#3 give zi jewel;#3 give zi agate;#3 give zi jade;#3 give zi amber;#3 give zi crystal;#3 give zi grayjade};
+
+
+#nop ------------------------check traps ------------------------
+#alias {ii} {
+	#foreach {*traps[%*]} {l_item} {#variable {traps[$l_item]} {0}};
+	#unvariable {l_item};
+	#list {trapslist} clr;
+	#list {broken_equips} {clr};	
+	#variable {l_traps_silver} {};
+	#variable {l_traps_gold} {};
+	#variable {l_traps_bilin} {};
+	#action {^%?%?你身上带着下列这些东西} {
+		#action {^%%%0}	{
+			#regex {%%%0} {^{.*}{∶|→}{.*}(%*)} {
+				#format {l_traps_item} {%l} {&4};
+				#list trapslist add $l_traps_item;
+				#regex {&3} {%*{削断的|震碎的|断掉的|碎片}%*} {#list broken_equips add $l_traps_item};		
+			} {
+				#regex {%%%0} {^　　　%*(%*)} {
+					#if {"&2" == "Gold"} {#variable l_traps_gold &1};
+					#if {"&2" == "Silver"} {#variable l_traps_silver &1};
+					#if {"&2" == "Coin"} {#variable l_traps_coin &1};
+					#if {"&2" == "Bilin zhen"} {#variable l_traps_bilin &1};
+					#format {l_traps_item} {%l} {&2};
+					#if {"$l_traps_item" == "{renshen|heshouwu|qubing dan|lingxin dan|jieqi wan|she dan|shedan gan}"} { 
+						#if {$me[comb_exp] > 1000000} {eat $l_traps_item} {give $bag_id $l_traps_item};
+					};
+					#elseif {"$l_traps_item" == "tianxian yulu"} {
+						give $yulu_id $l_traps_item
+					};
+					#elseif {"$l_traps_item" == "{jade|amber|agate|jewel|grayjade|crystal}"} {
+						give $equip_id $l_traps_item
+					};
+					#elseif {"$l_traps_item" == "{fu wan|meili wan|shenli wan|ling zhi|xu lian|dan|thousand-cash}"} {
+						give $bag_id $l_traps_item
+					};
+					#elseif {"$l_traps_item" == "{xiuhua zhen|yayi fu|jun fu|shawei bang|zijin chui|pixie_sword_book|dujiao tongren|tie jiang|shutong gun|tie pipa|yin jian|chang jian|chang qiang|sangmen fu|qingfeng jian|duan jian|gang jian|tie lianzi|sangu cha|gang dao|guitou dao|jie dao|chang bian|gang zhang|da dao|tie jia|mu chai|yexing yi|shashou fu|taohua gao|zuixian cha|wo dao|chai dao|hongyu yaoshi|sheng yi|bu xie|ma gua|model|shoes|jia sha|xuelian|shui wan|ji tui|mu jian|chang pao|jiaohua ji|heiqi zi|baiqi zi|yancao|yao fen|qing yi|panguan bi|zhe shan|fa lun|card1|card3|cuifulaofang yaoshi|dao pao|cao mei|seng mao}"} {
+						drop $l_traps_item
+					};
+					#elseif {"$l_traps_item" == "jiu dai" && 0 == &{bUseJiudai}} {drop $l_traps_item};
+					#else {
+						#list trapslist add $l_traps_item;
+						#regex {&1} {{.*}{削断的|震碎的|断掉的|碎片}{.*}} {#list broken_equips add $l_traps_item};		
+					};
+				} {
+					#unaction {^%?%?你身上带着下列这些东西};
+					#unaction {^%%%%0};	
+					#foreach {$trapslist[%*]} {l_traps_item} {
+						#if {"$l_traps_item" == "huo zhe"} {#math traps[nFire] {$traps[nFire]+1}};
+						#if {"$l_traps_item" == "xionghuang"} {#math traps[nXionghuang] {$traps[nXionghuang]+1}};
+						#if {"$l_traps_item" == "yingxiong ling"} {#math traps[slling] {$traps[slling]+1}};
+						#if {"$l_traps_item" == "chongyang ling"} {#math traps[qzling] {$traps[qzling]+1}};
+						#if {"$l_traps_item" == "heimu ling"} {#math traps[hmling] {$traps[hmling]+1}};
+						#if {"$l_traps_item" == "hezui chu"} {#math traps[hzchu] {$traps[hzchu]+1}};
+						#if {"$l_traps_item" == "gaochang ditu"} {#math traps[gcmap] {$traps[gcmap]+1}};
+						#if {"$l_traps_item" == "shan pai"} {#math traps[shanpai] {$traps[shanpai]+1}};
+						#if {"$l_traps_item" == "yangjing dan"} {#math traps[nDan] {$traps[nDan]+1}};
+						#if {"$l_traps_item" == "bi shou"} {#math traps[nDagger] {$traps[nDagger]+1}};
+						#if {"$l_traps_item" == "jiu dai"} {#math traps[nJiudai] {$traps[nJiudai]+1}};
+						#if {"$l_traps_item" == "mu dao"} {#math traps[mudao] {$traps[mudao]+1}};
+						#if {"$l_traps_item" == "mu tou"} {#math traps[mutou] {$traps[mutou]+1}};
+						#if {"$l_traps_item" == "ma budai"} {#math traps[nBudai] {$traps[nBudai]+1}};
+					};
+					#if {"$l_traps_gold" != ""} {
+						#regex {$l_traps_gold} {%*两黄金} {#variable {traps[nGold]} {@ctoi{&1}}};
+					};	
+					#if {"$l_traps_silver" != ""} {
+						#regex {$l_traps_silver} {%*两白银} {#variable {traps[nSilver]} {@ctoi{&1}}};
+					};
+					#if {"$l_traps_coin" != ""} {
+						#regex {$l_traps_coin} {%*枚铜钱} {#variable {traps[nCoin]} {@ctoi{&1}}};
+					};
+					#if {"$l_traps_bilin" != ""} {
+						#regex {$l_traps_bilin} {%*枚碧磷针} {#variable {traps[nBilin]} {@ctoi{&1}}};
+					};	
+					#delay {0.3} {						
+						#unvariable l_traps_%*;						
+					}
+				}
+			}
+		};
+	};
+	i;
+}
+
+
+
+#nop ===========================Action===========================
+#action {^%?%?你上次光临飘渺侠客行是} {
+	drop cloth;
+	drop shoes;
+	drop yangpi xue;
+	#delay {1} {
+		remove xunzhang;
+		init;
+	};
+	#unaction {^%?%?你上次光临飘渺侠客行是};
+	#unaction {重新连线完毕。};
+}
+
+#action {重新连线完毕。} {
+	#delay {1} {
+		remove xunzhang;
+		init;
+	};
+	#unaction {^%?%?你上次光临飘渺侠客行是};
+	#unaction {重新连线完毕。};
+}
+
+#action {^%?%?★ %1(%2)告诉你：%3} {
+	#format {l_ename} {%l} {%2};
+	#if {"%3" == "shenshu"} {
+		#if {0 == $bReturnShenshu} {
+			#if {(&s_list[]>0) && ($ss_giver[%1]>0) && ((0 == &ss_xw[%1]) || ($ss_xw[%1]<20))} {
+				give $s_list[1] to $l_ename;
+				#math {ss_giver[%1]} {$ss_giver[%1]-1};
+				#if {0 == &ss_xw[%1]} {#variable {ss_xw[%1]} {$ss_points[$s_list[1]]}};
+				#else {#math {ss_xw[%1]} {$ss_xw[%1]+$ss_points[$s_list[1]]}};	
+				#list {s_list} {delete} {1};				
+			}		
+		};
+		#else {
+			#if {(&s_list[]>0) && (0 != &ss_giver[%1])} {
+				give $s_list[1] to $l_ename;
+				#if {0 == &ss_xw[%1]} {#variable {ss_xw[%1]} {$ss_points[$s_list[1]]}};
+				#else {#math {ss_xw[%1]} {$ss_xw[%1]+$ss_points[$s_list[1]]}};	
+				#list {s_list} {delete} {1};
+			};
+			#elseif {(&ss_list[]>0) && (0 != &ss_giver[%1])} {
+				give $ss_list[1] to $l_ename;
+				#list {ss_list} {delete} {1};
+			}	
+		}
+	};
+	#elseif {&worldlist[$l_ename] != 0} {
+		#if {"%3" == "heal"} {
+			#if {$dazuoing == 0} {
+				#regex {$heal_asker} {^$} {
+					#list {heal_asker} {add} {$l_ename};
+					fly wm;w;exert lifeheal $l_ename;
+				} {
+					#list {heal_asker} {find} {$l_ename} {l_find};
+					#if {$l_find == 0} {#list {heal_asker} {add} {$l_ename}};
+					exert lifeheal $heal_asker[1];
+				}
+			};
+			#else {
+				#list {heal_asker} {find} {$l_ename} {l_find};
+				#if {$l_find == 0} {#list {heal_asker} {add} {$l_ename}};
+			};
+		};
+		#elseif {"%3" == "xunzhang"} {
+			#regex {$xunzhang_asker} {^$} {
+				#list {xunzhang_asker} {add} {$l_ename};
+				fly wm;give $l_ename xunzhang;w;
+				#variable xunzhang_epoch @get_epoch_time{};
+			} {
+				#list {xunzhang_asker} {find} {$l_ename} {l_find};
+				#if {$l_find == 0} {#list {xunzhang_asker} {add} {$l_ename}};
+			};
+			#delay {xunzhang_asker_clear} {#list {xunzhang_asker} {clr}} {300};
+		};
+		#elseif {"%3" == "drug"} {
+			#format l_hour {%t} {%H};
+			give $l_ename gold;
+			#action {^%?%?你附近没有这样东西1。} {
+				#math {drug_idx} {$drug_idx+1};
+				#if {$drug_idx > &drug_list[]} {
+					get all from bag;give xyldm bag;#var drug_idx 1;
+				};
+			};
+			1get $drug_list[$drug_idx] from bag;give $l_ename $drug_list[$drug_idx]
+		};
+		#elseif {"%3" == "yulu" && &worldlist[$l_ename] != 0} {
+			#action {^%?%?你附近没有这样东西。} {
+				get all from bag;give xyldm bag;
+			};
+			get yulu from bag;#2 give $l_ename yulu;
+		};
+		#elseif {"%3" == "bag"} {
+			ii;
+			#var bag_asker $l_ename;
+			#delay {0.1} {#var traps[nBudai]};
+			#delay {0.2} {
+				#if {$traps[nBudai] > 0} {give $bag_asker bag};
+				#else {
+					fly wm;e;#2 s;e;s;buy bag;
+					#delay {2} {fly wm;w;give $bag_asker budai}
+				};
+			};
+		};
+		#elseif {"%3" == "yao"} {
+			#if {"$job_status" == "free"} {
+				#var {job_status} {busy};
+				#variable {farmer} {$l_ename};
+				fly wm;
+				tell $farmer free;
+			};
+			#else {tell $l_ename busy;}
+		};
+		#elseif {"%3" == "yao_ok"} {
+			#if {"$job_status" == "busy"} {
+				#variable {farmer} {$l_ename};
+				#echo $farmer;
+				fly wm;e;#2 s;#2 e;#2 n;
+				sell $yao;
+				#delay {2} {
+					#echo $farmer;
+					fly wm;
+					give $farmer silver;
+					give $farmer gold;
+					give $farmer coin;
+					tell $farmer sell_ok;
+					fly xi;#2 w;#4 s;serve;eat rice;#5 drink tangwan;drop rice;drop tangwan;
+					halt;fly wm;w;
+					#variable {job_status} {free};
+				};
+			}
+		};
+		#elseif {"%3" == "superint"} {
+			#if {0 != &{superint_weapon}} {give $superint_weapon to $l_ename};
+			#if {0 != &{superint_equips}} {
+			#foreach {$superint_equips[%*]} {l_item} {give $l_item to $l_ename};
+			};
+		};
+		#elseif {"%3" == "carry xy" && "$me[cmaster]" == "逍遥子"} {
+			#undelay {carry_return};
+			#regex {$carry_asker} {^$} {
+				#list {carry_asker} {add} {$l_ename};
+				fly xyl;e;
+				#delay {carry_fail} {
+					#list carry_asker delete 1;
+					halt;fly wm;w
+				} {2};
+				whisper $carry_asker[1] action~; 
+			} {
+				#list {carry_asker} {find} {$l_ename} {l_find};
+				#if {$l_find == 0} {#list {carry_asker} {add} {$l_ename}};
+			};
+			#delay {asker_clear_delay} {#list carry_asker clr} {90};
+		};
+		#elseif {"%3" == "carry mj" && "$me[family]" == "明教"} {
+			#undelay {carry_return};
+			#regex {$carry_asker} {^$} {
+				#list {carry_asker} {add} {$l_ename};
+				fly xyl;e;
+				#delay {carry_fail} {
+					#list carry_asker delete 1;
+					halt;fly wm;w
+				} {2};
+				whisper $carry_asker[1] action~; 
+			} {
+				#list {carry_asker} {find} {$l_ename} {l_find};
+				#if {$l_find == 0} {#list {carry_asker} {add} {$l_ename}};
+			};
+		};
+		#elseif {"%3" == "break" && "$me[family]" == "华山派"} {
+			#list {break_asker} {add} {$l_ename};
+			#if {$dazuoing == 0} {
+				fly ws;sd;su;su;enter;
+				unwield all;wield sword;break wall;
+				#list break_asker clr;
+				#delay {0.5} {fly wm;u;#variable dazuoing 1;dazuo 200};
+			}
+		};
+		#else {%3};
+		#unvariable l_find;
+	};
+	#unvariable l_ename;
+}
+
+
+#action {^%?%?武庙内殿 -} {
+	#variable epochStamp @get_epoch_time{};
+	#variable dazuoing 0;
+}
+
+#action {^%?%?(%s你{已经一副头重脚轻的模样，正在勉力支撑著不倒下去|看起来已经力不从心了|摇头晃脑、歪歪斜斜地站都站不稳，眼看就要倒在地上|已经陷入半昏迷状态，随时都可能摔倒晕去}。%s)} {
+	#2 halt;fly wm;
+	#variable {cmd} {halt;fly wm;#unticker busy_test};
+}
+{1}
+
+#action {^%?%?过了不久，你额头上冒出豆大的汗珠，%*吐出一口瘀血，脸色看起来红润多了。} {
+	#delay {1} {yun lifeheal $heal_asker[1]};
+}
+
+#action {^%?%?( 你上一个动作还没有完成，不能施用内功。)} {
+	#delay {lifeheal_delay} {yun lifeheal $heal_asker[1]} {1};
+}
+
+#action {^%?%?你的真气不够。} {
+	#regex {$dazuo_end} {^$} {init};
+	#variable dazuoing 1;
+	e;u;dazuo max;
+}
+
+#action {^%?%?%*已经受伤过重，经受不起你的真气震荡} {
+	#list heal_asker delete 1;
+	#if {&heal_asker[] != 0} {exert lifeheal $heal_asker[1]};
+}
+
+#action {^%?%?%*没有受伤。} {
+	tell $heal_asker[1] healok;
+	#list heal_asker delete 1;
+	#if {&heal_asker[] != 0} {exert lifeheal $heal_asker[1]};
+	#else {
+		ihp;
+		#delay {0.5} {
+			#if {$me[eff_force] < 1500} {
+				#regex {$dazuo_end} {^$} {init};
+				#variable dazuoing 1;
+				e;u;dazuo max;
+			}
+		}
+	}
+}
+
+#action {^%?%?这里没有 %*。} {
+	#if {"$heal_asker[1]" == "%3"} {
+		#list heal_asker delete 1;
+		#if {&heal_asker[] != 0} {exert lifeheal $heal_asker[1]};
+	}
+}
+
+#action {^%?%?$dazuo_end} {
+	#if {"$dazuo_end" !=""} {
+		exert recover;
+		fly xi;#2 w;#4 s;serve;eat rice;#5 drink tangwan;drop rice;drop tangwan;
+		#delay {1} {
+			#if {&break_asker[] != 0} {
+				fly ws;sd;su;su;enter;
+				unwield all;wield sword;break wall;
+				#list break_asker clr;
+				#delay {0.5} {fly wm;u;dazuo 200};
+			};
+			#else {
+				halt;fly wm;w;	
+				#variable dazuoing 0;
+				#if {&heal_asker[] != 0} {exert lifeheal $heal_asker[1]};
+			}
+		}
+	}
+}
+
+
+#action {^%*给你一%.%.%.%1。} {
+	#echo 接到普通物品;
+	#switch {"%1"} {
+		#case {"蛇胆干"} {put gan in bag};
+		#case {"何首乌"} {#2 put wu in bag};
+		#case {"人参"} {#2 put shen in bag};
+		#case {"天仙玉露"} {put yulu in bag};
+		#case {"九转结气丸"} {put wan in bag};
+		#case {"灵心丹"} {put dan in bag};
+		#case {"祛病丹"} {put dan in bag};
+		#case {"豹胎"} {#variable {yao} {bao tai};put $yao in dai};
+		#case {"虎骨"} {#variable {yao} {hu gu};put $yao in dai};
+		#case {"穿山甲鳞片"} {#variable {yao} {lin pian};put $yao in dai};
+		#case {"牛黄"} {#variable {yao} {niu huang};put $yao in dai};
+		#case {"鲨胆"} {#variable {yao} {sha dan};;put $yao in dai};
+		#case {"犀角"} {#variable {yao} {xi jiao};put $yao in dai};
+		#case {"%*剑"} {#list {equip_process_list} {add} {jian}};
+		#case {"%*琴"} {#list {equip_process_list} {add} {qin}};
+		#case {"%*箫"} {#list {equip_process_list} {add} {xiao}};
+		#case {"%*笛"} {#list {equip_process_list} {add} {di}};
+		#case {"%*针"} {#list {equip_process_list} {add} {zhen}};
+		#case {"%*杖"} {#list {equip_process_list} {add} {zhang}};
+		#case {"%*刀"} {#list {equip_process_list} {add} {dao}};
+		#case {"%*锤"} {#list {equip_process_list} {add} {chui}};
+		#case {"%*轮"} {#list {equip_process_list} {add} {lun}};
+		#case {"%*斧"} {#list {equip_process_list} {add} {fu}};
+		#case {"%*棍"} {#list {equip_process_list} {add} {gun}};
+		#case {"%*棒"} {#list {equip_process_list} {add} {bang}};
+		#case {"%*枪"} {#list {equip_process_list} {add} {qiang}};
+		#case {"%*衣"} {#list {equip_process_list} {add} {yi}};
+		#case {"%*帽"} {#list {equip_process_list} {add} {mao}};
+		#case {"%*护手"} {#list {equip_process_list} {add} {hushou}};
+		#case {"%*靴"} {#list {equip_process_list} {add} {xue}};
+		#case {"白银"} {};
+		#case {"铜钱"} {};
+		#case {"麻布袋"} {kick};
+		#default {#variable {yao} {yao};put $yao in dai};
+	};
+	#if {$inprocess == 0 && &equip_process_list[] > 0} {
+		#var inprocess 1;
+		#showme 处理装备
+	};
+} 
+
+#action {^%*给你一%1%2。1} {
+	#if {"%1" == "本"} {
+		say haha
+	} {say hi}
+
+}
+
+#var equip_process_list {}
+
+#action {^%?%?处理装备} {
+	equip_process;
+};
+
+#alias {equip_process} {
+	#if {&equip_process_list[] > 0} {
+		#var zb_type $equip_process_list[1];
+		l $equip_process_list[1];
+		#delay {2} {#showme 检视装备};
+	};
+	#else {#var inprocess 0;#showme 装备列表处理完毕！}
+};
+
+
+#action {^%?%?检视装备} {
+	#if {"$zb_type" == "{jian|xiao|di|qin|zhen|dao|zhang|chui|lun|bang|gun|fu|qiang}"} {
+		#if {$equip_qx != 0 || $equip_gin != 0} {fly wm;u;n;fenjie $zb_type;fly wm;w;#var zb_type jg};
+	};
+	icon.equip $zb_type $equip_lvl;
+}
+
+#action {^%?%?%*在你的耳边悄声说道：a~%*~onposition~} {
+	give %4 $zb_type;
+	tell %4 takeover;
+	tell %4 #zap;
+}
+
+
+#action {^%?%?你给%*一%*{剑|箫|笛|琴|针|刀|锤|轮|杖|棍|棒|斧|枪|衣|帽|手|靴|百炼精钢}} {
+	#showme1 处理装备;
+}
+
+#action {~^%?%?\e[1;{35|32}m%*\e[0m(%*)。} {
+	#var zb_type rare;
+}
+
+/*
+#nop  yellow item   \e[1;33m%*\e[0m
+#nop  blue item     \e[1;34m%*\e[0m
+#nop  white item    \e[1;37m%*\e[0m
+#nop  red item      \e[1;31m%*\e[0m
+#nop  purple item   \e[1;35m%*\e[0m
+#nop  green item    \e[1;32m%*\e[0m
+*/
+
+#action {^%*对麻布袋而言太重了。} {
+	#if {"$me[ename]" == "{breakadm|mrs}" && $bAskBag == 0} {
+		#var bAskBag 1;
+		tell xyldm bag;
+		#delay {2} {put dan in bag;put wan in bag;put wu in bag;put shen in bag;put yulu in bag;#var bAskBag 0};
+	};
+	#elseif {"$me[ename]" == "yaoxm"} {
+		fly wm;e;#2 s;e;s;buy dai;
+		#delay {2} {scmd{fly wm;w;put $yao in dai}}
+	}
+}
+
+#action {^%*%*这里没有这样东西} {
+	#if {"$me[ename]" == "{breakadm|mrs}" && $bAskBag == 0} {
+		#var bAskBag 1;
+		tell xyldm bag;
+		#delay {1} {put dan in bag;put wan in bag;put wu in bag;put shen in bag;put yulu in bag;#var bAskBag 0};
+	};
+	#elseif {"$me[ename]" == "yaoxm"} {
+		fly wm;e;#2 s;e;s;buy dai;
+		#delay {2} {scmd{fly wm;w;put $yao in budai}}
+	};
+}
+
+#action {^%*给你一枚荣誉勋章。} {
+	#list xunzhang_asker delete 1;
+	#unvariable {xunzhang_epoch};
+	#regex {$xunzhang_asker} {^$} {jump} {
+		e;give $xunzhang_asker[1] xunzhang;w;
+		#variable xunzhang_epoch @get_epoch_time{};
+	};
+}
+
+#action {^%?%?%?%?啪%*的一声%*掉到你面前} {
+	get thousand-cash;get gold;get wan;get xu lian;get ling zhi;get dan;
+}
+
+#action {^%?%?你在%*的耳边悄声说道：action~} {
+	#undelay {carry_fail};
+	#variable {carry_name} {%3};
+	#variable epochStamp @get_epoch_time{};
+}
+
+#action {^%?%?$carry_name死了。} {
+	get $carry_asker[1];
+	#if {"$me[cmaster]" == "逍遥子"} {$carry[xy]};
+}
+
+#action {^%?%?$carry_name在地上悄悄地翻了个身，小心翼翼地睁开了眼。} {
+	#list carry_asker delete 1;
+	#if {&carry_asker[] != 0} {fly xyl;e;whisper $carry_asker[1] action~};
+	#else {
+		fly xi;#2 w;#4 s;serve;eat rice;#5 drink tangwan;drop rice;drop tangwan;
+		#delay {carry_return} {halt;fly wm;w} {1};
+	};
+}
+
+#action {{一团烟雾之中|扬州炒饭|皮水囊|嘉兴粽子|牛皮酒袋|离开|过来|穿上|戴上|脱了下来|摘了下来}} {
+	#line gag
+}
+
+#action {^%*给你一本%*。} {
+	#echo  接到一本;
+	#regex {%1} {%*：%*} {say hahaha} {
+		#if {0 != &ss_map[%2]} {
+			#variable {l_id} {$ss_map[%2]};
+			#regex {$l_id} {%w{[1-5]}} {
+				#list {ss_list} {add} {$l_id};
+				#echo &1;
+				combine &1;
+			} {
+				#if {"$l_id" == "{bmxxfeng|yyblade}"} {#list {ss_list} {add} {$l_id}};
+				#else {#list {s_list} {add} {$l_id}};
+			};
+			#unvariable {l_id};
+			#if {0 == &ss_giver[%1]} {#variable {ss_giver[%1]} {1}};
+			#else {#math {ss_giver[%1]} {$ss_giver[%1]+1}};	
+		}
+	}
+} {4}
+
+#action {^%?%?你给%*一本%*。} {
+	#echo 触发了给出去;
+	#if {0 != &ss_map[%4]} {
+		#variable {l_id} {$ss_map[%4]};
+		#regex {$l_id} {%w{[1-5]}} {
+			#list {ss_list} {find} {$l_id} {l_find};
+			#if {0 != $l_find} {#list {ss_list} {delete} {$l_find}};
+			
+		} {
+			#if {"$l_id" == "{bmxxfeng|yyblade}"} {
+				#list {ss_list} {find} {$l_id} {l_find};
+				#if {0 != $l_find} {#list {ss_list} {delete} {$l_find}};
+			};
+			#else {
+				#list {s_list} {find} {$l_id} {l_find};
+				#if {0 != $l_find} {#list {s_list} {delete} {$l_find}};
+			};
+		};
+		#unvariable {l_find};
+		#unvariable {l_id};
+	}
+}
+
+#action {^%?%?【传闻】$me[cname]得到%*啦！} {
+	#echo 触发了我得到;
+	#if {(0 != &ss_map[%3]) && (&ss_list[] > 0)} {		
+		#variable {l_id} {$ss_map[%3]};
+		#list {s_list} {add} {$l_id};
+		#variable {l_list} {$ss_list};
+		#list {ss_list} {clr};
+		#foreach {$l_list[%*]} {l_ss} {
+			#if {"$l_ss" != "$l_id%*"} {#list {ss_list} {add} {$l_ss}};
+		};		
+		#unvariable {l_list};
+		#unvariable {l_ss};
+		#unvariable {l_id};		
+	}
+}
+
+#action {^%?%?你的荣誉勋章不在游戏里，你可以重新连线找回你的装备。} {
+	#zap;
+}
+
+#action {^%?%?【神书系统】重新分布所有神书任务！} {
+	#list {s_list} {clr};
+	#list {ss_list} {clr};
+	#list {ss_giver} {clr};
+	#variable {bReturnShenshu} {0};
+	#format {current_day} {%t} {%d};
+	#if {"$current_day" != "$ss_stamp"} {
+		#list {ss_xw} {clr};
+		#format {ss_stamp} {%t} {%d};
+	}	
+}
+
+#action {^%?%?【神书系统】将在%*分钟后重新分布神书任务！} {
+	#if {"%3" == "五"} {combine jinbooka;combine jinbookb};
+	#variable {bReturnShenshu} {1}
+}
+
+#nop ==========================Function==========================
+#function {get_epoch_time} {
+	#format {result} {%T};
+}
+
+#function {azto12} {  
+	#variable {result} {0};
+	#variable l_tmp %1;
+	#replace {l_tmp} {a} {1};
+	#replace {l_tmp} {b} {2};
+	#replace {l_tmp} {c} {3};
+	#replace {l_tmp} {d} {4};
+	#replace {l_tmp} {e} {5};
+	#replace {l_tmp} {f} {6};
+	#replace {l_tmp} {g} {7};
+	#replace {l_tmp} {h} {8};
+	#replace {l_tmp} {i} {9};
+	#replace {l_tmp} {j} {0};
+	#var {result} {$l_tmp};
+	#unvariable l_tmp;
+}
+
+#function {12toaz} {  
+	#variable {result} {0};
+	#variable l_tmp %1;
+	#replace {l_tmp} {1} {a};
+	#replace {l_tmp} {2} {b};
+	#replace {l_tmp} {3} {c};
+	#replace {l_tmp} {4} {d};
+	#replace {l_tmp} {5} {e};
+	#replace {l_tmp} {6} {f};
+	#replace {l_tmp} {7} {g};
+	#replace {l_tmp} {8} {h};
+	#replace {l_tmp} {9} {i};
+	#replace {l_tmp} {0} {j};
+	#var {result} {$l_tmp};
+	#unvariable l_tmp;
+}
+
+#nop ===========================Ticker===========================
+#ticker {antiQuit} {
+	l;
+	#if {@get_epoch_time{} > $epochStamp+150} {halt;fly wm;w};
+	#if {&{xunzhang_epoch} != 0} {
+		#if {@get_epoch_time{} > $xunzhang_epoch+500} {equip callback neck};
+	}	
+} {120}
+
+#nop ===========================Event============================
+#event {SESSION DISCONNECTED} {
+	#gts #delay {30} {#gts connect %0}
+}
+
+#event {HOUR} {
+	#if {'$me[ename]' == 'bagadm'} {
+		fly wm;e;s;s;s;e;u;#20 jicun jinggang;#delay 1 {fly wm;w};
+	};	
+};
+
+#class {dummy} close

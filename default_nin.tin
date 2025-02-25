@@ -1,0 +1,170 @@
+#nop This script is written for v1.99.7 and higher
+
+#nop set the script folder;
+#variable {MOD} {pmxkx_mods};
+#variable {CHAR} {Chars};
+
+#nop read global data;
+#class worlddata read worlddata.tin;
+
+#nop keypad settings
+#class keypad read keypad.tin;
+
+#no temporary folders
+#variable {VAR} {Vars};
+#variable {LOG} {Logs};
+#script {l_folders} {ls -F|grep /$};
+#list {l_folders} {find} {$VAR/} {l_find};
+#if {$l_find == 0} {#system {mkdir -p $VAR}};
+#list {l_folders} {find} {$LOG/} {l_find};
+#if {$l_find == 0} {#system {mkdir -p $LOG}};
+#unvariable l_folders;
+#unvariable l_find;
+
+#nop =========================Begin of world Management ==========================================
+#if {&{worldlist} == 0}
+{
+	#class worlddata open;
+	#list worldlist clr;
+	#class worlddata close;
+}
+
+#alias {addworld}
+{
+	#if {"%3" == ""}
+	{
+		#showme Syntax: addworld <name> <host> <port> [character name] [password];
+	};
+	#else
+	{
+		#var worldlist[%1][name] %1;
+		#var worldlist[%1][host] %2;
+		#var worldlist[%1][port] %3;
+		#if {"%4" != ""}
+		{
+			#var worldlist[%1][char] %4;
+		};
+		#if {"%5" != ""}
+		{
+			#var worldlist[%1][pass] %5;
+		};
+		#if {&worldlist[%1][char]}
+		{
+			#showme The world %1 (%2 %3) and the character %4 (%5) has been added;
+		};
+		#else
+		{
+			#showme The world %1 (%2 %3) has been added;
+		};
+		#class worlddata write worlddata.tin;
+	}
+}
+
+#alias {deleteworld}
+{
+	#if {&worldlist[%1] != 0}
+	{
+		#unvar worldlist[%1];
+		#class worlddata write worlddata.tin;
+		#showme The world %1 has been deleted;
+	};
+	#else
+	{
+		#showme The world %1 couldn't be found;
+	}
+}
+
+#alias {connect}
+{
+	#if {"%1" == ""}
+	{
+		#echo {%h} {{ WORLD LIST }};
+
+		#foreach {*worldlist[]} {world}
+		{
+			#echo {%-20s %s %s %s} {$worldlist[$world][name]} {$worldlist[$world][host]} {$worldlist[$world][port]} {$worldlist[$world][char]};
+		}
+	};
+	#elseif {&worldlist[%1] != 0}
+	{
+		#ses $worldlist[%1][name] $worldlist[%1][host] $worldlist[%1][port];
+
+		#if {&worldlist[%1][char]}
+		{
+			#$worldlist[%1][name] $worldlist[%1][char];
+
+			#if {&worldlist[%1][pass]}
+			{
+				#$worldlist[%1][name] $worldlist[%1][pass];
+				#$worldlist[%1][name] yes;
+			}
+		}
+	};
+	#else
+	{
+		#showme Couldn't find world %1;
+	}
+}
+
+#nop 登录big账号群
+#alias {conbig} {
+	connect dust;
+	connect mrs;
+	connect ugly;
+	connect hsup;
+	connect icloud;
+	connect wfkk;
+	connect helpme;
+	connect putin;
+}
+
+#nop 登录small账号群
+#alias {consmall} {
+	connect ldl;
+	connect mzong;
+	connect wfxx;
+	connect ljup;
+	connect bkx;
+	connect arain;
+}
+
+#nop 登录dms账号群
+#alias {condms} {
+	connect bagadm;
+	connect xuyun;
+}
+
+#nop 登录dmb账号群
+#alias {condmb} {
+	connect breakadm;
+	connect xyldm;
+}
+#nop ========================= End of world Management ============================================
+
+#alias {te}
+{
+	#regex {%1} {^$} {#showme Usage: te <class_name>. Enable the class.} {
+		#class %1 read $MOD/%1.tin;
+	};
+}
+
+#alias {ts}
+{
+	#regex {%1} {^$} {#showme Usage: ts <class_name>. Disable the class.} {
+		#class %1 kill;
+	};
+}
+
+#event {SESSION CONNECTED} 
+{
+	#split 3 1;
+	#regex {%0} {%*{dm|xm|uyun}} {#class {dummy} read $MOD/dummy.tin} {
+		#map read $MOD/pmxkx.map;
+		#map flag static on;
+		#class npc_list read $MOD/npc_limits.tin;
+		#class {core} read $MOD/core.tin;
+		#regex {%0} {tx%*} {#class {char} read $CHAR/txa.tin} {
+			#class {char} read $CHAR/%0.tin;
+		};	
+	};
+}

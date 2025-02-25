@@ -1,0 +1,40 @@
+#class {status} open
+#nop ===========================hp info==========================
+#action {^【 精 神 】%s%d/%s%d%s(%s%d%%)%s【 精 力 】%s%d%s/%s%d%s[%20]} {
+	#variable me[eff_gin] %2;
+	#variable me[gin] %4;
+	#variable me[gin_ratio] %7;
+	#variable me[eff_mana] %10;
+	#variable me[max_mana] %13;
+	#variable me[upper_force] %20;		
+}
+
+#action {^【 气 血 】%s%d/%s%d%s(%s%d%%)%s【 内 力 】%s%d%s/%s%d%s(} {
+	#variable me[eff_kee] %2;
+	#variable me[kee] %4;
+	#variable me[kee_ratio] %7;
+	#variable me[eff_force] %10;
+	#variable me[max_force] %13;	
+}
+
+#action {^【 {正|戾} 气 】%s%S%s【 阅 历 】%s%d$} {
+	#variable me[shen] %3;	
+	#variable me[yl_exp] %6;
+}
+
+#action {^【 食 物 】%s%d/%s%d%s【 潜 能 】%s%S%s/%s%d$} {
+	#variable me[eff_food] %2;
+	#variable me[food] %4;
+	#variable me[pot] %7;
+	#variable me[max_pot] %10;
+}
+
+#action {^【 饮 水 】%s%d/%s%d%s【 经 验 】%s%d$} {
+	#variable me[eff_water] %2;
+	#variable me[water] %4;
+	#variable me[comb_exp] %7;
+	#undelay {status_kill};
+	#class {status} kill;
+}
+
+#class {status} close

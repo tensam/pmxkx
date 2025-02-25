@@ -1,0 +1,727 @@
+#CLASS {worldzb} OPEN
+
+#VARIABLE {worldzb_list}
+{
+    {bang} 
+    {
+        {char} {bang}
+        {host} {47.100.213.250}
+        {name} {bang}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {cka} 
+    {
+        {char} {cka}
+        {host} {47.100.213.250}
+        {name} {cka}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {ckb} 
+    {
+        {char} {ckb}
+        {host} {47.100.213.250}
+        {name} {ckb}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {dustinta} 
+    {
+        {char} {dustinta}
+        {host} {47.100.213.250}
+        {name} {dustinta}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {gem} 
+    {
+        {char} {gem}
+        {host} {47.100.213.250}
+        {name} {gem}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {hushoua} 
+    {
+        {char} {hushoua}
+        {host} {47.100.213.250}
+        {name} {hushoua}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {intb} 
+    {
+        {char} {intb}
+        {host} {47.100.213.250}
+        {name} {intb}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {jingpin} 
+    {
+        {char} {jingpin}
+        {host} {47.100.213.250}
+        {name} {jingpin}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {jingping} 
+    {
+        {char} {jingping}
+        {host} {47.100.213.250}
+        {name} {jingping}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {ljupdm} 
+    {
+        {char} {ljupdm}
+        {host} {47.100.213.250}
+        {name} {ljupdm}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {lowzb} 
+    {
+        {char} {lowzb}
+        {host} {47.100.213.250}
+        {name} {lowzb}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {lowzhuangbei} 
+    {
+        {char} {lowzhuangbei}
+        {host} {47.100.213.250}
+        {name} {lowzhuangbei}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {maob} 
+    {
+        {char} {maob}
+        {host} {47.100.213.250}
+        {name} {maob}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {rare} 
+    {
+        {char} {rare}
+        {host} {47.100.213.250}
+        {name} {rare}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {ringren} 
+    {
+        {char} {ringren}
+        {host} {47.100.213.250}
+        {name} {ringren}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {shier} 
+    {
+        {char} {shier}
+        {host} {47.100.213.250}
+        {name} {shier}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {testcca} 
+    {
+        {char} {testcca}
+        {host} {47.100.213.250}
+        {name} {testcca}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {txq} 
+    {
+        {char} {txq}
+        {host} {47.100.213.250}
+        {name} {txq}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {tzup} 
+    {
+        {char} {tzup}
+        {host} {47.100.213.250}
+        {name} {tzup}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wifepp} 
+    {
+        {char} {wifepp}
+        {host} {47.100.213.250}
+        {name} {wifepp}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wiqig} 
+    {
+        {char} {wiqig}
+        {host} {47.100.213.250}
+        {name} {wiqig}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wqqin} 
+    {
+        {char} {wqqin}
+        {host} {47.100.213.250}
+        {name} {wqqin}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wqzhen} 
+    {
+        {char} {wqzhen}
+        {host} {47.100.213.250}
+        {name} {wqzhen}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wuaig} 
+    {
+        {char} {wuaig}
+        {host} {47.100.213.250}
+        {name} {wuaig}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wuqiadm} 
+    {
+        {char} {wuqiadm}
+        {host} {47.100.213.250}
+        {name} {wuqiadm}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wuqig} 
+    {
+        {char} {wuqig}
+        {host} {47.100.213.250}
+        {name} {wuqig}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wuqih} 
+    {
+        {char} {wuqih}
+        {host} {47.100.213.250}
+        {name} {wuqih}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wuqii} 
+    {
+        {char} {wuqii}
+        {host} {47.100.213.250}
+        {name} {wuqii}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wuqij} 
+    {
+        {char} {wuqij}
+        {host} {47.100.213.250}
+        {name} {wuqij}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wuqik} 
+    {
+        {char} {wuqik}
+        {host} {47.100.213.250}
+        {name} {wuqik}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {wuqil} 
+    {
+        {char} {wuqil}
+        {host} {47.100.213.250}
+        {name} {wuqil}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {xbw} 
+    {
+        {char} {xbw}
+        {host} {47.100.213.250}
+        {name} {xbw}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {xuea} 
+    {
+        {char} {xuea}
+        {host} {47.100.213.250}
+        {name} {xuea}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {yifud} 
+    {
+        {char} {yifud}
+        {host} {47.100.213.250}
+        {name} {yifud}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {yifue} 
+    {
+        {char} {yifue}
+        {host} {47.100.213.250}
+        {name} {yifue}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {ylaevbbicon} 
+    {
+        {char} {ylaevbbicon}
+        {host} {47.100.213.250}
+        {name} {ylaevbbicon}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbbang} 
+    {
+        {char} {zbbang}
+        {host} {47.100.213.250}
+        {name} {zbbang}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbbian} 
+    {
+        {char} {zbbian}
+        {host} {47.100.213.250}
+        {name} {zbbian}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbchui} 
+    {
+        {char} {zbchui}
+        {host} {47.100.213.250}
+        {name} {zbchui}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbdao} 
+    {
+        {char} {zbdao}
+        {host} {47.100.213.250}
+        {name} {zbdao}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbdi} 
+    {
+        {char} {zbdi}
+        {host} {47.100.213.250}
+        {name} {zbdi}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbfilter} 
+    {
+        {char} {zbfilter}
+        {host} {47.100.213.250}
+        {name} {zbfilter}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbfu} 
+    {
+        {char} {zbfu}
+        {host} {47.100.213.250}
+        {name} {zbfu}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbgem} 
+    {
+        {char} {zbgem}
+        {host} {47.100.213.250}
+        {name} {zbgem}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbgema} 
+    {
+        {char} {zbgema}
+        {host} {47.100.213.250}
+        {name} {zbgema}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbgreen} 
+    {
+        {char} {zbgreen}
+        {host} {47.100.213.250}
+        {name} {zbgreen}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbgun} 
+    {
+        {char} {zbgun}
+        {host} {47.100.213.250}
+        {name} {zbgun}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbhushou} 
+    {
+        {char} {zbhushou}
+        {host} {47.100.213.250}
+        {name} {zbhushou}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbhushouj} 
+    {
+        {char} {zbhushouj}
+        {host} {47.100.213.250}
+        {name} {zbhushouj}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbhushoum} 
+    {
+        {char} {zbhushoum}
+        {host} {47.100.213.250}
+        {name} {zbhushoum}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbhushous} 
+    {
+        {char} {zbhushous}
+        {host} {47.100.213.250}
+        {name} {zbhushous}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbint} 
+    {
+        {char} {zbint}
+        {host} {47.100.213.250}
+        {name} {zbint}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbjgva} 
+    {
+        {char} {zbjgva}
+        {host} {47.100.213.250}
+        {name} {zbjgva}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbjian} 
+    {
+        {char} {zbjian}
+        {host} {47.100.213.250}
+        {name} {zbjian}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbjiana} 
+    {
+        {char} {zbjiana}
+        {host} {47.100.213.250}
+        {name} {zbjiana}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbjianvgva} 
+    {
+        {char} {zbjianvgva}
+        {host} {47.100.213.250}
+        {name} {zbjianvgva}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbjianvva} 
+    {
+        {char} {zbjianvva}
+        {host} {47.100.213.250}
+        {name} {zbjianvva}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbjingping} 
+    {
+        {char} {zbjingping}
+        {host} {47.100.213.250}
+        {name} {zbjingping}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbkx} 
+    {
+        {char} {zbkx}
+        {host} {47.100.213.250}
+        {name} {zbkx}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zblow} 
+    {
+        {char} {zblow}
+        {host} {47.100.213.250}
+        {name} {zblow}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbmao} 
+    {
+        {char} {zbmao}
+        {host} {47.100.213.250}
+        {name} {zbmao}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbmaoa} 
+    {
+        {char} {zbmaoa}
+        {host} {47.100.213.250}
+        {name} {zbmaoa}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbnew} 
+    {
+        {char} {zbnew}
+        {host} {47.100.213.250}
+        {name} {zbnew}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbqiang} 
+    {
+        {char} {zbqiang}
+        {host} {47.100.213.250}
+        {name} {zbqiang}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbqin} 
+    {
+        {char} {zbqin}
+        {host} {47.100.213.250}
+        {name} {zbqin}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbrare} 
+    {
+        {char} {zbrare}
+        {host} {47.100.213.250}
+        {name} {zbrare}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbrarea} 
+    {
+        {char} {zbrarea}
+        {host} {47.100.213.250}
+        {name} {zbrarea}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbring} 
+    {
+        {char} {zbring}
+        {host} {47.100.213.250}
+        {name} {zbring}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbringa} 
+    {
+        {char} {zbringa}
+        {host} {47.100.213.250}
+        {name} {zbringa}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbringb} 
+    {
+        {char} {zbringb}
+        {host} {47.100.213.250}
+        {name} {zbringb}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbringd} 
+    {
+        {char} {zbringd}
+        {host} {47.100.213.250}
+        {name} {zbringd}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbstorea} 
+    {
+        {char} {zbstorea}
+        {host} {47.100.213.250}
+        {name} {zbstorea}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbstoreb} 
+    {
+        {char} {zbstoreb}
+        {host} {47.100.213.250}
+        {name} {zbstoreb}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbstorec} 
+    {
+        {char} {zbstorec}
+        {host} {47.100.213.250}
+        {name} {zbstorec}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbwx} 
+    {
+        {char} {zbwx}
+        {host} {47.100.213.250}
+        {name} {zbwx}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbxiao} 
+    {
+        {char} {zbxiao}
+        {host} {47.100.213.250}
+        {name} {zbxiao}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbzhang} 
+    {
+        {char} {zbzhang}
+        {host} {47.100.213.250}
+        {name} {zbzhang}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zbzhen} 
+    {
+        {char} {zbzhen}
+        {host} {47.100.213.250}
+        {name} {zbzhen}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeia} 
+    {
+        {char} {zhuangbeia}
+        {host} {47.100.213.250}
+        {name} {zhuangbeia}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeiaa} 
+    {
+        {char} {zhuangbeiaa}
+        {host} {47.100.213.250}
+        {name} {zhuangbeiaa}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeib} 
+    {
+        {char} {zhuangbeib}
+        {host} {47.100.213.250}
+        {name} {zhuangbeib}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeic} 
+    {
+        {char} {zhuangbeic}
+        {host} {47.100.213.250}
+        {name} {zhuangbeic}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeid} 
+    {
+        {char} {zhuangbeid}
+        {host} {47.100.213.250}
+        {name} {zhuangbeid}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeie} 
+    {
+        {char} {zhuangbeie}
+        {host} {47.100.213.250}
+        {name} {zhuangbeie}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeif} 
+    {
+        {char} {zhuangbeif}
+        {host} {47.100.213.250}
+        {name} {zhuangbeif}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeig} 
+    {
+        {char} {zhuangbeig}
+        {host} {47.100.213.250}
+        {name} {zhuangbeig}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeih} 
+    {
+        {char} {zhuangbeih}
+        {host} {47.100.213.250}
+        {name} {zhuangbeih}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeii} 
+    {
+        {char} {zhuangbeii}
+        {host} {47.100.213.250}
+        {name} {zhuangbeii}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zhuangbeij} 
+    {
+        {char} {zhuangbeij}
+        {host} {47.100.213.250}
+        {name} {zhuangbeij}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+    {zrare} 
+    {
+        {char} {zrare}
+        {host} {47.100.213.250}
+        {name} {zrare}
+        {pass} {Qwer1234}
+        {port} {5678}
+    }
+}
+
+#CLASS {worldzb} CLOSE

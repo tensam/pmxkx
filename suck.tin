@@ -1,0 +1,75 @@
+#class {suck} open
+#nop ==========================Variable==========================
+#variable {suckClass} {1};
+#variable {suckSuccess} {0};
+#variable {bing_cnt} {1};
+
+#nop ===========================Alias============================
+#alias {suck.start} {	
+	gotobing;
+	#ticker {suck_act} {halt;exert recover;kill guan bing;uw;exert qisuck} {2};
+}
+
+#alias {suck.kill} {	
+	#unticker {suck_act};
+	#class {suck} kill;
+}
+
+#alias {suck.end} {
+	suck.kill;
+	halt;
+	exert recover;
+	exert regenerate;
+	#variable robot 1;
+	scmd {halt;fly wm;w};
+}
+
+#alias {gotobing} {	
+	#if {$bing_cnt > 17} {#variable {bing_cnt} {1}};
+	#if {$bing_cnt == 1} {fly wm;e;n};
+	#if {$bing_cnt == 2} {fly wm;e;#5 s};
+	#if {$bing_cnt == 3} {fly wm;e;#2 s;#3 e};
+	#if {$bing_cnt == 4} {fly wm;e;#2 s;#3 w};
+	#if {$bing_cnt == 5} {fly bj;#3 e};
+	#if {$bing_cnt == 6} {fly bj;#3 w};
+	#if {$bing_cnt == 7} {fly bj;#3 s};
+	#if {$bing_cnt == 8} {fly sz;w;n};
+	#if {$bing_cnt == 9} {fly sz;w;#6 s};
+	#if {$bing_cnt == 10} {fly sz;w;#2 s;se;#2 e};
+	#if {$bing_cnt == 11} {fly sz;w;#2 s;sw;#2 w};
+	#if {$bing_cnt == 12} {fly cd};
+	#if {$bing_cnt == 13} {fly cd;#2 w};
+	#if {$bing_cnt == 14} {fly cd;#3 w;s};
+	#if {$bing_cnt == 15} {fly cd;#4 w};
+	#if {$bing_cnt == 16} {fly cd;#3 w;#3 s};
+	#if {$bing_cnt == 17} {fly cd;#6 w};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你觉得%*自手掌源源不绝地流了进来} {
+	#delay {suck_success} {#variable {suckSuccess} {1}} {3};
+}
+
+#action {^%?%?你觉得随着%*传入，身上痛苦有了一些减轻。} {
+	#undelay {suck_success};
+}
+
+#action {^%?%?官兵%*死了} {
+	#if {$suckSuccess == 1} {suck.end};
+}
+
+#action {^%?%?这里没有这个人} {
+	#unticker {suck_act};
+	#if {$suckSuccess == 1} {suck.end};
+	#else {
+		#math {bing_cnt} {$bing_cnt + 1};
+		gotobing;
+		#ticker {suck_act} {halt;exert recover;kill guan bing;uw;exert qisuck} {2};
+	}
+}
+
+#action {^%?%?你所学的内功中没有这种功能。} {
+	enable force xixing-dafa;
+}
+
+#class {suck} close

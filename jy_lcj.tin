@@ -1,0 +1,63 @@
+#class {jy_lcj} open
+#nop ==========================Variable==========================
+#variable {jy_lcjClass} {1};
+#variable {tri_lvl} {4};
+
+#nop ===========================Alias============================
+#alias {jy_lcj.start} {
+    updatedolist jy_lcj;
+    #alias {arrive_cmd} {ask di yun about 落花流水};
+    gotonpc 狄云;
+};
+
+#alias {jy_lcj.kill} {
+    #variable {tri_lvl} {5};
+    #unalias {arrive_cmd};
+    #unticker klz;follow none;
+    #class {jy_lcj} kill;
+}
+
+#alias {jy_lcj.end} {
+    jy_lcj.kill;
+    fly wm;w
+}
+
+
+#action {^%?%?{三炷香已焚烧完毕，你缓缓起身|你身上没有这样东西。|你身上没有这样东西|这里没有这个人}} {
+    #delay {3} {jy_lcj.end}
+}
+
+#action {^%?%?你向狄云打听有关『落花流水』的消息} {
+    #alias {arrive_cmd} {uw;kill hua};
+    gotonpc 花铁干;
+}
+
+#action {^%?%?花铁干扑在地上挣扎了几下} {
+    uw;wield dao;kantou corpse;uw;
+    #alias {arrive_cmd} {give di head};
+    #delay {1} {gotonpc 狄云}
+} {1}  
+
+#action {^%?%?你拿出花铁干的头颅(Head)给狄云。} {
+    ask di yun about 血刀老祖
+}
+
+#action {^%?%?你向狄云打听有关『血刀老祖』的消息} {
+    #alias {arrive_cmd} {wi;fight_ready;te fight2;follow laozu;kill laozu};
+    gotonpc 血刀老祖;
+}
+
+#action {^%?%?血刀老祖扑在地上挣扎了几下} {
+    ts fight2;
+    get jing from corpse;
+    #alias {arrive_cmd} {give di jing;ask di yun about 丁典};
+    #delay {1} {gotonpc 狄云}
+} {1}
+
+#action {^%?%?你向狄云打听有关『丁典』的消息} {
+    #alias {arrive_cmd} {#3 buy xiang;#delay {1} {fly wm;e;#9 s;w;s;se;fenxiang}};
+    #delay {1} {gotonpc 老年僧人}
+}
+
+
+

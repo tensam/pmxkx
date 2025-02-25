@@ -1,0 +1,83 @@
+#class {full_force} open
+#nop ==========================Variable==========================
+#variable {full_forceClass} {1};
+#nop ===========================Alias============================
+#alias {full_force.start} {
+	updatedolist full_force;
+	ienable;
+	#class fight read $MOD/fight.tin;
+	#class walk read $MOD/walk.tin;
+	prepare_food;
+}
+
+#alias {full_force.kill} {
+	walk.kill;
+	fight.kill;
+	#class {full_force} {kill};
+	ts dazuo;
+	#echo {%c#class full_force killed!} {red}
+}
+
+#alias {full_force.end} {
+	full_force.kill;
+}
+
+#alias {gotoice} {fly lj;n;e;e;n;n;#3 w;climb ice}
+
+#alias {arrive_cmd} {buy skin;#delay {1} {#showme buy~skin~over}};
+#alias {prepare_food} {
+	gotonpc 买买提;
+};
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "余婆婆"} {
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	}
+}
+
+
+#nop ===========================Actions============================
+#action {^%?%?buy~skin~over} {
+	#unalias {arrive_cmd};
+	fly jx;#2 buy zongzi;
+	#delay {3} {#showme buy~zongzi~over};
+};
+
+#action {^%?%?buy~zongzi~over} {
+	fly wm;e;s;s;e;s;buy dai;#2 put zongzi in dai;
+	#delay {3} {#showme buy~dai~over};
+};
+
+#action {^%?%?buy~dai~over} {
+	gotoice;
+};
+
+
+#action {^%?%?余婆婆{拦住你|一把揪住你的头发|一把把你拽了下来}} {
+	#if {$me[comb_exp]<10000000]} {e;idazuo};
+	#else {fight_ready;#variable {kill_id} {yu popo};kill $kill_id}
+}
+
+#action {^%?%?余婆婆扑在地上挣扎了几下，口中喷出几口鲜血，死了！} {
+	fight.kill;
+	#delay {30} {#showme ok~to~climb};
+} {4}
+
+#action {^%?%?ok~to~climb} {
+	gotoice;
+}
+
+#action {^%?%?你费劲地爬上了玄冰，现在可以打坐练功了。} {
+	#delay {2} {idazuo};
+}
+
+#action {^%?%?dazuo~over} {
+	full_force.end;
+}
+
+#class {full_force} close

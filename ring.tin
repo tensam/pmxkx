@@ -1,0 +1,68 @@
+#class ring open
+
+#variable {ringClass} {1};
+
+#variable ring_color {0};
+
+#alias {ring.start} {
+    fly wm;u;n;gamble ring;
+}
+
+#alias {ring.kill} {
+	#class {ring} kill;
+}
+
+#alias {ring.end} {
+	ring.kill;
+	halt;
+	scmd {halt;fly wm;w};
+}
+
+#action {赌博需缴纳一块百炼精钢} {
+    #delay {2} {
+        fly wm;e;s;s;s;e;u;
+        #10 quhui 百炼精钢;
+        #showme 取好了;
+    }
+}
+
+
+#action {取好了} {
+    #delay {qu} {fly wm;u;n;#showme 开赌} {2};
+}
+
+#action {开赌} {
+    gamble ring;
+}
+
+
+/*
+你得到一枚\e[%d;%dm%*\e[0m。
+你已赌博了\e[1;33m5389\e[0m次戒指。
+*/
+
+
+#action {~你得到一枚\e[%d;%dm%*戒指\e[0m} {
+    #echo get~~~~ring~~~~~~~~~~~``;
+    #variable ring_color %2;
+    #if {"$ring_color" == "{31|32|35}"} {
+        s;d;w;
+        give zbringd ring;
+        give zbringe ring;
+        give zbringf ring;
+        give zbringg ring;
+        e;u;n;
+    } {give zi ring};
+    #delay {0.3} {gamble ring};
+}
+
+#action {你已赌博了%*次戒指。} {
+
+}
+
+#action {你并没有寄存此样物品} {
+    #undelay {qu};
+    ring.end;
+}
+
+#class ring close

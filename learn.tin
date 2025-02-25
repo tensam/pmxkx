@@ -1,0 +1,271 @@
+#class {learn} open
+#nop ==========================Variable==========================
+#variable {learnClass} {1};
+#variable {master} {};
+#variable {skill} {};
+#variable {learn_status} {};
+#variable {learn_count} {1};
+#variable {maxlevel} {0};
+#variable {bAutoAfterLearn} {0};
+#variable {bsuper} {0};
+#variable {int_level} {int};
+	
+#nop ===========================Alias============================
+#alias {learn.start} {
+	updatedolist learn;	
+	#nop #class superint read $MOD/superint.tin;
+	#if {&learn_list[] == 0} {#echo noskillstolearn;learn.end};
+	#else {
+		fly ca;s;withdraw $me[deposit_pot] qn;
+		#variable {master} {$me[emaster]};	
+		#variable learn_count @get_learn_count{$me[gin]};
+		#list {learn_status} {clr};
+		#loop {1} {&learn_list[]} {l_cnt} {#list learn_status add 0};
+		#unvariable l_cnt;		
+		#if {$bAverageSkill} {			
+			iskills;
+			#delay {2} {
+				#variable {maxlevel} {@skillmaxlevel{}};
+				#list {learn_list} {find} {literate} {l_find};
+				#if {$l_find == 0 && $skill_list[读书写字][level] < 300} {learn.end};
+				#else {
+					#list {learn_list} {find} {qixing-bufa} {l_find};
+					#if {$l_find != 0} {
+						#math {qx_lvl} {$skill_list[七星步法][level] % 7};
+						#if {$qx_lvl != 0} {
+							#echo {本次无需学习七星步法};
+							#list {learn_list} {set} {$l_find} {xiantian-qigong};
+						};
+					};
+					#variable {l_diff} {0};
+					#variable {l_maxdiff} {0};
+					#foreach {$learn_list[%*]} {l_learn} {					
+						#math {l_diff} {$maxlevel - $skill_list[$skill_e2c[$l_learn]][level]};
+						#if {$l_diff > $l_maxdiff} {
+							#variable {l_maxdiff} {$l_diff};
+							#variable {skill} {$l_learn};
+						};	
+					};
+					#unvariable {l_learn};
+					#unvariable {l_diff};
+					#unvariable {l_maxdiff};
+					#if {"$skill" == ""} {
+						#variable {learn_idx} {1};
+						#variable skill {$learn_list[1]};
+					};
+					#else {#list {learn_list} {find} {$skill} {learn_idx}};
+					#if {"$me[family]" == "少林派"} {#delay {1} {walkto 3590}};
+					#else {#delay {2} {gotonpc $me[cmaster]}};
+				};				
+				#unvariable {l_find};
+			};
+		};
+		#else {
+			#variable {learn_idx} {1};
+			#variable skill {$learn_list[1]};
+			#if {"$me[family]" == "少林派"} {#delay {2} {walkto 3590}};
+			#else {#delay {2} {gotonpc $me[cmaster]}}; 
+		}
+	}	
+}
+
+#alias {learn1.start} {
+	#variable {bAutoAfterLearn} {1};
+	learn.start;
+}
+
+#alias {learn2.start} {
+	#variable {bsuper} {1};
+	learn.start;
+}
+
+#alias {learn.kill} {
+	#unticker {learn_act};
+	#class {learn} kill;
+}
+
+
+#alias {learn.end} {
+	#variable {mission_complete} {0};
+	#if {"$me[family]" == "少林派" && "$me[cmaster]" == "渡%*" } {out};	
+	#regex {$qiguan_name} {^$} {	
+		#if {"$me[family]" == "明教"} {
+			#if {$skill_list[七伤拳][level]<250} {bai zhang} {bai xie};
+		};
+		ihp;
+		#delay {hp_check} {
+			#if {$me[pot] < 100} {
+				unwield all;
+				remove all;
+				weara;
+				wi;
+				#delay {learn_end} {halt;fly wm;w;superint.back1;#if {1 == $bAutoAfterLearn} {#showme learn is over goto mission;robot start}} {1};
+			};
+			#elseif {$skill_list[读书写字][level] < 300 && $skill_list[读书写字][level]< $maxlevel} {
+				#class {zhuxi} read $MOD/zhuxi.tin;
+				zhuxi.start;
+			};
+			#elseif {&ask_list > 0} {
+				#class {ask} read $MOD/ask.tin;
+				#if {&learn_list[] == 0 && "$me[family]" == "少林派"} {walkto 3590};
+				#else {ask1.start};
+			};
+			#else {#variable mission_complete 0;halt;fly wm;w;superint.back1;#if {1 == $bAutoAfterLearn} {#showme learn is over goto mission;robot start};}
+		} {2};
+	} {halt;fly wm;w;superint.back1;#if {1 == $bAutoAfterLearn} {#showme learn is over goto mission;robot start};};
+	learn.kill;
+}
+
+#alias {arrive_cmd} {
+	#map get roomvnum l_vnum;
+	#map leave;#class walk kill;
+	#if {"$me[family]" == "少林派" && $l_vnum == 3590} {
+		gotonpc $me[cmaster];
+	};
+	#else {
+		#if {$bsuper == 1} {#echo {superint mode!!!};#variable {int_level} {superint}};
+		#else {#variable {int_level} {int}};
+		remove all;unwield all;weara $int_level;wi $int_level;
+		#regex {$skill} {liumai%*} {hmm} {wi $int_level};
+		#ticker {learn_act} {learn $skill from $master for $learn_count;exert regenerate} {0.3};
+	};
+	#unvariable l_vnum;
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你的「%*」进步了！} {
+	#if {&skill_list[%3] == 0} {#variable skill_list[%3][level] 1};	
+	#else {#math skill_list[%3][level] {$skill_list[%3][level]+1}};	
+	#if {"%3" == "七星步法"} {
+		#math {qx_lvl_mod} {$skill_list[七星步法][level] % 7};
+		#if {$qx_lvl_mod != 0} {learn.end};
+	};
+	#if {$skill_list[%3][level] > $maxlevel} {#variable {maxlevel} {$skill_list[%3][level]}};	
+	#if {$bAverageSkill} {				
+		#unticker {learn_act};
+		#variable {skill} {};
+		#variable {l_diff} {0};
+		#variable {l_maxdiff} {0};
+		#math {l_valid} {&learn_list[]+1};
+		#loop {1} {&learn_list[]} {l_idx} {
+			#if {$learn_status[$l_idx] == 0} {
+				#if {$l_idx < $l_valid} {#variable {l_valid} {$l_idx}};
+				#math {l_diff} {$maxlevel - $skill_list[$skill_e2c[$learn_list[$l_idx]]][level]};
+				#if {$l_diff > $l_maxdiff} {
+					#variable {l_maxdiff} {$l_diff};
+					#variable {skill} {$learn_list[$l_idx]};
+					#variable {learn_idx} {$l_idx};
+				};			
+			};
+		};
+		#unvariable {l_idx};
+		#unvariable {l_diff};
+		#unvariable {l_maxdiff};
+		#if {"$skill" == "" && $l_valid <= &learn_list[]} {
+			#variable {skill} {$learn_list[$l_valid]};
+			#variable {learn_idx} {$l_valid};
+		};		
+		#unvariable {l_valid};
+		#if {"$skill" == ""} {learn.end};
+		#else {
+			#if {"$me[family]" == "明教"} {
+				#if {"$skill" == "strike"} {bai wei;#variable master {wei yixiao}};
+				#elseif {"$skill" == "claw"} {bai yin;#variable master {yin tianzheng}};
+				#elseif {"$skill" == "cuff"} {bai xie;#variable master {xie xun}};
+				#elseif {"$skill" == "parry"} {bai xie;#variable master {xie xun}};
+				#else {bai zhang;#variable master {zhang wuji}};
+			};
+			#if {"$me[family]" == "密宗"} {
+				#echo {密宗弟子};
+				#if {"$skill" == "blade"} {fly xs;ed;n;ed;ed;su;wu;wu;su;wu;su;n;su;e;enter;bai laozu;#variable master {xuedao laozu}};
+				#elseif {"$skill" == "hammer"} {fly xs;#2 n;w;u;e;bai fawang;#variable master {jinlun fawang}};
+				#elseif {"$skill" == "longxiang" && $me[comb_exp]<1500000} {fly xs;#2 n;w;u;e;bai fawang;#variable master {jinlun fawang}};
+				#else {fly xs;#2 n;w;u;eu;n;bai zhi;#variable master {jiumo zhi}};
+			};
+			#if {"$me[family]" == "大理段家"} {#regex {$skill} {liumai%*} {uw} {wi int}};
+			#ticker {learn_act} {learn $skill from $master for $learn_count;exert regenerate} {0.3};
+		};		
+	}; 
+}
+
+#action {^%?%?你的内力不够。} {
+	#unticker {learn_act};
+	dazuo max;
+}
+
+#action {^%?%?$dazuo_end} {
+	#variable epochStamp @get_epoch_time{};
+	exert recover;
+	#if {$learn_status[$learn_idx] > 0} {
+		#loop {1} {&learn_list[]} {l_cnt} {
+			#math learn_idx {$learn_idx+1};
+			#if {$learn_idx > &learn_list[]} {#variable learn_idx 1};
+			#if {$learn_status[$learn_idx] == 0} {#break};
+		};
+		#unvariable l_cnt;
+		#if {$learn_status[$learn_idx] > 0} {learn.end};
+		#else {
+			#variable skill $learn_list[$learn_idx];
+			#if {"$me[family]" == "明教"} {
+				#if {"$skill" == "strike"} {bai wei;#variable master {wei yixiao}};
+				#elseif {"$skill" == "claw"} {bai yin;#variable master {yin tianzheng}};
+				#elseif {"$skill" == "cuff"} {bai xie;#variable master {xie xun}};
+				#elseif {"$skill" == "parry"} {bai xie;#variable master {xie xun}};
+				#else {bai zhang;#variable master {zhang wuji}};
+			};
+			#if {"$me[family]" == "密宗"} {
+				#echo {密宗弟子};
+				#if {"$skill" == "blade"} {fly xs;ed;n;ed;ed;su;wu;wu;su;wu;su;n;su;e;enter;bai laozu;#variable master {xuedao laozu}};
+				#elseif {"$skill" == "hammer"} {fly xs;#2 n;w;u;e;bai fawang;#variable master {jinlun fawang}};
+				#elseif {"$skill" == "longxiang"  && $me[comb_exp]<1500000} {fly xs;#2 n;w;u;e;bai fawang;#variable master {jinlun fawang}};
+				#else {fly xs;#2 n;w;u;eu;n;bai zhi;#variable master {jiumo zhi}};
+			};
+			#if {"$me[family]" == "大理段家"} {#regex {$skill} {liumai%*} {uw} {wi int}};
+			#if {&skill_list[临济十二庄] != 0} {enable force linji-zhuang;exert zhixinzhuang};
+			#ticker {learn_act} {learn $skill from $master for $learn_count;exert regenerate} {0.3};
+		}
+	};
+	#else {		
+		#if {&skill_list[临济十二庄] != 0} {enable force linji-zhuang;exert zhixinzhuang};
+		#ticker {learn_act} {learn $skill from $master for $learn_count;exert regenerate} {0.3};
+	};
+}
+
+#action {^%?%?{也许是缺乏实战经验|也许是学问不够深}} {
+	#unticker {learn_act};
+	#variable learn_status[$learn_idx] 1; 
+	dazuo max;
+}
+
+#action {^%?%?{这项技能你的程度|这项技能你恐怕必须找别人学了|这项技能你的程度已经不输你师父了|你的基本功火候未满}} {
+	#unticker {learn_act};
+	#variable learn_status[$learn_idx] 2; 
+	dazuo max;
+}
+
+#action {^{[^：]+}神色间似乎对你不是十分信任} {
+	#unticker {learn_act};
+	#variable learn_status[$learn_idx] 2; 
+	dazuo max;
+}
+
+#action {^%?%?这套剑法我%*教到这儿} {
+	#unticker {learn_act};
+	#variable learn_status[$learn_idx] 2; 
+	dazuo max;
+}
+
+#action {^%s%s{你的潜能不够学习这么多次了。|你的潜能不够研究所需的了。|这里不让学习！|你要向谁求教？}} {
+	#delay {0.5} {learn.end};
+}
+
+#action {^%?%?你现在精不够，无法控制内息的流动！} {
+	#delay {gin_wait} {exert regenerate;dazuo max} {2};
+}
+
+#nop ==========================Function==========================
+#function {get_learn_count} {
+	#math {result} {%1/50}; 
+}
+
+#class {learn} close

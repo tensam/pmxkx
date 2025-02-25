@@ -1,0 +1,326 @@
+#class {ask} open
+#nop ==========================Variable==========================
+#variable {askClass} {1};
+#variable {state} {ask};
+#variable {ask_idx} {1};
+#variable {maxlevel} {0};
+#variable {bAutoAfterAsk} {0};
+#variable {l_askskill} {};
+#variable {bsuper} {0};
+#variable {askskill} {};
+#variable {skill_list_name} {};
+#variable {minlvl} {9999};
+#var {temp_ask_list} {$ask_list};
+#var {inter} {0.2};
+#var {ask_cnt} {1};
+#var lvl_up 0;
+#variable {wait_time} {0.5};
+
+#nop ===========================Alias============================
+#alias {ask.start} {
+    updatedolist ask;
+    score;
+    #if {$me[deposit_pot] < 0} {ask.end};
+    #else {
+        #class superint read $MOD/superint.tin;
+        #if {$bsuper == 1} {fly wm;w;tell $bag_id superint};
+        fly ca;s;withdraw $me[deposit_pot] qn;
+        #var {askskill} {@selectSkill{}};
+        uw;
+        #if {"$askskill" != ""} {#delay {1} {en_ask;;gotonpc 王语嫣}};
+    #else {#echo no~skill~to~ask;ask.end};
+    }   
+}
+
+
+#alias {ask1.start} {
+    #variable {bAutoAfterAsk} {1};
+    ask.start;
+}
+
+#alias {ask2.start} {
+    #variable {bsuper} {1};
+    #variable {bAutoAfterAsk} {1};
+    ask.start;
+}
+
+#alias {ask.kill} {
+	#unticker {ask_act};
+    #unticker {practice_act};
+    #unvariable {temp_ask_list};
+    #undelay {cmd_over};
+	#class {walk} kill;
+	#class {ask} kill;
+}
+
+
+#alias {ask.end} {
+    halt;unwield all;remove all;weara;wi;
+    halt;fly wm;w;
+    #if {$bsuper == 1} {superint.back};
+    #if {$bAutoAfterAsk == 1} {
+        #showme ask is over goto mission;
+        robot start;
+    };
+    ask.kill;
+    l;
+}
+
+#alias {ask.chi} {
+    get zongzi from dai;
+    eat zongzi;
+    put zongzi in dai;
+    #3 he pi shuinang;
+}
+
+#alias {arrive_cmd} {
+    #showme 刚到达$temp_ask_list[%*];
+    // #if {$bsuper == 1} {#echo {superint mode!!!}};
+	// #else {#variable {int_level} {int}};
+	remove all;unwield all;wear all;wield $int_level;
+	#regex {$askskill} {liumai%*} {hmm} {wield $int_level};
+    #echo $askskill;
+    #var {state} {ask};
+    #showme 到达的$temp_ask_list[%*];
+    #$ask_cnt ask wang about $askskill
+}
+
+#nop #ticker {ask_act} {#$ask_cnt ask wang about $askskill} {$inter};
+
+#alias {ask_next} {
+    #showme 执行asknext;
+    #unvariable askskill;
+    #var {askskill} {@selectSkill{}};
+    #if {"$askskill" == ""} {ask.end};
+    #else {
+        #delay {ask_act} {#ticker {ask_act} {#$ask_cnt ask wang about $askskill} {$inter}} {1};
+    }
+}
+
+
+
+#nop ===========================Action===========================
+
+#action {你渴得眼冒金星，全身无力。} {#zap}
+
+#action {痴心情长剑只有从逍遥派掌门人处学习。} {
+    enable sword tianyu-qijian;
+}
+
+#action {你必须先找一把剑才能练剑法。} {wield jian}
+
+#action {练%*必须空手。} {uw}
+
+#action {^%?%?王语嫣{疑惑地看着你|摇摇头|耸了耸肩|睁大眼睛}} {
+    n;s
+}
+
+#action {^%?%?你一次输入太多命令了。} {
+    #unticker ask_act;
+    #unticker practice_act;
+    #unticker busy_test;
+    #delay {cmd_over} {yun regenerate;dazuo max} {10};
+}
+
+#action {^%?%?一股暖流发自丹田流向全身，慢慢地你又恢复了知觉} {
+    n;s;yun regenerate;dazuo 10;
+} {1}；
+
+
+#action {^%?%?你听了王语嫣的指点，对%*的体会又深了一层。} {
+    #delay {wait_ask} {ask wang about $askskill;yun regenerate} {$wait_time}
+}
+
+#action {^%?%?王语嫣说道：你正忙着呢。} {
+    #delay {1} {ask wang about $askskill;yun regenerate}
+}
+
+#action {^%?%?你的内力不够。} {
+	#unticker {ask_act};
+    #unticker {practice_act};
+    #if {$skill_list[龙象般若功][level] > 290} {exert powerup};
+	dazuo max;
+}
+
+#action {^%?%?checkhp} {
+    #if {$me[eff_force] < 1.5*$me[max_force] && $lvl_up == 0} {
+        #unticker {ask_act};
+        #unticker {practice_act};
+	    dazuo max;
+    };
+}
+
+#action {^%?%?$dazuo_end} {
+    #unticker ask_act;
+	exert recover;
+    #format hour {%t} {%H};
+    #if {$hour>= 0 && $hour<5 } {#zap};
+    #if {"$state" == "ask"} {
+        uw;wield $int_level;
+        #ticker {ask_act} {#$ask_cnt ask wang about $askskill} {$inter};
+    };
+    #elseif {"$state" == "practice"} {
+        #ticker {practice_act} {practice $askskill 22;exert recover} {0.2};
+    };
+    #else {ask.end};
+	#variable epochStamp @get_epoch_time{};
+}
+
+#action {^%?%?你现在精不够，无法控制内息的流动！} {
+	#delay {dazuo_wait} {exert regenerate;#if {$skill_list[龙象般若功][level] > 290} {exert powerup};dazuo max} {2};
+}
+
+#action {^%?%?这里没有这个人} {
+    south
+}
+
+#action {^%?%?王语嫣说道：%*先休息一下吧。} {
+    exert regenerate;
+    #undelay ask_act;
+    #unticker ask_act;
+    #delay {dazuo_wait} {exert regenerate;#if {$skill_list[龙象般若功][level] > 290} {exert powerup};dazuo max} {0.1};
+}
+
+#action {^%?%?你使用的武器不对} {#echo $askskill;uw;wield $askskill}; 
+
+#action {^%?%?王语嫣说道：你的潜能太少了} {
+    #unticker {ask_act};
+	ask.end;
+}
+
+#action {^%?%?{也许是缺乏实战经验|你的实战经验不足|也许是缺乏实战经验，你的练习总没法进步。}} {
+    #unticker {ask_act};
+    #list {ask_list_name} {clear};
+	#foreach {$temp_ask_list[%*]} {l_skill} {#list {ask_list_name} {add} {$l_skill[name]}};
+    #list {ask_list_name} {find} {$askskill} {l_find};
+    #showme {删除$askskill};
+    #if {$l_find > 0} { #list {temp_ask_list} {delete} {$l_find}};
+    ask_next;
+}
+
+#action {^%?%?你的基本功火候未到，必须先打好基础才能继续提高} {
+        s;uw;wield $int_level;
+        #unticker {practice_act};
+        #var {state} {ask};
+        ask_next;
+}
+
+
+#action {王语嫣说道：%*的%*造诣不够，我不能指点你更深一层的%*。} {
+    #unticker {ask_act};
+    #undelay {ask_next};
+    #undelay {up}; 
+    #if {"$state" == "ask"} {
+        #if {"$askskill" == "parry"} {
+            #showme parry处理流程启动;
+            #list {ask_list_name} {clear};
+	        #foreach {$temp_ask_list[%*]} {l_skill} {#list {ask_list_name} {add} {$l_skill[name]}};
+            #list {ask_list_name} {find} {$askskill} {l_find};
+            #if {&ask_list_name[] == 1} {ask.end};
+            #else {
+                #showme 更换学习技能;
+                #math {ask_idx} {$l_find+1};
+                #if {$ask_idx > &ask_list_name[]} {#variable {ask_idx} {1}};
+                #showme 新技能序号$ask_idx 为$ask_list_name[$ask_idx];
+                #variable {askskill} {$ask_list_name[$ask_idx]};
+                #ticker {ask_act} {#$ask_cnt ask wang about $askskill} {$inter};
+            }
+        };
+        #else {
+            #var {state} {practice};
+            halt;n;uw;;wield $askskill;
+            #ticker {practice_act} {practice $askskill 22;exert recover} {0.2};
+        };
+    };
+}
+
+
+#action {^%?%?这里不让习武！} {
+    n;uw;;wield $askskill;
+}
+
+
+
+
+#action {^%?%?你的「%1」进步了！} {
+    #var lvl_up 1;
+    ask.chi;
+    #if {"$state" == "ask"} {
+        #if {"%1" == "基本招架"} {
+            #unticker {ask_act};
+            #delay {ask_next} {ask_next} {1};
+        };
+        #else {
+            #unticker {ask_act};
+            #var {state} {practice};
+            halt;n;uw;;wield $askskill;
+            #ticker {practice_act} {practice $askskill 22;exert recover} {0.2};
+        };   
+    };
+    #elseif {"$state" == "practice"} {
+        #unticker {practice_act};
+        #delay {1} {
+            s;uw;wield $int_level;
+            #var {state} {ask};
+            ask_next;
+        };  
+    };
+    #else {
+        #showme {"状态不对，结束"};
+        ask.end
+    };
+    #delay {0.5} {#var lvl_up 0};
+}
+
+#action {你要问谁什么事？} {
+    #unticker ask_act;
+}
+
+#nop ===========================Function===========================
+#function {selectSkill} {
+    #var {result} {};
+    #if {&temp_ask_list[] > 0} {
+        iskills;
+        #var {ask_idx} {1};
+        #while {$ask_idx <= &temp_ask_list[]} { 
+            #variable {temp_ask_list[$ask_idx][level]} {$skill_list[$skill_e2c[$temp_ask_list[$ask_idx][name]]][level]};         
+            #math {ask_idx} {$ask_idx+1};
+        };
+        #math {aim_skilllvl} {@minlevel{}};
+        #var {aim_exp} {@skillExp{$aim_skilllvl}};
+        #if {$me[comb_exp] >= $aim_exp} {#variable result @minlevelSkill{}};
+        #else {#var {result} {}};
+        #showme select 函数中的$temp_ask_list[%*];
+    };
+    #else {#showme 列表空了};
+    #return $result;
+}
+
+#function {minlevelSkill} {
+	#variable {result} {};
+    #variable {minlvl} {9999};
+	#foreach {$temp_ask_list[%*]} {l_skill} {
+		#if {$l_skill[level] < $minlvl} {
+            #var minlvl $l_skill[level];
+            #variable {result} {$l_skill[name]}
+        };
+	};
+    #echo $result;
+	#unvariable {l_skill};
+    #return $result;	
+}
+
+
+#function {minlevel} {
+	#variable {result} {};
+    #variable {minlvl} {9999};
+	#foreach {$temp_ask_list[%*]} {l_skill} {
+		#if {$l_skill[level] < $minlvl} {
+            #variable {result} $l_skill[level];
+        };
+	};
+    #echo $result;
+	#unvariable {l_skill};
+    #return $result;	
+}
+#class {ask} close

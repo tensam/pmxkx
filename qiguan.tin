@@ -1,0 +1,62 @@
+#class {qiguan} open
+#nop ==========================Variable==========================
+#variable {qiguan_loc} {
+	{峨嵋金顶日出}{fly em;#3 wu;#3 su;sw;su;se;wu;su;#ticker {qiguan_act} {dazuo 10} {1};#delay {timefinish} {qiguan.end} {600}}
+	{衡山水帘洞瀑布}{fly hy;#10 n;nu;nw;nu;ed;e;eu;#ticker {qiguan_act} {dazuo 10} {1};#delay {timefinish} {qiguan.end} {600}}
+	{无量山玉壁剑舞}{fly ws;wd;#2 nd;#2 wu;w;#ticker {qiguan_act} {dazuo 10} {1};#delay {timefinish} {qiguan.end} {600}}
+	{长白山天池流星}{fly gw;#3 n;#2 e;ne;e;n;e;e}
+	{钱塘江潮信}{fly fz;#5 w;#2 nw;nu;nd;nu;n;#2 ne;e;s;#ticker {qiguan_act} {dazuo 10} {1};#delay {timefinish} {qiguan.end} {600}}
+}
+
+#nop ===========================Alias============================
+#alias {qiguan.start} {
+	#if {&{qiguan_name} != 0} {
+		#regex {$qiguan_name} {^$} {qiguan.end} {$qiguan_loc[$qiguan_name]};		
+	};
+	#else {qiguan.end};
+}
+
+#alias {qiguan.end} {
+	#undelay {timefinish};
+	#variable {qiguan_name} {};
+	#echo $qiguan_name;
+	#unticker {qiguan_act};
+	#class {qiguan} kill;
+	halt;fly wm;w;
+	#if {$bdigmoney} {ts digmoney;te digmoney};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?$dazuo_start} {
+	#unticker {qiguan_act};
+	halt;
+	qiguan.end;
+}
+
+
+#action {^%?%?$dazuo_end} {
+	#unticker {qiguan_act};
+	exert recover;
+	qiguan.end;
+}
+
+#action {^%?%?你现在的气太少了，无法产生内息运行全身经脉。} {
+	#unticker {qiguan_act};
+	exert recover;
+	qiguan.end;
+}
+
+#action {^%?%?船夫在旁边拿眼瞪着你看。冰面化冻，还是乘船吧！} {
+	give 1 gold to fu;
+	#delay {autofinish} {
+		#undelay {autofinish};
+		qiguan.end;
+	} {20};
+};
+
+#action {^%?%?大门坎子 -} {
+	#undelay {autofinish};
+	#delay {1} {sb;se;e;se;e;e;eu;su;eu;e;eu;se;sw;ub;sd;exert heal;#ticker {qiguan_act} {dazuo 10} {1};#delay {timefinish} {qiguan.end} {600}};
+};
+
+#class {qiguan} close

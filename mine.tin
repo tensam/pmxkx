@@ -1,0 +1,121 @@
+#class {mine} open
+#nop ==========================Variable==========================
+#variable {mine} {1};
+#variable {mineloc_idx} {1};
+#variable {chu_cnt} {0};
+
+#variable {goto_mineloc} {
+    {1}{{loc}{赤帝峰}{rnum}{1811}{path}{fly ss;sd;sd;sw;sw;se;sd;sd;se;su}}
+    {2}{{loc}{山路}{rnum}{1811}{path}{fly ss;sd;sd;sw;sw;se;sd;sd;se;su;sd}}
+    {3}{{loc}{山路}{rnum}{1811}{path}{fly ss;sd;sd;sw;sw;se;sd;sd;se;su;sd;se}}
+    {4}{{loc}{云门}{rnum}{999}{path}{fly ws1;se;su}}
+    {5}{{loc}{青柯坪}{rnum}{999}{path}{fly ws1;se;su;su}}
+    {6}{{loc}{莎萝坪}{rnum}{999}{path}{fly ws1;se}}
+    {7}{{loc}{金龙峡}{rnum}{999}{path}{fly bj;#4 s;se;sw}}
+    {8}{{loc}{翠屏谷}{rnum}{999}{path}{fly bj;#4 s;se;sw;se}}
+    {9}{{loc}{翠屏谷}{rnum}{999}{path}{fly bj;#4 s;se;sw;se;se}}
+    {10}{{loc}{武夷山}{rnum}{999}{path}{fly fz;#5 w;nw;nw;nu;nd;w}}
+    {11}{{loc}{九曲溪}{rnum}{999}{path}{fly fz;#5 w;nw;nw;nu;nd;w;w}}
+    {12}{{loc}{九曲溪}{rnum}{999}{path}{fly fz;#5 w;nw;nw;nu;nd;w;w;w}}
+
+}
+
+
+#nop ===========================Alias============================
+#alias {mine.start}
+{
+	#if {&robot ==0 || (&robot != 0 && "$dolist[-1]" != "mine")} {
+		#variable mission_complete 0;
+		updatedolist mine;
+		#showme {goto~mine !!!};
+        fly ca;s;
+        deposit $traps[nGold] gold;
+        deposit $traps[nSilver] silver;
+        withdraw 6 silver;
+        #delay {10} {
+            fly xi;#3 s;e;l tiejiang;buy hezui chu;
+            #high {^{你|你的}%*} {light orange};
+            #high {%*你} {high orange};
+        }
+	};
+}
+
+
+#alias {mine.kill} {
+    #unticker {mine_act};
+    #unticker {buychu};
+    #ungag {你刚刚才干过活,要休息一会了};
+    #ungag {你现在很忙！不能挖！};
+    #unhigh {^{你|你的}%*};
+    #unhigh {%*你};
+    #class {mine} kill;
+	#echo {%c#class mine killed!} {cyan};
+}
+
+#alias {mine.end}
+{
+	mine.kill;
+	halt;fly wm;w;
+}
+
+#action {^%?%?你要看什么？} {
+    fly wm;w;
+    #ticker {buychu} {fly xi;#3 s;e;l tiejiang;buy hezui chu} {30};
+}
+
+
+#nop ===========================Action===========================
+#action {^%?%?你从铁匠那里买下了一把鹤嘴锄。} {
+    #unticker {buychu};
+    uw;wield chu;
+    #delay {2} {
+                $goto_mineloc[@rnd{1;12}][path];
+                #ticker {mine_act} {mine} {1};
+            }
+}
+
+#action {^%?%?这里的矿脉被采的差不多了，请保护矿脉，等等再采。} {
+    #unticker {mine_act};
+    $goto_mineloc[@rnd{1;12}][path];
+    #ticker {mine_act} {mine} {1};
+}
+
+#action {^%?%?你挥动鹤嘴锄开始在地上挖了起来。} {
+    #gag {你刚刚才干过活,要休息一会了};
+    #gag {你现在很忙！不能挖！};
+    #gag {只闻琴声柔和之至};
+    #gag {良久你把手中的};
+    #gag {^> $};
+    #gag {^$};
+}
+
+
+
+#action {^%?%?{一阵挖掘之后，你什么也没挖到。|你得到了一块}} {
+    #if {"$me[family]" == "梅庄"} {
+        #unticker {mine_act};
+        #delay {2} {
+            uw;wield qin;yun qingxin;
+        };
+    };  
+}
+
+#action {^%?%?{只听“铛”的一声，你手中的鹤嘴锄断成两截！|你手中无琴}} {
+    #unticker {mine_act};
+    #unaction {^%?%?{一阵挖掘之后，你什么也没挖到。|你得到了一块}};
+    #showme 断了;
+    #delay {2} {
+        uw;drop chu;
+        fly xi;#3 s;e;#20 give ore to tiejiang;
+        #delay {4} {mine.end};
+    };
+}
+
+#action {^%?%?良久你把手中的%*一搁} {
+    #ticker {mine_act} {mine} {1};
+    #delay {2} {
+        uw;wield chu;mine
+    }
+}
+
+#class {mine} close

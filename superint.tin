@@ -1,0 +1,21 @@
+#class {superint} open
+
+#nop 9
+#variable {superint_weapon}{jinniu jian}
+#variable {superint_weapon_2}{qingyang jian}
+
+
+#nop 11
+#variable {superint_equips} {
+    {1}{baihe yi}
+    {2}{songluan mao}
+    {3}{fengquan hushou}
+    {4}{ziwei xue}
+    {5}{shenying ring}
+}
+
+#var {superint_equips_2} {
+    {1}{tiancheng xue}
+}
+
+#class {superint} close

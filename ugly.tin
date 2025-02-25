@@ -1,0 +1,330 @@
+#CLASS {char} OPEN
+#nop ==========================Global variable==========================================
+#nop --------------------- char状态以及属性设置 --------------------------------
+/*
+设置机器人是否开启的flag（0：不开启，1：开启）。 
+若不想登录即开启机器人，下行前添加#nop进行加注释。
+若不注释，在登陆后用#unvariable robot删除robot变量即可停止机器人转为手动模式。
+*/
+#variable {robot} {1};
+
+#nop 福州向阳老宅铜钱。
+#variable xy_coins {3223};
+
+#nop 是否进行teamtask 1:是  0：否
+#variable bttask {1};
+
+#nop  teamtask伙伴。  配对使用，队长填写该值
+#variable {ttask_mate} {ldl};
+
+#nop  teamtask队长信息。  
+#nop #variable {lead_en} {ldl};
+
+#nop 是否吃补品 0:不吃  1：吃
+#variable {bDrug} {0};
+
+#nop 是否可以拿黒木令(即是否救过任我行) （0：不能 1：能） 
+#variable hmling {1};
+
+#nop 是否要腰牌(加入一品堂) （0：否 1：是） 
+#variable {bYaopai} {1};
+
+#nop 是否需要醉酒状态 （0：否 1：是）  如果选是，bag_id大米身上要有大酒坛。
+#variable {bDrunk} {0};
+
+#nop ttask和task放弃的地点
+#variable {abandonroom_list} {
+	{1}{侠客岛 石洞}
+	{2}{侠客岛 崖底}
+	{3}{逍遥林 秘密通道}
+	{4}{逍遥林 石级}
+	{5}{逍遥林 石洞}
+	{6}{逍遥林 岩缝}
+	{7}{逍遥林 石室大门}
+	{8}{昆仑山 雪山斜坡}
+	{9}{昆仑山 大平台}
+	{10}{泉州 赤嵌城}
+	{11}{泉州 日月潭}
+	{12}{昆仑山 山沟}
+	{12}{昆仑山 昆仑仙境}
+	{14}{光明顶 甬道}	
+	{15}{逍遥林 岩洞}
+	{16}{光明顶 深潭}
+	{17}{光明顶 石室}
+	{18}{昆仑山 瀑布}
+	{19}{昆仑山 翠谷}
+	{20}{昆仑山 山壁}	
+}
+
+#nop --------------------------- 特殊物品设置 --------------------------------------
+#nop ------------- 若使用下列某个物品，请将其对应的#variable前的#nop删除 --------------
+#nop 是否使用燃木刀法（木刀）。 （0：否 1：是）
+#variable {bUseMudao} {0};
+
+#nop 是否使用生死符（酒袋）。 （0：否 1：是）
+#nop #variable {bUseJiudai} {0};
+
+#nop 是否使用碧磷针（星宿）。 （0：否 1：是）
+#variable {bUseBilin} {0};
+
+#nop 是否使用匕首（梅庄）。 （0：否 1：是）
+#variable {bUseDagger} {0};
+
+#nop ------------------------- 辅助大米设置 -----------------------------------------
+#nop 背包Dummy
+#variable {bag_id} {mrs};
+
+#nop 疗伤Dummy
+#variable {heal_id} {xuyun};
+
+#nop 华山break wall Dummy。 华山派的id不需要该大米。
+#variable {break_id} {mrs};
+
+#nop task装备收集Dummy
+#variable {equip_id} {bagadm};
+
+#nop task_helper。
+#nop #variable {task_helper} {};
+
+#nop 逍遥背人dummy
+#variable {xy_carry} {xyldm};
+
+#nop 明教背人dummy。 **开发还没完成，reserved
+#nop #variable {mj_carry} {mjdm};
+
+#nop 昆仑背人dummy。**开发还没完成，reserved
+#nop #variable {kl_carry} {kldm};
+
+
+
+#nop --------------------------- 装备设置 --------------------------------------
+#nop ------ 战斗装备,可以多兵器，第一位的是主兵器, 后面的是辅助兵器 ---------------
+#variable {weapons} {
+	{1}{wohu bang}
+	{2}{jinniu jian}
+	{3}{songluan dao}
+	{4}{denglong zhang}
+};     
+
+#variable {equips} {
+	{1}{wugou yi}
+	{2}{muxi mao}
+	{3}{zihe xue}
+	{4}{subi hushou}
+	{5}{beidou ring}
+	{6}{piaomiao xunzhang}
+};
+
+#nop 学习装备。
+#variable {int_weapon} {jinniu jian};
+#variable {int_equips} {
+	{1}{wanzhang yi}
+	{2}{songluan mao}
+	{3}{ziwei xue}	
+	{4}{huowei hushou}
+	{5}{beidou ring}
+	{6}{piaomiao xunzhang}
+};
+
+#nop ------------------------技能学习设置------------------------
+#nop 潜能门限，当存储潜能超过该值会去学习/研究，消耗掉对应的潜能。
+#variable {potVolume} {50000000};
+
+#nop 是否技能平均增长 （0：否 1：是）
+#variable {bAverageSkill} {1};
+
+#nop 设置机器人学习的技能列表，学习的优先级。
+#variable {learn_list} {	
+};
+
+#nop 设置机器人研究的技能列表，研究的优先级
+#variable {research_list} {
+};
+
+#nop 设置机器人侠客岛面壁的技能列表。
+#variable {mianbi_list} {
+	{1}{staff}
+	{2}{force}
+	{3}{sword}
+	{4}{strike}
+};
+
+#nop 设置机器人王语嫣ask的技能列表。
+#variable {ask_list} {
+	{1}{{name}{stick}{level}{}}
+	{2}{{name}{parry}{level}{}}
+};
+
+#nop ask 特殊技能处理
+#alias {en_ask} {enable parry dagou-bang}
+
+#nop 设置机器人所做的练习技能列表，以及优先级。
+#variable {practice_list} {
+    {1}{dodge}
+	{2}{strike}
+	{3}{stick}
+	{4}{staff}
+};
+
+#nop ------------------- 机器人任务设置 -------------------------------
+#nop 做任务时是否使用双倍奖励 （0：不使用 1：使用）
+#variable {bDouble} {0};
+
+#nop 送信杀killer的场所（若不设置，内部有缺省的设置，但若与其他人重合会有危险。建议自行设置）。
+#variable sx_go {fly yzw};
+
+#nop 是否需要降Exp，反复利用digjob来获得潜能，学习技能。 （0：否 1：是）
+#variable {bDownExp} {0};
+
+#nop quest任务是否交钱取消不能完成的任务 （0：不交钱等待任务自然结束 1：交钱结束任务）
+#variable bCancel {0};
+
+#nop 官府任务是否受贿.  （0 不受贿 1 受贿 ）
+#variable {bribe} {1};
+
+#nop 萧峰任务难度设置： 1～～5 由易到难
+#variable {xiaojob_difficult} {5};
+
+#nop 是否做神书任务： （0:否  1:是）
+#variable {bShenshu} {0};
+
+#nop 设置机器人所做的mission的list
+#variable {mission_list} {
+	{1}{mission_task}
+	{2}{mission_guanfu}
+	{3}{nop}
+	{4}{mission_npc}
+	{5}{mission_guojob}
+	{6}{mission_item}
+	{7}{mission_task}
+	{8}{mission_guanfu}
+	{9}{nop}
+	{10}{mission_songxin}
+	{11}{mission_biao}
+	{12}{mission_task}
+	{13}{mission_guanfu}
+	{14}{mission_xiaojob}
+	{15}{nop}}	
+};
+
+#nop 设置机器人所做的teamtask mission的list
+#variable {tt_mission_list} {
+	{1}{mission_ttask}
+	{2}{mission_guanfu}
+	{3}{mission_ttask}
+	{4}{mission_npc}
+	{5}{mission_ttask}	
+	{6}{mission_guojob}
+	{7}{mission_ttask}
+	{8}{mission_item}
+	{9}{mission_ttask}
+	{10}{mission_songxin}
+	{11}{mission_ttask}
+	{12}{mission_biao}
+	{13}{mission_ttask}
+};
+
+#nop 设置double时间机器人所做的mission的list
+#variable {double_mission_list} {
+
+};
+
+#nop 设置mission_list做完后执行的mission list
+#variable {post_mission_list} {
+	{1}{ask}
+	{2}{xkd_mianbi}
+	{3}{jump_tower}
+	{4}{research}
+	{5}{practice}
+	{6}{full_force}
+};
+
+#nop ------------------- 使用技能pfm设置 -----------------------------------
+#nop busy perform sequence
+#variable {busy_pfm} {
+	{1}{prefight;wi1;perform stick.chan $kill_id;uw}
+	{2}{enable move xiaoyaoyou;perform move.canghaiyixiao $kill_id}	
+};
+
+#nop attack perform sequence
+#variable {attack_pfm} {
+	{1}{uw;enable parry xianglong-zhang;perform parry.sanhui $kill_id}
+	{2}{wi2;enable sword lonely-sword;perform sword.jiushi $kill_id}
+	{3}{uw;bei tiezhang-zhangfa;perform strike.tiezhangxianglong $kill_id}
+	{4}{wi1;perform stick.luanda $kill_id;uw}
+    {5}{uw;enable parry xianglong-zhang;perform parry.leiting $kill_id}
+	{6}{uw;perform strike.tianlei $kill_id}
+	{7}{uw;hubo $kill_id}		
+};
+
+#nop attack task perform sequence
+#variable {attack_task_pfm} {
+};
+
+#nop attack xiaojob perform sequence
+#variable {attack_xiao_pfm} {
+};
+
+#nop 为了实现挑战分时间段释放不同技能，防御反击，简化代码的alias
+#alias {tz_pfm} {
+	#if {@get_epoch_time{} < $tiaozhanStamp+120} {#nop};
+	#else {%1}
+}
+
+#nop attack tiaozhan perform sequence
+#variable {attack_tiaozhan_pfm} {
+	{1}{uw;perform parry.sanhui $kill_id}
+	{2}{wi2;enable sword lonely-sword;perform sword.jiushi $kill_id}
+	{3}{wi2;perform sword.poqi $kill_id}
+	{4}{wi2;perform sword.pozhang $kill_id}
+	{5}{uw;perform parry.leiting $kill_id}
+	{6}{uw;perform strike.tianlei $kill_id}		
+};
+
+#nop ----------------------- 多特内缺省设置 -----------------------
+#nop 脚本中对特内数量进行判断，当数量大于1时，quit时才检测下述缺省变量，若存在，则切换到该特内后退出，若不存在，切换至等级高的特内退出。
+#variable {default_specialforce} {};
+
+#nop ----------------------- 五行相克特内设置 -----------------------
+#nop 脚本中对特内数量进行判断，当数量大于1时，才会用到下述五行变量；当数量大于1时，不设置下述变量，就是固定特内，不会根据task的五行进行切换特内。
+#variable {anti_metal} {huntian-qigong};
+#variable {anti_fire} {huntian-qigong};
+#variable {anti_wood} {guiyuan-tunafa};
+#variable {anti_water} {huntian-qigong};
+#variable {anti_earth} {guiyuan-tunafa};
+
+
+#nop ======================alias=================================================
+#nop wield 第一种武器
+#alias {wi1} {
+	uw;wield $weapons[1];
+}
+
+#nop wield 第一种武器
+#alias {wi2} {
+	uw;wield $weapons[2];
+}
+
+#nop wield 第一种武器
+#alias {wi4} {
+	uw;wield $weapons[4];
+}
+
+#nop  进入战斗准备（尚未进入kill状态)
+#alias {fight_ready} {
+	yun powerup;
+}
+
+#nop 某些门派需要进入kill状态后，才能提升自己的pfm，该命令会在进入kill后被执行一次
+#alias {prefight}
+{
+	uw;
+	enable force huntian-qigong;yun shengang;
+	enable force guiyuan-tunafa;perform dodge.piao;
+	perform strike.zhangdao;
+	perform parry.xianglong;
+}
+
+#nop ============================action========================================
+
+#CLASS {char} CLOSE

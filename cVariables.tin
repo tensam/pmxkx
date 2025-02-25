@@ -1,0 +1,43 @@
+#class {cVariables} open
+#nop =======================Global variable======================
+#variable {cVariablesClass} {1};
+
+/* mission status  */
+#variable {mission_status} {};
+
+#alias {mission_status.reset} {
+    #var {mission_status[mission_ttask][complete]} {0};
+    #var {mission_status[mission_task][complete]} {0};
+    #var {mission_status[mission_guanfu][complete]} {0};
+    #var {mission_status[mission_guojob][complete]} {0};
+    #var {mission_status[mission_biao][complete]} {0};
+    #var {mission_status[mission_songxin][complete]} {0};
+};
+
+
+ /* epoch  */
+#variable {doubleEpoch} {0};
+ 
+/* time stamps  */
+#variable {doubleStamp} {};
+#variable {biwuStamp} {};
+#variable {starClearStamp} {};
+#variable {starFullStamp} {};
+#variable {tiaozhanStamp} {};
+
+/* 记录断线日是周几 */
+#variable {zapWeekday} {};
+
+/* qiguan(event)  */
+#variable {qiguan_name} {};
+
+#nop double time flag
+#variable {double_flag} {0};
+
+#nop mission_item
+#variable {item_failure} {0};
+
+#nop mission_task
+#variable {taskCancel} {0};
+
+#class {cVariables} close

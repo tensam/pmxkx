@@ -1,0 +1,205 @@
+#class {mission_yulu} open
+#nop ==========================Variable==========================
+#variable {mission_yuluClass} {1};
+#variable {dig_area} {};
+#variable {room_desc} {};
+#variable {vnum_list} {};
+#variable {vnum_idx} {1};
+#variable {bag_id} {mrs};
+#variable {yulu_id} {breakadm}
+
+#nop ===========================Alias============================
+#alias {mission_yulu.start} {
+	bei none;bei tanzhi-shentong lanhua-shou;
+	#if {$me[comb_exp] < 1000000} {
+		#variable mission_complete 0;
+		updatedolist mission_yulu;
+		#class walk read $MOD/walk.tin;
+		fly wm;e;e;ask qu qing about job;
+		#delay {ask_failure} {mission_yulu.end} {3};
+	};
+	#else {mission_yulu.end};
+}
+
+#alias {mission_yulu.kill} {
+	#if {$walkClass == 1} {walk.kill};
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_yulu} kill;
+}
+
+#alias {mission_yulu.end} {
+	iii;
+}
+
+#alias {mission_yulu.fail} {
+	#list {trapslist} {find} {bao wu} {l_baowu};
+	#if {$l_baowu == 0} {
+		scmd {halt;fly wm;e;e;ask qu qing about fail;
+			ask qu qing about job};	
+	};
+	#else {
+		scmd {halt;fly wm;e;e;give baowu to qu qing;mission_yulu.end};
+	};
+	#unvariable {l_baowu};
+}
+
+#alias {arrive_cmd} {
+	#echo $sess_name;
+	dig;
+}
+
+#alias {iii} {
+	#foreach {*traps[%*]} {l_item} {#variable {traps[$l_item]} {0}};
+	#unvariable {l_item};
+	#list {trapslist} clr;	
+	#variable {l_traps_silver} {};
+	#variable {l_traps_gold} {};
+	#action {^%?%?你身上带着下列这些东西} {
+		#action {^%%%0}	{
+			#regex {%%%0} {^{.*}{∶|→}{.*}(%*)} {
+				#format {l_traps_item} {%l} {&4};
+				#list trapslist add $l_traps_item;
+				#regex {&3} {%*{削断的|震碎的|断掉的|碎片}%*} {#list broken_equips add $l_traps_item};		
+			} {
+				#regex {%%%0} {^　　　%*(%*)} {
+					#if {"&2" == "Gold"} {#variable l_traps_gold &1};
+					#if {"&2" == "Silver"} {#variable l_traps_silver &1};
+					#if {"&2" == "Coin"} {#variable l_traps_coin &1};
+					#format {l_traps_item} {%l} {&2};
+					#if {"$l_traps_item" == "{renshen|heshouwu|qubing dan|lingxin dan|jieqi wan|she dan|shedan gan|tianxian yulu|fu wan|meili wan|shenli wan|ling zhi|xu lian|dan|thousand-cash}"} { 
+						fly wm;w;
+						#if {"$l_traps_item" == "tianxian yulu"} {give $yulu_id $l_traps_item} {give $bag_id $l_traps_item};
+						ylquit;
+					};
+				} {
+					#unaction {^%?%?你身上带着下列这些东西};
+					#unaction {^%%%%0};	
+					#if {"$l_traps_gold" != ""} {
+						#regex {$l_traps_gold} {%*两黄金} {#variable {traps[nGold]} {@ctoi{&1}}};
+					};	
+					#if {"$l_traps_silver" != ""} {
+						#regex {$l_traps_silver} {%*两白银} {#variable {traps[nSilver]} {@ctoi{&1}}};
+					};
+					#if {"$l_traps_coin" != ""} {
+						#regex {$l_traps_coin} {%*枚铜钱} {#variable {traps[nCoin]} {@ctoi{&1}}};
+					};
+					#if {$traps[nSilver]<50 || $traps[nSilver]>120} {
+						fly ca;s;
+						deposit $traps[nGold] gold;
+						deposit $traps[nSilver] silver;
+						deposit $traps[nCoin] coin;
+						withdraw 99 silver;
+						#delay {1} {ylquit};
+					};
+					#else {ylquit};	
+				}
+			}
+		};
+	};
+	#delay {2} {i};
+}
+
+
+#nop ===========================Action===========================
+#action {^%?%?你向曲清打听有关『job』的消息} {
+	#undelay {ask_failure};
+	#action {^%?%?曲清说道:拿好这个通天镜} {		
+		#unaction {^%?%?曲清说道:拿好这个通天镜};
+		#unaction {^%?%?曲清说道：%*休息吧}; 
+		#unaction {^%?%?曲清说道：%*怎么还不去挖宝？};
+		#variable {dig_area} {};
+		#variable {room_desc} {};
+		detect;
+	};
+	#action {^%?%?曲清说道：%*休息吧} {		
+		#unaction {^%?%?曲清说道：%*休息吧}; 
+		#unaction {^%?%?曲清说道:拿好这个通天镜};
+		#unaction {^%?%?曲清说道：%*怎么还不去挖宝？};
+		mission_yulu.end;
+	};
+	#action {^%?%?曲清说道：%*怎么还不去挖宝？} {
+		#unaction {^%?%?曲清说道：%*怎么还不去挖宝？};
+		#unaction {^%?%?曲清说道：%*休息吧}; 
+		#unaction {^%?%?曲清说道:拿好这个通天镜};
+		ask qu qing about fail;
+		ask qu qing about job;
+	};
+}
+
+
+#action {^%?%?宝物的地点似乎在%*。} {
+	#variable {dig_area} {$area_map[%3]};
+	#action {^%%0} {	
+		#regex {%%0} {%*■%*} {
+			#format {append} {%p} {%%0};
+			#variable {room_desc} {${room_desc}${append}};
+		} {
+			#delay {1} {#showme 开始寻宝};		
+			#unvariable append;
+			#unaction {^%%%0};
+		};
+	};
+}
+
+#action {^%?%?开始寻宝} {
+	#echo $sess_name;
+	#replace {room_desc} {■} {%*};
+	#variable room_desc {%*$room_desc%*};
+	#map goto 14;
+	#map list {roomarea} {$dig_area} {roomdesc} {$room_desc} {variable} {l_dig_mapList};
+	#if {&l_dig_mapList[] == 0} {
+		halt;mission_yulu.fail;
+	};
+	#else {
+		#list {vnum_list} clr;
+		#foreach {*l_dig_mapList[%*]} {l_vnum} {#list {vnum_list} {add} {$l_vnum}};
+		#unvariable l_vnum;
+		#variable {vnum_idx} {1};
+		#if {"$dig_area" == "jx"} {
+			#if {$vnum_list[$vnum_idx] == 1239} {#math vnum_idx {$vnum_idx+1}};
+			#if {$vnum_idx <= &vnum_list[]} {run.to $vnum_list[$vnum_idx]};
+			#else {halt;mission_yulu.fail};
+		};
+		#else {
+			#if {$vnum_idx <= &vnum_list[]} {walk.to $vnum_list[$vnum_idx]};
+			#else {halt;mission_yulu.fail};
+		};
+	};
+	#unvariable l_dig_mapList;
+}
+
+#action {^%?%?你忙着呢，等下再挖吧} {
+	#delay {1} {dig};
+}
+
+#action {^%?%?你找到了一件宝物。} {
+	#variable mission_complete 1;
+	scmd {halt;fly wm;e;e;give baowu to qu qing;mission_yulu.end};
+}
+
+#action {^%?%?你挖了半天，发现什么都没有，似乎找错地方了} {
+	#math vnum_idx {$vnum_idx+1};
+	#if {"$dig_area" == "jx"} {
+		#if {$vnum_list[$vnum_idx] == 1239} {#math vnum_idx {$vnum_idx+1}};
+		#if {$vnum_idx <= &vnum_list[]} {scmd {halt;run.to $vnum_list[$vnum_idx]}};
+		#else {scmd {halt;mission_yulu.fail}};
+	};
+	#else {
+		#if {$vnum_idx <= &vnum_list[]} {scmd {halt;walk.to $vnum_list[$vnum_idx]}};
+		#else {scmd {halt;mission_yulu.fail}};
+	};
+}
+
+#action {^%?%?只听“铛”的一声，铁铲断成两节!} {
+	scmd {halt;mission_yulu.fail}
+}
+
+#action {^%?%?看起来%*想杀死你！} {
+	halt;ylquit;halt;ylquit;
+}
+
+#nop ===========================Ticker===========================
+#ticker {mission_yulu_end} {mission_yulu.end} {30};
+
+#class {mission_yulu} close
+

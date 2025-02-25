@@ -1,0 +1,74 @@
+#class {study} open
+#nop ==========================Variable==========================
+#variable {studyClass} {1};
+#variable {act} {};
+#variable {act_cnt} {0};
+#variable {act_num} {0};
+#variable {interval} {0.35};
+
+#nop ===========================Alias============================
+#alias {study.start} {
+	updatedolist study;
+	#ticker {study_act} {
+		$act;
+		exert regenerate;
+		#if {$act_num >0} {
+			#math act_cnt {$act_cnt+1};
+			#if {$act_cnt > $act_num} {#unticker {study_act};dazuo max};
+		}
+	} {$interval};
+}
+
+#alias {study.kill} {
+	#unticker {study_act};
+	#if {"$act" == "canwu xisuijing"} {halt;drop xisuijing;d};
+	#class {study} kill;
+}
+
+#alias {study.end} {
+	study.kill;
+	halt;
+	scmd {halt;fly wm;w};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?{你的内力不够|你内力不够，无法钻研这么高深的武功|你现在的修为不足以提高神元功了}} {
+	#unticker {study_act};
+	#if {"$act" == "canwu xisuijing"} {drop xisuijing};
+	dazuo max;
+}
+
+#action {^%?%?$dazuo_end} {
+	exert recover;
+	#if {"$act" == "canwu xisuijing"} {get xisuijing};
+	#if {$act_num >0} {#variable act_cnt 0};
+	#ticker {study_act} {
+		$act;
+		exert regenerate;
+		#if {$act_num >0} {
+			#math act_cnt {$act_cnt+1};
+			#if {$act_cnt > $act_num} {#unticker {study_act};dazuo max};
+		}
+	} {$interval};
+	#variable epochStamp @get_epoch_time{};
+}
+
+#action {^%?%?{也许是缺乏实战经验|你的实战经验不足|也许是学问不够深|你研读了一会儿，但是发现上面所说的对你而言都太浅了|学.*，要心狠手辣，奸恶歹毒，你可做得不够呀}} {
+	study.end;
+}
+
+#action {^%?%?你无法参悟洗髓经。} {
+	drop xisuijing;
+	d;
+	study.end;
+}
+
+#action {^%?%?{你对着石壁冥思苦想了一会，毫无收获|你望着石壁冥思苦想了一会，发觉上面的东西对你来说太浅薄了}} {
+	study.end;
+}
+
+#action {^%?%?你现在精不够，无法控制内息的流动！} {
+	#delay {dazuo_wait} {exert regenerate;dazuo max} {3};
+}
+
+#class {study} close

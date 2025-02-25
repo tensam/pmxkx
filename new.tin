@@ -1,0 +1,163 @@
+#CLASS {new} OPEN
+#VAR {newClass} {1};
+
+#var equip_center {yaoxm};
+
+
+#nop read worldzb data;
+#class worldzb read $MOD/worldzb.tin;
+
+#alias {addworld_zb}
+{
+	#if {"%3" == ""}
+	{
+		#showme Syntax: addworld_zb <name> <host> <port> [character name] [password];
+	};
+	#else
+	{
+		#var worldzb_list[%1][name] %1;
+		#var worldzb_list[%1][host] %2;
+		#var worldzb_list[%1][port] %3;
+		#if {"%4" != ""}
+		{
+			#var worldzb_list[%1][char] %4;
+		};
+		#if {"%5" != ""}
+		{
+			#var worldzb_list[%1][pass] %5;
+		};
+		#if {&worldzb_list[%1][char]}
+		{
+			#showme The worldzb %1 (%2 %3) and the character %4 (%5) has been added;
+		};
+		#else
+		{
+			#showme The worldzb %1 (%2 %3) has been added;
+		};
+        #showme 写入账号记录;
+		#class worldzb write $MOD/worldzb.tin;
+	}
+}
+
+
+#action {使用%s%+%s这个名字将会创造一个新的人物} {
+    #echo %1~~~%2~~%2;
+    #var {name} {%2};
+    y;
+}
+
+
+#action {您的中文名字} {
+    装备大米;
+}
+
+#action {请设定您的密码} {
+    Qwer1234;
+}
+
+#action {请再输入一次您的密码，以确认您没记错} {
+    Qwer1234;
+}
+
+#action {您的电子邮件地址} {
+    sdf@fs.com
+}
+
+#action {您要扮演男性(m)的角色或女性(f)的角色？} {m}
+
+#action { 敏捷：影响防御及躲避的能力} {
+    #delay {1} {1};
+
+}
+
+#action {请输入悟性的新取值[10-30]} {10}
+
+#action {你现有十点天赋还没有分配。} {
+    #delay {1} {0}
+}
+
+#action {请输入膂力的新取值[10-30]} {
+    30;
+    #delay {1} {9};
+}
+
+#action {你确定接受当前的天赋设置吗？} {y}
+
+#action {东方派需要学辟邪剑法必须先自宫，自宫要求先天力量<=20，先天体质<=23} {
+    #delay {1} {join murong}
+}
+
+#action {全部技能自动激活完成。} {
+    #showme 注册好了！;
+    addworld_zb $name 47.100.213.250 5678 $name Qwer1234;
+    #ticker {out} {out;w} {2};
+}
+
+#action {%*的储物柜(Store)} {
+    #unticker out;
+    whisper $equip_center a~$me[ename]~onposition~;
+    #unaction {%*的储物柜(Store)};
+}
+
+/*
+ename命名格式：
+对不起，您的英文名字必须是 3 到 12 个英文字母。
+zb_type_lvl_No
+eg. 7级帽子一号  zbmaovava
+eg. 最长账号     zbxiaovzzvzz
+
+武器 jian dao zan(zhang) qin lun chui  zhen xiao di gun bang fu  {qang}qiang
+*/
+#variable type_list {
+    {yi}{衣}
+    {衣}{yi}
+    {mao}{帽}
+    {帽}{mao}
+    {hushou}{手}
+    {护手}{hushou}
+    {xue}{靴}
+    {靴}{xue}
+    {ring}{戒}
+    {戒指}{ring}
+    {jian}{剑}
+    {剑}{jian}
+    {dao}{刀}
+    {刀}{dao}
+    {zan}{杖}
+    {杖}{zan}
+    {qin}{琴}
+    {琴}{qin}
+    {chui}{锤}
+    {锤}{chui}
+    {lun}{轮}
+    {轮}{lun}
+    {zhen}{针}
+    {针}{zhen}
+    {xiao}{箫}
+    {箫}{xiao}
+    {di}{笛}
+    {笛}{di}
+    {gun}{棍}
+    {棍}{gun}
+    {bang}{棒}
+    {棒}{bang}
+    {fu}{斧}
+    {斧}{fu}
+    {qiang}{枪}
+    {枪}{qang}
+
+}
+
+
+#function {en2cn} {
+    #variable {result} {0};
+    #variable l_tmp %1;
+    #regex {$l_tmp} {zb%wv%wv%w} {#variable {l_type} {&1};#variable {l_lvl} {&2};#variable {l_num} {&3}};
+    #var l_name1 {$type_list[$l_type]};
+    #var l_name2 {@azto12{$l_lvl}};
+    #var l_name3 {@azto12{$l_num}};
+    #var result {$l_name1$l_name2$l_name3};
+    #unvariable l*;
+}
+
+#CLASS {new} CLOSE

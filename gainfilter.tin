@@ -1,0 +1,313 @@
+#class {gainfilter} open
+#nop ==========================Variable==========================
+#variable {gainfilterClass} {1};
+#variable {item} {
+    {id}{}
+    {color}{0}
+    {伤害}{0}
+    {锋利}{0}
+    {硬度}{0}
+    {护甲}{0}
+    {防御}{0}
+    {闪避}{0}
+    {攻击}{0}
+    {招架}{0}
+    {气血}{0}
+    {精神}{0}
+    {内力}{0}
+    {速度}{0}
+    {力量}{0}
+    {才智}{0}
+    {体质}{0}
+    {身法}{0}
+    {容貌}{0}
+    {福缘}{0} 
+    {五行}{0}
+    {有效等级}{0}
+    {等级}{0}
+    {评价}{0}
+    {孔洞}{0}
+    {保存}{}
+};
+
+#variable {param} {
+    {yi}{
+        {才智}{2}
+        {力量}{3}
+        {内力}{30}
+    }
+    {mao}{
+        {才智}{2}
+        {力量}{3}
+        {内力}{25}
+    }
+    {hushou}{
+        {才智}{4}
+        {力量}{7}
+        {内力}{12}
+    }
+    {xue}{
+        {才智}{5}
+        {力量}{8}
+        {内力}{15}
+    }
+    {weapon}{
+        {才智}{2}
+        {力量}{3}
+        {内力}{30}
+    }
+};
+
+#variable {gem} {
+    {id}{}
+    {lines}{0}
+    {才智}{0}
+    {等级}{0}
+};
+
+#nop ===========================Alias============================
+#alias {gainfilter.kill} {
+    #if {$gaininfoClass} {gaininfo.kill};
+    #class gainfilter kill;
+};
+
+#alias {item.reset} {
+    #variable {item} {
+        {id}{}
+        {color}{0}
+        {伤害}{0}
+        {锋利}{0}
+        {硬度}{0}
+        {护甲}{0}
+        {防御}{0}
+        {闪避}{0}
+        {攻击}{0}
+        {招架}{0}
+        {气血}{0}
+        {精神}{0}
+        {内力}{0}
+        {速度}{0}
+        {力量}{0}
+        {才智}{0}
+        {体质}{0}
+        {身法}{0}
+        {容貌}{0}
+        {福缘}{0} 
+        {五行}{0}
+        {有效等级}{0}
+        {等级}{0}
+        {评价}{0}
+        {孔洞}{0}
+        {保存}{}
+    };
+}
+
+#alias {item.gain} {
+    #if {$prepareClass} {#list gain_equips add $item[id]};
+}
+
+#alias {item.discard} {
+    #if {$prepareClass} {
+        #if {"$item[color]" == "{32}"} {
+            #if {"$item[保存]" == "$me[ename]"} {
+                #if {&keep_equips[] > 0} {
+                    #list {keep_equips} {find} {$item[id]} {l_find};
+                    #if {$l_find == 0} {give $item[id] to seng};
+                    #unvariable l_find;
+                };
+            };
+            #else {#echo {purple/green item must not be discard!!!}};
+        };
+        #elseif {("$item[color]" == "31") && ($item[等级] >= 15)} {fenjie $item[id]};
+        #else {give $item[id] to ouye zi};
+    };
+    #elseif {$batchfilterClass} {
+        #if {"$item[color]" == "{32|35}"} {#echo {purple/green item must not be discard!!!}};
+        #elseif {("$item[color]" == "31") && ($item[等级] >= 15)} {#list {filterList} {insert} {1} {$idx_fenjie}};
+        #else {#list {filterList} {insert} {1} {$idx}};
+    }
+}
+
+#alias {item.filter} {
+    #variable l_bgain 0;
+    #if {"$item[保存]" != ""} {
+        #if {"$item[保存]" != "$me[ename]"} {#variable l_bgain 1};
+    };
+    #elseif {"$item[color]" == "{32|35}"} {#variable l_bgain 1};
+    #if {$l_bgain == 0} {item.discard} {item.gain};
+    #unvariable l_bgain;
+}
+
+
+#alias {item.filter_bk} {
+    #variable l_bgain 0;
+    #if {"$item[保存]" != ""} {
+        #if {"$item[保存]" != "$me[ename]"} {#variable l_bgain 1};
+    };
+    #elseif {"$item[color]" == "{32|35}"} {#variable l_bgain 1};
+    #elseif {"$item[color]" == "31"} {
+        #if {$item[等级]<12} {#var l_bgain 0};
+        #else {
+            #if {$item[五行1] != 0} {#variable l_bgain 1};
+            #elseif {$item[有效等级] != 0 && $item[攻击] > 30} {#variable l_bgain 1};
+            #elseif {$item[孔洞] >= 3} {#variable l_bgain 1};
+            #elseif {"$item[id]" == "%* yi"} {
+                #if {$item[才智] > 0} {
+                    #if {(($item[等级] + $param[yi][才智])/$param[yi][才智]) <= ($item[才智]+$item[孔洞]-1)} {#variable l_bgain 1};
+                };
+            };
+            #elseif {"$item[id]" == "%* mao"} {
+                #if {$item[才智] > 0} {
+                    #if {(($item[等级] + $param[mao][才智] -1)/$param[mao][才智]) <= ($item[才智]+$item[孔洞])} {#variable l_bgain 1};
+                };
+            };
+            #elseif {"$item[id]" == "%* hushou"} {
+                #if {($item[才智] * $param[hushou][才智]) >= $item[等级]} {#variable l_bgain 1};
+                #elseif {$item[攻击] > 10 && $item[特效] != 0} {#variable l_bgain 1};
+                #elseif {$item[兵器技能有效等级] != 0} {#variable l_bgain 0};
+            };
+            #elseif {"$item[id]" == "%* xue"} {
+                #if {($item[才智] * $param[xue][才智]) >= $item[等级]} {#variable l_bgain 1};
+            };
+            #else {
+                #if {$item[才智] > 0} {
+                    #if {(($item[等级]+$param[weapon][才智]-1)/$param[weapon][才智]) <= ($item[才智]+$item[孔洞])} {#variable l_bgain 1};
+                };
+            };     
+        };
+    };
+    #elseif {"$item[color]" == "{33|34}" && $item[等级]>=25} {
+        #if {$item[等级]<12} {#var l_bgain 0};
+        #else {
+            #if {$item[孔洞] > 3} {#variable l_bgain 1};
+            #elseif {"$item[id]" == "%* yi"} {
+                #if {$item[才智] > 0} {
+                    #if {(1 + $item[等级] / $param[yi][才智]) < ($item[才智] + $item[孔洞])} {#variable l_bgain 1};
+                };     
+            };
+            #elseif {"$item[id]" == "%* mao"} {
+                 #if {$item[才智] > 0} {
+                    #if {(1 + $item[等级] / $param[mao][才智]) < ($item[才智] + $item[孔洞])} {#variable l_bgain 1};
+                };
+            };
+            #elseif {"$item[id]" == "%* hushou"} {
+                #if {$item[才智] > 0} {
+                    #if {(1 + $item[等级] / $param[hushou][才智]) < $item[才智]} {#variable l_bgain 1};
+                };     
+            };
+            #elseif {"$item[id]" == "%* xue"} {
+                #if {$item[才智] > 0} {
+                    #if {(1 + $item[等级] / $param[xue][才智]) < $item[才智]} {#variable l_bgain 1};
+                };     
+            };
+            #else {
+                #if {$item[才智] > 0} {
+                    #if {(1 + $item[等级] / $param[weapon][才智]) < ($item[才智] + $item[孔洞])} {#variable l_bgain 1};
+                };
+            };
+        };   
+    };
+    #if {$l_bgain == 0} {item.discard} {item.gain};
+    #unvariable l_bgain;
+}
+
+#alias {gem.reset} {
+    #variable {gem} {
+        {id}{}
+        {lines}{0}
+        {才智}{0}
+        {特效}{0}
+        {等级}{0}
+    };
+}
+
+#alias {gem.gain} {#if {$prepareClass} {#list gain_equips add $gem[id]}};
+#alias {gem.discard} {
+    #if {$prepareClass} {give $gem[id] to ouye zi};
+    #elseif {$batchfilterClass} {#list {filterList} {insert} {1} {$idx}};
+}
+
+#alias {gem.filter} {
+    #variable l_bgain 0;
+    #if {$gem[lines] > 2 || $gem[才智] > 5} {#variable l_bgain 1};
+    #if {$l_bgain == 0} {gem.discard} {gem.gain};
+    #unvariable l_bgain;
+}
+
+#nop ===========================Action===========================
+#action {~^\e[%d;%dm%*\e[0m(%*)。} {
+    #format {l_id} {%l} {%4};
+    #if {"$l_id" == "{jewel|jade|amber|agate|crystal|grayjade}"} {
+        gem.reset;
+        #variable gem[id] $l_id;
+    } {
+        item.reset;
+        #variable item[id] $l_id;
+        #variable item[color] %2;
+    };
+    te gaininfo;
+    #unvariable l_id;
+}
+
+#nop ===========================Function===========================
+#nop %1 类型 %2 属性 %3 等级 
+#function {param} {
+    #if {"%1" == "yi"} {
+        #if {"%2" == "int"} {
+            #if {%3 < 5} {#return 1};
+            #elseif {%3 <= 10} {#return 2};
+        };
+        #if {"%2" == "str"} {
+
+        };
+        #if {"%2" == "force"} {
+
+        };
+    };
+    #if {"%1" == "mao"} {
+        #if {"%2" == "int"} {
+
+        };
+        #if {"%2" == "str"} {
+
+        };
+        #if {"%2" == "force"} {
+
+        };
+    };
+    #if {"%1" == "hushou"} {
+        #if {"%2" == "int"} {
+
+        };
+        #if {"%2" == "str"} {
+
+        };
+        #if {"%2" == "force"} {
+
+        };
+    };
+    #if {"%1" == "xue"} {
+        #if {"%2" == "int"} {
+
+        };
+        #if {"%2" == "str"} {
+
+        };
+        #if {"%2" == "force"} {
+
+        };
+    };
+    #if {"%1" == "weapon"} {
+        #if {"%2" == "int"} {
+
+        };
+        #if {"%2" == "str"} {
+
+        };
+        #if {"%2" == "force"} {
+
+        };
+    };
+}
+
+#class {gainfilter} close

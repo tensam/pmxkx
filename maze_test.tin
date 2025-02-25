@@ -1,0 +1,121 @@
+#class {maze_test} OPEN;
+
+#alias {maze_test_init} {
+    #showme [测试] 开始迷宫测试;
+    
+    #nop 加载必要的模块;
+    ts map_trigger_test;
+    ts maze_path;
+    te map_trigger_test;
+    te maze_path;
+    
+    #showme [测试] 模块加载完成;
+    #showme [测试] 开始获取地图数据;
+    
+    #delay {0.5} {
+        trigger_test;
+        #delay {1} {
+            #showme [测试] 地图数据获取完成;
+            #showme [测试] 开始寻路测试;
+            #showme [测试] 当前位置: $maze[current][x],$maze[current][y];
+            #showme [测试] 可以使用以下命令测试:;
+            #showme   maze_test show    - 显示当前地图信息;
+            #showme   maze_test check   - 检查数据完整性;
+            #showme   maze_test x y     - 寻找到指定坐标的路径;
+            #showme   maze_test explore <方向> - 探索指定方向;
+        };
+    };
+};
+
+#alias {maze_test_check} {
+    #showme [检查] 地图数据完整性;
+    #showme [地图] 大小: $maze[size][width]x$maze[size][height];
+    #showme [房间] 数量: &maze[rooms][];
+    #showme [连接] 数量: &maze[connections][];
+    #showme [边界] 数量: &maze[boundary][points][];
+    #showme [位置] 当前: ($maze[current][x],$maze[current][y]);
+    #showme [入口] 位置: ($maze[entrance][x],$maze[entrance][y]);
+    
+    #if {&maze[rooms][] == 0} {
+        #showme [错误] 未检测到房间数据;
+    } {
+        #showme [房间] 列表:;
+        #foreach {$maze[rooms][%*]} {room} {
+            #showme   -> ($room[x],$room[y]);
+        };
+    };
+    
+    #if {&maze[connections][] == 0} {
+        #showme [错误] 未检测到连接数据;
+    } {
+        #showme [连接] 列表:;
+        #foreach {$maze[connections][%*]} {conn} {
+            #showme   -> ($conn[from_x],$conn[from_y]) -> ($conn[to_x],$conn[to_y]);
+        };
+    };
+    
+    #if {&maze[boundary][points][] == 0} {
+        #showme [边界] 未检测到边界点;
+    } {
+        #showme [边界] 列表:;
+        #foreach {$maze[boundary][points][%*]} {point} {
+            #showme   -> ($point[x],$point[y]) 方向: $point[direction];
+        };
+    };
+    
+    #if {&maze[exits][] > 0} {
+        #showme [出口] 已发现列表:;
+        #foreach {$maze[exits][%*]} {exit} {
+            #showme   -> ($exit[x],$exit[y]);
+        };
+    } {
+        #showme [出口] 尚未发现出口;
+    };
+};
+
+#alias {maze_test} {
+    #if {"%1" == "init"} {
+        maze_test_init;
+    } {
+        #if {"%1" == "show"} {
+            #showme [地图信息];
+            #showme 当前位置: ($maze[current][x],$maze[current][y]);
+            #showme 地图大小: $maze[size][width]x$maze[size][height];
+            #showme 房间数量: &maze[rooms][];
+            #showme 连接数量: &maze[connections][];
+            #showme [房间列表];
+            #foreach {$maze[rooms][%*]} {room} {
+                #showme   房间: ($room[x],$room[y]);
+            };
+            #showme [连接列表];
+            #foreach {$maze[connections][%*]} {conn} {
+                #showme   连接: ($conn[from_x],$conn[from_y]) -> ($conn[to_x],$conn[to_y]);
+            };
+        } {
+            #if {"%1" == "check"} {
+                maze_test_check;
+            } {
+                #if {"%1" == "explore"} {
+                    #if {"%2" == ""} {
+                        #showme 用法: maze_test explore <n/s/e/w/ne/nw/se/sw>;
+                        #return;
+                    };
+                    maze_explore %2;
+                } {
+                    #if {"%1" == "" || "%2" == ""} {
+                        #showme 用法:;
+                        #showme   maze_test init         - 初始化测试环境;
+                        #showme   maze_test show         - 显示当前地图信息;
+                        #showme   maze_test check        - 检查数据完整性;
+                        #showme   maze_test x y          - 测试寻路到指定坐标;
+                        #showme   maze_test explore 方向 - 探索指定方向;
+                        #return;
+                    };
+                    maze_path %1 %2;
+                };
+            };
+        };
+    };
+};
+
+#class {maze_test} CLOSE; 

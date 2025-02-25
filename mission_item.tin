@@ -1,0 +1,132 @@
+#nop ============================================================
+#nop  wei quest in 7star mission
+#nop ============================================================
+#class {mission_item} open
+#nop ==========================Variable==========================
+#variable {mission_itemClass} {1};
+#variable {item_id} {};
+#variable {kill_name} {};
+
+#nop ===========================Alias============================
+#alias {mission_item.start} {
+	#if {!$robot || ($robot && "$dolist[-1]" != "mission_item")} {
+		#variable mission_complete 0;
+		updatedolist mission_item;
+		#class fight read $MOD/fight.tin;
+		#if {&{item_list} == 0} {
+			#class {item_list} read $MOD/item_list.tin;
+		};
+		fly wm;e;#3 s;e;u;
+		#variable jicunlist $trapslist;
+		#list {jicunlist} {filter} {{jin dan|yin dan|bailian jinggang}};
+		#if {&jicunlist[]>0} {
+			#foreach {$jicunlist[%*]} {l_item} {jicun $l_item};
+			#unvariable l_item;
+		};
+		#unvariable jicunlist;
+		quest;
+		#delay {ask_failure} {mission_item.end} {3};
+	};
+}
+
+#alias {mission_item.kill} {
+	fight.end;
+	#class fight kill;
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_item} kill;
+	#echo {%c#class mission_item killed!} {cyan};
+}
+
+#alias {mission_item.end} {
+	mission_item.kill;
+	scmd {halt;fly wm;w};
+}
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "$kill_name"} {		
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	}
+}
+
+#nop ===========================Action===========================
+#action {^%?%?韦小宝吩咐道：给你在%*找到『%*』给我，我会好好谢你。} {
+	#undelay {ask_failure};
+	#variable {item} {%4};
+	#if {&{item_%4} == 0} {
+		#showme can't find %4 in item_list;
+		#line log {$LOG/error.log} {item error: $me[cname] can't find %4 in item_list!};
+		#if {$bCancel} {
+			#math item_failure {$item_failure+1};
+			#if {$item_failure > 3} {give 1 gold to wei xiaobao} {give 50 silver to wei xiaobao};
+		};
+		mission_item.end;
+	};
+	#else {
+		scmd {${item_%4}};
+	};
+}
+
+#action {^%?%?你今日已完成了%s%d/%d%s次韦小宝任务} {
+	#variable {mission_complete} {1};
+	#variable {item_failure} {0};
+	#variable {mission_status[mission_item][complete]} {%4};
+	#variable {mission_status[mission_item][total]} {%5};
+	mission_item.end;
+}
+
+#action {^%?%?韦小宝瞟了你一眼说道：你要是没本事，就拿点儿钱买就得了。} {
+	#undelay {ask_failure};
+	#if {$bCancel} {
+		#math item_failure {$item_failure+1};
+		#if {$item_failure > 3} {give 1 gold to wei xiaobao} {give 50 silver to wei xiaobao};
+	};
+	mission_item.kill;
+	#if {$robot && &mission_list[] > 0} {mission.do};
+	#else {halt;fly wm;w};
+}
+
+#action {^%?%?韦小宝对着你不耐烦地说道：最近我心情不好，等会再来找我吧。} {
+	#undelay {ask_failure};
+	mission_item.kill;
+	#if {$robot && &mission_list[] > 0} {mission.do};
+	#else {halt;fly wm;w};
+}
+
+#action {^%?%?韦小宝说道：这不是我想要的。} {
+	mission_item.end;
+}
+
+#action {^%?%?韦小宝不接受这样东西。} {
+	d;drop $item_id;
+	mission_item.end;
+}
+
+#action {^%?%?$kill_name%*死了} {
+	#if {"$kill_name" != ""} {
+		fight.end;
+		scmd {get $item_id;get $item_id from corpse;gwei;give $item_id to wei xiaobao};
+	}
+}
+
+#action {^%?%?你身上没有这样东西。} {
+	mission_item.end
+}
+
+#action {^%?%?这里没有这个人。} {
+	get $item_id;
+	get $item_id from corpse;
+	#delay {1} {
+		gwei;
+		give $item_id to wei xiaobao
+	}
+}
+
+#nop ===========================Ticker===========================
+#ticker {mission_item_end} {mission_item.end} {90};
+
+#class {mission_item} close

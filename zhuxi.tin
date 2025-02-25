@@ -1,0 +1,86 @@
+#class {zhuxi} open
+#nop ==========================Variable==========================
+#variable learn_count {50};
+
+#nop ===========================Alias============================
+#alias {zhuxi.start} {
+	updatedolist zhuxi;
+	#class superint read $MOD/superint1.tin;
+	fly wm;e;s;s;e;n;weara int;wi int;
+	#ticker {zhuxi_act} {learn literate from zhu for $learn_count;exert regenerate} {0.3};
+}
+
+#alias {zhuxi.kill} {
+	#unticker {zhuxi_act};
+	#class {zhuxi} kill;
+}
+
+#alias {zhuxi.end} {
+	zhuxi.kill;
+	#if {$robot && &mission_list[] > 0} {
+		halt;ihp;
+		#delay {hp_check} {
+			#if {$me[pot] < 100} {
+				unwield all;
+				remove all;
+				weara;
+				wi;
+				#delay {learn_end} {scmd {halt;fly wm;w;superint.back1}} {1};
+			};
+			#elseif {&research_list[] > 0} {
+				#class {research} read $MOD/research.tin;
+				research.start;
+			};
+			#else {#variable mission_complete 0;halt;fly wm;w;superint.back1}
+		} {2};
+	};
+	#else {halt;fly wm;w;superint.back1}
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你的「%*」进步了！} {
+	#if {&skill_list[%3] == 0} {#variable skill_list[%3][level] 1};	
+	#else {#math skill_list[%3][level] {$skill_list[%3][level]+1}};		
+}
+
+#action {^%?%?你的内力不够。} {
+	#unticker {zhuxi_act};
+	#if {$xunzhang_level > 0} {remove xunzhang};
+	dazuo max;
+}
+
+#action {^%?%?$dazuo_end} {
+	#if {$xunzhang_level > 0} {wear xunzhang};
+	exert recover;
+	#if {"$me[family]" == "峨嵋派"} {exert zhixinzhuang};
+	#ticker {zhuxi_act} {learn literate from zhu for $learn_count;exert regenerate} {0.3};
+	#variable epochStamp @get_epoch_time{};
+}
+
+#action {^%?%?朱熹{.*这怎么敢当|.*我这点雕虫小技怎够资格「指点」您什么}} {
+	give 1 gold to zhu;
+}
+
+#action {^%s%s{你的潜能不够学习这么多次了。|你要向谁求教？|这项技能你的程度已经不输你师父了。}} {
+	zhuxi.end;
+}
+
+#action {^%?%?你因先天所制，已无法再进修更高深的学问了。} {
+	zhuxi.end;
+}
+
+#action {^%?%?你现在精不够，无法控制内息的流动！} {
+	fly thd;s;w;sleep
+}
+
+#action {^%?%?你一觉醒来，只觉精力充沛。该活动一下了。} {
+	fly wm;e;s;s;e;n;dazuo max
+}
+
+#action {^%?%?你身上没有这样东西。} {
+	#unticker {zhuxi_act};
+	fly wm;e;s;w;withdraw 5 gold;
+	#delay {10} {e;s;e;n;dazuo 10;};
+}
+
+#class {zhuxi} close

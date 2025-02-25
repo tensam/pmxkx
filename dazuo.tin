@@ -1,0 +1,82 @@
+#class {dazuo} open
+#nop ==========================Variable==========================
+#variable {dazuoClass} {1};
+#variable {bAutoAfterDazuo} {0};
+#var {neck_weared} {0};
+#nop ===========================Alias============================
+#alias {dazuo.start}
+{
+	updatedolist dazuo;
+	#ticker {dazuo} {dazuo 10} {100};
+	enable force $default_specialforce;
+	tuo all;uw;wear neck;erg;
+	#var {neck_weared} {1};
+	erg;
+	dazuo max;
+}
+
+#alias {dazuo1.start} {
+	#variable {bAutoAfterDazuo} {1};
+	dazuo.start;
+}
+
+#alias {dazuo.kill}
+{
+	#unticker {dazuo};
+	#undelay {dazuo_goon};
+	#if {1 == $bAutoAfterDazuo} {robot start};
+	#class {dazuo} {kill};
+}
+
+#alias {dazuo.end}
+{
+	dazuo.kill;
+	halt;fly wm;w;exert recover;
+	#showme dazuo~over;
+}
+
+#alias {chi} {
+	he skin;
+	get zongzi from dai;
+	eat zongzi;
+	put zongzi in dai;
+}
+
+#nop ===========================Action===========================
+#action {^%?%?$dazuo_end}
+{
+	chi;
+	exert recover;
+	#if {$skill_list[龙象般若功][level] > 290} {exert powerup};
+	#delay {dazuo_goon} {erg;dazuo max} {0.1};
+	#variable epochStamp @get_epoch_time{};
+}
+
+#action {^%?%?( 你上一个动作还没有完成，不能施用内功。)} 
+{
+	#delay {0.6} {exert recover};
+}
+
+#action {^%?%?你的内力修为似乎已经达到了瓶颈，无法再靠打坐来提升了}
+{
+	#if {$neck_weared == 0} {dazuo.end};
+	#else {tuo neck};
+}
+
+
+#action {^%?%?你的内力修为增加了！}
+{
+	#if {$neck_weared == 0} {wear neck};
+}
+
+#action {^%?%?你戴上一枚缥缈勋章。} {
+	#var {neck_weared} {1}
+}
+
+#action {^%?%?你将缥缈勋章摘了下来。} {
+	#var {neck_weared} {0}
+}
+
+
+
+#class {dazuo} close

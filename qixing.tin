@@ -1,0 +1,15 @@
+#class qixing open
+
+#action {^%?%?可能是因为机缘不够，你无法从破军剑中领悟到任何东西。}
+{
+	study.kill;
+	#delay {gopractice} {ipractice {lian dodge 10}} {2};
+}
+
+#action {^%?%?你对七星步法的精深奥妙之处无法深入理解，不能自己练七星步法。}
+{
+	practice.kill;
+	#delay {miansword} {istudy {mian sword}} {2};
+}
+
+#class qixing close

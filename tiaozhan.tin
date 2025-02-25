@@ -1,0 +1,93 @@
+#class {tiaozhan} open
+#nop ==========================Variable==========================
+#variable {tiaozhanClass} {1};
+#var {tiaozhan_flag} {0};
+
+#nop ===========================Alias============================
+#alias {tiaozhan.start} {
+    updatedolist tiaozhan;
+    #format hour {%t} {%H};
+    #if {@get_epoch_time{} < $tiaozhanStamp+10} {#echo 时间未到;tiaozhan.end};
+    #else {
+        fly ws;wd;nd;nd;wu;nu;
+        #format {now} {%t} {%u};
+        ask freya about 奖励;
+        #showme {ready~to~tiaozhan};
+    };  
+}
+
+#alias {tiaozhan.kill} {
+    #undelay {tiaozhan_cancel};
+    #unticker {busy_test};
+    #unticker {suck};
+    #if {$walkClass == 1} {walk.kill};	
+	#if {$fightClass == 1} {fight.kill};
+    #echo {%c#class tiaozhan killed!} {cyan};
+	#class {tiaozhan} {kill};
+}
+
+#alias {tiaozhan.end} {
+    tiaozhan.kill;
+    #delay {0.2} {scmd {halt;fly wm;w}};	
+}
+
+
+#nop ===========================Action===========================
+#action {ready~to~tiaozhan} {
+    #class fight read $MOD/fight.tin;
+    fight_ready;
+    tiaozhan;
+    #echo 下达了挑战命令;
+    #delay {tiaozhan_cancel} {tiaozhan.end} {3}
+}
+
+#action {^%?%?一天只有七次挑战机会} {
+    tiaozhan.end;
+}
+
+/*
+#action {^%?%?如获胜可获得大量潜能、阅历及修为奖励。你的当前挑战进度为%1。} {
+    #if {$tiaozhan_flag == 0 } {
+        #undelay {tiaozhan_cancel};
+        fight_ready;
+        tiaozhan;
+        #var {kill_id} {};
+        #var {tiaozhan_flag} {1};
+    };    
+}
+*/
+
+#action {^%?%?你向%*发起了挑战，比武时间限定三分钟，超过时限将判定平手。} {
+    #undelay {tiaozhan_cancel};
+    #var {kill_id} {};
+    #var {tiaozhan_flag} {1};
+    #variable tiaozhanStamp @get_epoch_time{};
+    enforce none;
+    #if {"$me[family]" != "少林派"} {busy_pfm};
+    #ticker {busy_test} {$status_test} {1};
+    #variable {cmd} {busy_pfm};
+}
+
+#action {^%?%?已有玩家正在挑战，请等待下次机会} {
+    tiaozhan.end;
+}
+
+#action {^%?%?你已完成了所有挑战，请等待后续更新。} {
+    tiaozhan.end;
+}
+
+#action {^%?%?{你获得奖励：|你向后一纵，恨恨地说道：君子报仇，十年不晚！|%*双手一拱，笑著说道：知道我的利害了吧|你脸色微变，说道：佩服，佩服！|%*哈哈大笑，说道：承让了}} {
+    halt;d;
+    #delay {3} {tiaozhan.end};
+}
+
+#action {^%?%?%*{只能对战斗中的|只能在战斗中}} {
+    halt;d;
+    #delay {3} {tiaozhan.end};
+}
+
+
+#nop ===========================Ticker===========================
+#ticker {tiaozhan_end} {tiaozhan.end} {300};
+
+

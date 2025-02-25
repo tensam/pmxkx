@@ -1,0 +1,233 @@
+#nop ============================================================
+#nop   shan and helian quest  for 7stars mission
+#nop ============================================================
+#class {mission_npc} open
+#nop ==========================Variable==========================
+#variable {mission_npcClass} {1};
+#variable {quester} {shan zheng};
+#variable {npc} {};
+#variable {escape_way} {};
+#variable {duplicate_npc} {
+	{梅超风}{3866}
+	{郭靖}{8}
+};
+
+#variable ddz_list {
+    {少林寺监寺}{{ename}{jiansi}{showname}{任监寺}}
+    {逍遥派凌波居士}{{ename}{jushi}{showname}{代凌波居士}}
+    {峨嵋派掌门}{{ename}{zhangmen}{showname}{代掌门弟子}}
+    {铁掌帮副帮主}{{ename}{bangzhu}{showname}{任副帮主}}
+    {全真教掌教}{{ename}{zhangjiao}{showname}{代掌教}}
+    {大理国护国定南侯}{{ename}{houye}{showname}{大理国护国定南侯}}
+   	{灵鹫宫首领}{{ename}{shouling}{showname}{任首领}}
+    {星宿派大弟子}{{ename}{dadizi}{showname}{代大师兄}}
+    {天龙寺护寺神僧}{{ename}{shenseng}{showname}{护寺神僧}}
+    {丐帮掌棒龙头}{{ename}{longtou}{showname}{任掌棒龙头}}
+    {神龙教五龙圣使}{{ename}{shengshi}{showname}{任五龙圣使}}
+    {明教光明圣火使}{{ename}{shenghuoshi}{showname}{任光明圣火使}}
+    {日月教复仇使者}{{ename}{shizhe}{showname}{任复仇使者}}
+    {华山剑宗大弟子}{{ename}{dadizi}{showname}{代大弟子}}
+    {华山气宗大弟子}{{ename}{dadizi}{showname}{代大弟子}}
+    {姑苏慕容大管家}{{ename}{guanjia}{showname}{任大管家}}
+    {神雕侠侣传人}{{ename}{chuanren}{showname}{代传人}}
+    {黑木崖护教圣使}{{ename}{shengshi}{showname}{任护教圣使}}
+    {中神通}{{ename}{zhong}{showname}{中}}
+    {北丐}{{ename}{bei}{showname}{北}}
+    {南帝}{{ename}{nan}{showname}{南}}
+    {东邪}{{ename}{dong}{showname}{东}}
+    {西毒}{{ename}{xi}{showname}{西}}
+    {武林盟主}{{ename}{mengzhu}{showname}{代武林盟主}}
+    {赏善使者}{{ename}{shangshan}{showname}{代扶弱赏善使者}}
+    {罚恶使者}{{ename}{fae}{showname}{代锄强罚恶使者}}
+	{天地会副总舵主}{{ename}{duozhu}{showname}{副总舵主}}
+	{大熊掌}{{ename}{fae}{showname}{世外高人}}
+	{白驼山少主}{{ename}{shaozhu}{showname}{白驼山少主}}
+}
+
+#nop ===========================Alias============================
+#alias {mission_npc.start} {
+	#if {!$robot || ($robot && "$dolist[-1]" != "mission_npc")} {
+		#echo 执行NPC~~~~~~;
+		#variable {mission_complete} {0};
+		updatedolist mission_npc;
+		#class walk read $MOD/walk.tin;
+		#class fight read $MOD/fight.tin;
+		#if {&{npc_limits} == 0} {
+			#class {npc_limits} read $MOD/npc_limits.tin;
+		};
+		#if {$me[shen]>0}
+		{
+		   fly es;nu;quest;
+		};
+		#else
+		{
+			#variable {quester} {helian tieshu};
+			fly lz;w;#3 n;quest;
+		};
+		#delay {ask_failure} {mission_npc.end} {3}
+	}
+}
+
+#alias {mission_npc.kill} {
+	#if {$walkClass == 1} {walk.kill};
+	#if {$fightClass == 1} {fight.kill};
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_npc} kill;
+	#echo {%c#class mission_npc killed!} {cyan};
+}
+
+#alias {mission_npc.end} {
+	mission_npc.kill;
+	scmd {halt;fly wm;w};
+}
+
+#alias {mission_npc.passby} {
+	#echo passby~~~~~~~~~~;
+	mission_npc.kill;		
+	#if {$robot && &mission_list[] > 0} {mission.do};
+	#else {halt;fly wm;w};
+}
+
+#alias {arrive_cmd} {
+	#showme arrived!!!;
+}
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "$npc"} {		
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	}
+}
+
+#nop ===========================Action===========================
+#action {^%?%?{单正|赫连铁树}吩咐道：给你在%*替我把『%*』给我杀了，别的差使} {
+	#undelay {ask_failure};
+	#variable {npc} {%5};
+	#var {npc_name} {%5};
+	#list {vnum_list} clr;
+	#if {"$ddz_list[$npc][showname]" != ""} {#var npc_name $ddz_list[$npc][showname]};
+	#echo $npc_name;
+	#if { 0 == @is_safe_npc{$npc} } {
+		#showme %5 can't kill!!!;
+		mission_npc.passby;		
+	};
+	#elseif {&duplicate_npc[$npc] != 0} {
+		#list {vnum_list} {add} {$duplicate_npc[$npc]};
+		scmd {halt;vnum_list_go};
+	};
+	#else {
+		#if {"$quester" == "shan zheng"} {#map goto 407} {#map goto 529};
+		#variable vnum_list {@gen_note_vnumlist{<$npc>}};
+		#echo $vnum_list;
+		#if {&vnum_list[] == 0} {
+			#line log {$LOG/$me[ename]_npc.log} {@get_current_time{} $npc};
+			mission_npc.passby
+		}; 
+		#else {scmd {halt;vnum_list_go}};
+	};
+}
+
+
+#action {^%?%?{单正|赫连铁树}%*瞟了你一眼说道：你要是没本事，就拿点儿费用出来} {
+	#undelay {ask_failure};
+	#if {$bCancel && $me[comb_exp] < 10000000} {give 50 silver to $quester};
+	mission_npc.passby;	
+}
+
+#action {^%?%?{单正|赫连铁树}对着你{说道：干的不错|不耐烦地说道：最近我心情不好}} {
+	#undelay {ask_failure};
+	mission_npc.passby;		
+}
+
+#action {$npc_name(%*)} {
+	#if {"$npc" != ""} {
+		walk.stop;
+		#format {kill_id} {%l} {%1};
+		follow $kill_id;
+		kill $kill_id;
+	}
+}
+
+#action {$npc_name %+(%*)} {
+	#if {"$npc" != ""} {
+		walk.stop;
+		#format {kill_id} {%l} {$ddz_list[$npc][ename]};
+		#format {ddz_name} {%l} {%1};
+		follow $kill_id;
+		kill $kill_id;
+	}
+}
+
+#action {四周的%*衣武士群起对你发动攻击！} {
+	kill shi;
+}
+
+
+#action {^%?%?{$npc_name|$ddz_name}{往|身行一闪，飞一样地向}{.*}{落荒而逃|逃去}} {
+	#if {"$npc" != ""} {
+		#variable escape_way {@get_escape_way{%4}};
+		scmd {${escape_way};kill $kill_id};
+	}
+}
+
+
+#action {^%?%?%s{$npc_name|$ddz_name}正坐在地下运功疗伤。} {
+	#if {"$npc" != ""} {
+		walk.stop;
+		kill $kill_id;
+	}
+}
+
+#action {%*脚下一个不稳，跌在地上一动也不动了。} {
+	l;
+	#if {"%1"=="$npc_name" || "%1"=="$ddz_name"} {kill $kill_id};
+}
+
+#action {%*{扑在地上挣扎了几下，口中喷出几口鲜血，死了|的蜡像倒在地上，摔碎了}} {
+	l;
+	#if {"%1"=="$npc_name" || "%1"=="$ddz_name"} {
+		#if {"$npc" != ""} {
+			fight.end;
+			get silver from corpse;
+			get gold from corpse;
+			#delay {2} {mission_npc.end};	
+		};
+	};	
+}
+
+
+#action {111^%?%?{$npc_name|$ddz_name}脚下一个不稳，跌在地上一动也不动了。} {
+	l;
+	kill $kill_id;
+}
+
+#action {111^%?%?{$npc_name|$ddz_name}{扑在地上挣扎了几下，口中喷出几口鲜血，死了|的蜡像倒在地上，摔碎了}} {
+	l;
+	#if {"$npc" != ""} {
+		fight.end;
+		get silver from corpse;
+		get gold from corpse;
+		#delay {2} {mission_npc.end};	
+	}
+}
+
+#action {^%?%?你今日已完成了%s%d/%d%s次{单正|赫连}任务}	{
+	#variable {mission_complete} {1};
+	#variable {mission_status[mission_npc][complete]} {%4};
+	#variable {mission_status[mission_npc][total]} {%5};
+	#if {"$npc" != ""} {
+		fight.end;
+		get silver from corpse;
+		get gold from corpse;
+		#delay {2} {mission_npc.end};	
+	};
+}
+
+#nop ===========================Ticker===========================
+#ticker {mission_npc_end} {mission_npc.end} {180};
+
+#class {mission_npc} close

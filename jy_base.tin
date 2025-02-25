@@ -1,0 +1,92 @@
+#class {jy_base} open
+#nop ==========================Variable==========================
+#variable {jy_baseClass} {1};
+#variable {tri_lvl} {4};
+
+#nop ===========================Alias============================
+#alias {jy_base.start} {
+    updatedolist jy_base;
+
+};
+
+#alias {jy_base.kill} {
+    #variable {tri_lvl} {5};
+    #unalias {arrive_cmd};
+    #class {jy_base} kill;
+}
+
+#alias {jy_base.end} {
+    jy_base.kill;
+    fly wm;w
+}
+
+#action {^%?%?{|你身上没有这样东西。|你身上没有这样东西}} {
+    jy_base.end
+}
+
+#action {^%?%?} {
+   
+}
+
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+#action {^%?%?} {
+   
+}
+
+
+
+#class {jy_base} close;

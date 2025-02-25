@@ -1,0 +1,42 @@
+#class {drunk} open
+#nop ----------- variable ---------------------
+#variable {drunkClass} {1};
+#variable {drunk_level} {0};
+#variable {drunk_stamp} {};
+#variable {drunk_epoch} {};
+
+#alias {drunk.do} {
+    #if {$drunk_level == 0} {#4 drink jiu tan};
+    #if {$drunk_level == 1} {#2 drink jiu tan};
+    #variable {drunk_epoch} @get_epoch_time{};
+    l jiu tan;
+    #delay {drunk_buy} {
+        fly bj;s;w;sell jiu tan;
+        scmd {buy jiu tan;scmd {halt;fly wm;w;give jiu tan to $bag_id}}
+    } {3}; 
+}
+
+#nop ------------- action ----------------------
+#action {^%?%?你觉得一阵酒意上冲，眼皮有些沉重了。} {
+    #variable {drunk_stamp} @get_epoch_time{};
+    #variable {drunk_level} {1};
+}
+
+#action {^%?%?你觉得脑中昏昏沉沉，身子轻飘飘地，大概是醉了。} {
+    #variable {drunk_stamp} @get_epoch_time{};
+    #variable {drunk_level} {2};
+}
+
+#action {^%?%?你的酒终于醒了！} {
+    #variable {drunk_level} {0};
+}
+
+#action {^%?%?里面装了%*分满的女儿红酒。} {
+    #undelay {drunk_buy};
+    w;give jiu tan to $bag_id;
+}
+
+#nop ===========================Ticker===========================
+#ticker {drunk_check} {#if {@get_epoch_time{} > $drunk_stamp+60} {#variable {drunk_level} {0}}} {30};
+
+#class {drunk} close

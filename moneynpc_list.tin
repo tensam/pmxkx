@@ -1,0 +1,331 @@
+#nop a:1-96 b:97-177 c:178-243
+#class {moneynpc_list} open
+#variable {moneynpc_list} 
+{
+
+	{1} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly ca;e}{room}{长安城东门}}
+	{1} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly ca;e}{room}{长安城东门}}
+	{3} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly ca;e}{room}{长安城东门}}
+	{2} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly ca;w}{room}{长安城西门}}
+	{5} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly wg;s;e}{room}{东门}}
+	{6} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly wg;s;e}{room}{东门}}
+	{7} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly wg;s;#3 w}{room}{西门}}
+	{8} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly wg;s;#3 w}{room}{西门}}
+	{9} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd}{room}{东门}}
+	{10} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd}{room}{东门}}
+	{11} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd;#2 w}{room}{蜀都大道}}
+	{12} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd;#2 w}{room}{蜀都大道}}
+	{13} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd;#4 w}{room}{蜀都大道}}
+	{14} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd;#4 w}{room}{蜀都大道}}
+	{15} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd}{room}{西门}}
+	{16} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd}{room}{西门}}
+	{17} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd;#3 w;s}{room}{提督街}}
+	{18} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd;#3 w;s}{room}{提督街}}
+	{19} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd;#3 w;s}{room}{提督街}}
+	{20} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd;#3 w;#3 s}{room}{南门}}
+	{21} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly cd;#3 w;#3 s}{room}{南门}}
+	{22} {{name}{宋兵}{id}{song bing}{spoils}{dao;fu;silver}{path}{fly xi;#2 w;#3 n;#2 e;#3 n}{room}{玄武外门}}
+	{23} {{name}{宋兵}{id}{song bing}{spoils}{dao;fu;silver}{path}{fly xi;#2 w;#3 n;#2 e;#3 n}{room}{玄武外门}}
+	{24} {{name}{宋兵}{id}{song bing}{spoils}{dao;fu;silver}{path}{fly xi;#4 s}{room}{朱雀内门}}
+	{25} {{name}{宋兵}{id}{song bing}{spoils}{dao;fu;silver}{path}{fly xi;#4 s}{room}{朱雀内门}}
+	{26} {{name}{宋兵}{id}{song bing}{spoils}{dao;fu;silver}{path}{fly xi;#2 w;#3 n;#2 e;#2 n}{room}{玄武内门}}
+	{27} {{name}{宋兵}{id}{song bing}{spoils}{dao;fu;silver}{path}{fly xi;#2 w;#3 n;#2 e;#2 n}{room}{玄武内门}}
+	{28} {{name}{锦衣卫士}{id}{wei shi}{spoils}{dao;fu;silver}{path}{fly dl}{room}{王府大门}}
+	{29} {{name}{黄衣卫士}{id}{wei shi}{spoils}{dao;fu;silver}{path}{fly dl}{room}{王府大门}}
+	{30} {{name}{黄衣卫士}{id}{wei shi}{spoils}{dao;fu;silver}{path}{fly dl}{room}{王府大门}}
+	{31} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly dl;s;w;n}{room}{北门}}
+	{32} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly dl;s;w;n}{room}{北门}}
+	{33} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly dl;s;w;n}{room}{北门}}
+	{34} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly dl;s;w;#4 s}{room}{南门}}
+	{35} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly dl;s;w;#4 s}{room}{南门}}
+	{36} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly dl;s;w;#4 s}{room}{南门}}
+	{37} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;n;w}{room}{街道}}
+	{38} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;n;w}{room}{街道}}
+	{39} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;n;w;w}{room}{鳌府大门}}
+	{40} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;n;w;w}{room}{鳌府大门}}
+	{41} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#3 s}{room}{永定门}}
+	{42} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#3 s}{room}{永定门}}
+	{43} {{name}{宋兵}{id}{song bing}{spoils}{dao;fu;silver}{path}{fly xi;#5 s}{room}{朱雀外门}}
+	{44} {{name}{宋兵}{id}{song bing}{spoils}{dao;fu;silver}{path}{fly xi;#5 s}{room}{朱雀外门}}
+	{45} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 n}{room}{皇宫正门}}
+	{46} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 n}{room}{皇宫正门}}
+	{47} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 n}{room}{天安门}}
+	{48} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 n}{room}{天安门}}
+	{49} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;#2 n;e;e}{room}{朝阳门}}
+	{50} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;#2 n;e;e}{room}{朝阳门}}
+	{51} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#3 e}{room}{东门}}
+	{52} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#3 e}{room}{东门}}
+	{53} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#3 w}{room}{西门}}
+	{54} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#3 w}{room}{西门}}
+	{55} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 w;#4 n;#3 e}{room}{地安门}}
+	{56} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 w;#4 n;#3 e}{room}{地安门}}
+	{57} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly gw;#3 s;#2 sw;s;#3 sw}{room}{山海关}}
+	{58} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly gw;#3 s;#2 sw;s;#3 sw}{room}{山海关}}
+	{59} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#4 e;#2 se;#5 s{room}{汝州城}}}
+	{60} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#4 e;#2 se;#5 s}{room}{汝州城}}
+	{61} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#4 e;#2 se;#5 s}{room}{汝州城}}
+	{62} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 w;#4 n;e;#2 s}{room}{兵营}}
+	{63} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;#3 n;w;s}{room}{东厂大门}}
+	{64} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;#3 n;w;s}{room}{东厂大门}}
+	{65} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;#3 n;w;s}{room}{东厂大门}}
+	{66} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 w;#4 n;e;s}{room}{西厂大门}}
+	{67} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;#3 n;w;s;s}{room}{兵营}}
+	{68} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;e;#3 n;w;s;s}{room}{兵营}}
+	{69} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;n}{room}{北门}}
+	{70} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;n}{room}{北门}}
+	{71} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;#6 s}{room}{南门}}
+	{72} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;#6 s}{room}{南门}}
+	{73} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;#2 s;sw;s}{room}{兵营}}
+	{74} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;#2 s;sw;s}{room}{兵营}}
+	{75} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;#2 s;sw;s}{room}{兵营}}
+	{76} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;#2 s;sw;s}{room}{兵营}}
+	{77} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly fz;#5 w;#2 nw}{room}{延平府}}
+	{78} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly fz;#5 w;#2 nw}{room}{延平府}}
+	{79} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;#2 s;sw;#2 w}{room}{苏州西门}}
+	{80} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;#2 s;sw;#2 w}{room}{苏州西门}}
+	{81} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;#2 s;se;#2 e}{room}{苏州东门}}
+	{82} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly sz;w;#2 s;se;#2 e}{room}{苏州东门}}
+	{83} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 w;#4 n;#3 e;n}{room}{安定门}}
+	{84} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 w;#4 n;#3 e;n}{room}{安定门}}
+	{85} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 w;#4 n;e;s}{room}{西厂大门}}
+	{86} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 w;#4 n;e;s}{room}{西厂大门}}
+	{87} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 w;#4 n;e;s}{room}{西厂大门}}
+	{88} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 w;#4 n;e;#2 s}{room}{兵营}}
+	{89} {{name}{黄衣卫士}{id}{wei shi}{spoils}{dao;fu;silver}{path}{fly dl;s;w;#3 s;w;s}{room}{王府大门}}
+	{90} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly dl;s;w;#3 s;w;s}{room}{兵营}}
+	{91} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly dl;s;w;#3 s;w;s}{room}{兵营}}
+	{92} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly dl;s;w;#3 n}{room}{太和城}}
+	{93} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly dl;s;w;#3 n}{room}{太和城}}
+	{94} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly tls;#4 n;w;sw;nw;n;n}{room}{剑川山口}}
+	{95} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly tls;#4 n;w;sw;nw;n;n}{room}{剑川山口}}
+	{96} {{name}{士兵}{id}{shi bing}{spoils}{dao;fu;silver}{path}{fly tls;#4 n;w;sw;nw;n;n}{room}{剑川山口}}
+	{97} {{name}{青衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;u;w}{room}{正气厅}}
+	{98} {{name}{青衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;u;w}{room}{正气厅}}
+	{99} {{name}{白衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;w}{room}{丈人峰}}
+	{100} {{name}{白衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;w}{room}{丈人峰}}
+	{101} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly ca;e}{room}{长安城东门}}	
+	{102} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly ca;w}{room}{长安城西门}}
+	{103} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly wg;s;e}{room}{东门}}
+	{104} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly wg;s;#3 w}{room}{西门}}
+	{105} {{name}{裨将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 e}{room}{青龙内门}}
+	{106} {{name}{宋兵}{id}{song bing}{spoils}{fu;dao;silver}{path}{fly xi;#5 e}{room}{青龙外门}}
+	{107} {{name}{裨将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#2 w;#3 n;#2 e;#3 n}{room}{玄武外门}}
+	{108} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly cd}{room}{东门}}
+	{109} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly cd;#3 w}{room}{蜀都广场}}
+	{110} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly cd;#3 w}{room}{蜀都广场}}
+	{111} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly cd}{room}{西门}}
+	{112} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly cd;#3 w;#3 s}{room}{南门}}
+	{113} {{name}{裨将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#2 w;#3 n;#2 e;n;n}{room}{玄武内门}}
+	{114} {{name}{宋兵}{id}{song bing}{spoils}{dao;fu;silver}{path}{fly xi;e;n}{room}{将军府大门}}
+	{115} {{name}{宋兵}{id}{song bing}{spoils}{dao;fu;silver}{path}{fly xi;e;n}{room}{将军府大门}}
+	{116} {{name}{裨将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;e;#3 n}{room}{将军府大堂}}
+	{117} {{name}{偏将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;e;#3 n}{room}{将军府大堂}}
+	{118} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;e;#3 n}{room}{将军府大堂}}
+	{119} {{name}{佐将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;e;#3 n}{room}{将军府大堂}}
+	{120} {{name}{裨将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 s}{room}{朱雀内门}}
+	{121} {{name}{裨将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#5 s}{room}{朱雀外门}}
+	{122} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly dl;s;w;n}{room}{北门}}
+	{123} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly sz;w;#2 s;se;#2 e}{room}{苏州东门}}
+	{124} {{name}{素衣卫士}{id}{wei shi}{spoils}{dao;jia;silver}{path}{fly dl;s;w;#5 s;#2 w;enter;n}{room}{楼梯}}
+	{125} {{name}{素衣卫士}{id}{wei shi}{spoils}{dao;jia;silver}{path}{fly dl;s;w;#5 s;#2 w;enter;n}{room}{楼梯}}
+	{126} {{name}{素衣卫士}{id}{wei shi}{spoils}{dao;jia;silver}{path}{fly dl;s;w;#5 s;#2 w;enter;n}{room}{楼梯}}
+	{127} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly dl;s;w;#4 s}{room}{南门}}
+	{128} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly bj;#3 s}{room}{永定门}}
+	{129} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly bj;#2 n}{room}{皇宫正门}}
+	{130} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly bj;e;#2 n;e;e}{room}{朝阳门}}	
+	{131} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly bj;#3 e}{room}{东门}}
+	{132} {{name}{红衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;u;e}{room}{侠义厅}}
+	{133} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly bj;#3 w}{room}{西门}}
+	{134} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly bj;#2 w;#4 n;#3 e}{room}{地安门}}
+	{135} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly gw;#3 s;#2 sw;s;#3 sw}{room}{山海关}}
+	{136} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly bj;#4 e;#2 se;#5 s}{room}{汝州城}}
+	{137} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly bj;#2 w;#4 n;e;#2 s}{room}{兵营}}
+	{138} {{name}{太监}{id}{jiang}{spoils}{silver}{path}{fly bj;#2 w;#4 n;e;#2 s}{room}{兵营}}
+	{139} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly bj;e;#3 n;w;s;s}{room}{兵营}}
+	{140} {{name}{太监}{id}{jiang}{spoils}{silver}{path}{fly bj;e;#3 n;w;s;s}{room}{兵营}}
+	{141} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly sz;w;n}{room}{北门}}
+	{142} {{name}{宋兵}{id}{song bing}{spoils}{fu;dao;silver}{path}{fly xi;#4 e;#4 su;sw}{room}{南城头}}
+	{143} {{name}{宋兵}{id}{song bing}{spoils}{fu;dao;silver}{path}{fly xi;#4 e;#4 su;sw}{room}{南城头}}
+	{144} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 e;#4 su}{room}{东城头}}
+	{145} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 e;#4 su;sw}{room}{南城头}}
+	{146} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly sz;w;#6 s}{room}{南门}}	
+	{147} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly sz;w;#2 s;sw;s}{room}{兵营}}	
+	{148} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly fz;#5 w;#2 nw}{room}{延平府}}
+	{149} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 e;#4 su}{room}{东城头}}
+	{150} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 e;#4 su;sw}{room}{南城头}}	
+	{151} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly sz;w;#2 s;sw;#2 w}{room}{苏州西门}}
+	{152} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly bj;#2 w;#4 n;#3 e;n}{room}{安定门}}
+	{153} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly dl;s;w;#3 n}{room}{太和城}}
+	{154} {{name}{武将}{id}{jiang}{spoils}{jia;jian;silver}{path}{fly tls;#4 n;w;sw;nw;n;n}{room}{剑川山口}}
+	{155} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 s;#4 wu}{room}{南城头}}
+	{156} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 s;#4 wu;nw}{room}{西城头}}
+	{157} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 w;#4 nu}{room}{西城头}}
+	{158} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 w;#4 nu;ne}{room}{北城头}}
+	{159} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 e;#4 nu}{room}{东城头}}
+	{160} {{name}{牙将}{id}{pi jiang}{spoils}{jia;jian;silver}{path}{fly xi;#4 e;#4 nu;nw}{room}{北城头}}
+	{161} {{name}{皇宫卫士}{id}{wei shi}{spoils}{jia;jian;silver}{path}{fly lz;#2 n}{room}{皇宫大门}}
+	{162} {{name}{皇宫卫士}{id}{wei shi}{spoils}{jia;jian;silver}{path}{fly lz;#2 n}{room}{皇宫大门}}
+	{163} {{name}{皇宫卫士}{id}{wei shi}{spoils}{jia;jian;silver}{path}{fly lz;#3 n}{room}{皇宫广场}}
+	{164} {{name}{皇宫卫士}{id}{wei shi}{spoils}{jia;jian;silver}{path}{fly lz;#3 n}{room}{皇宫广场}}
+	{165} {{name}{皇宫卫士}{id}{wei shi}{spoils}{jia;jian;silver}{path}{fly lz;#2 e;ne;#3 n;#2 w}{room}{边门}}
+	{166} {{name}{皇宫卫士}{id}{wei shi}{spoils}{jia;jian;silver}{path}{fly lz;#2 e;ne;#3 n;#2 w}{room}{边门}}
+	{167} {{name}{皇宫卫士}{id}{wei shi}{spoils}{jia;jian;silver}{path}{fly lz;#2 e;ne;#3 n;#3 w}{room}{皇宫广场}}
+	{168} {{name}{皇宫卫士}{id}{wei shi}{spoils}{jia;jian;silver}{path}{fly lz;#2 e;ne;#3 n;#3 w}{room}{皇宫广场}}
+	{169} {{name}{红衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;u;e}{room}{侠义厅}}
+	{170} {{name}{红衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;u;e}{room}{侠义厅}}
+	{171} {{name}{青衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es}{room}{南天门}}
+	{172} {{name}{青衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es}{room}{南天门}}
+	{173} {{name}{白衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;u}{room}{封禅台}}
+	{174} {{name}{白衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;u}{room}{封禅台}}
+	{175} {{name}{白衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;u}{room}{封禅台}}
+	{176} {{name}{白衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;u}{room}{封禅台}}
+	{177} {{name}{青衣武士}{id}{shi}{spoils}{jian;jia;silver}{path}{fly es;nu;u;w}{room}{正气厅}}
+	{178} {{name}{守寺僧兵}{id}{seng bing}{spoils}{zhang;silver}{path}{fly bj;#4 s;w}{room}{雪山别院}}
+	{179} {{name}{守寺僧兵}{id}{seng bing}{spoils}{zhang;silver}{path}{fly bj;#4 s;w}{room}{雪山别院}}	
+	{180} {{name}{侍者}{id}{zhe}{spoils}{zhang;silver}{path}{fly dl;s;w;#5 s;#2 w;enter}{room}{大厅}}
+	{181} {{name}{侍者}{id}{zhe}{spoils}{zhang;silver}{path}{fly dl;s;w;#5 s;#2 w;enter}{room}{大厅}}
+	{182} {{name}{侍者}{id}{zhe}{spoils}{zhang;silver}{path}{fly dl;s;w;#5 s;#2 w;enter}{room}{大厅}}	
+	{183} {{name}{西夏兵}{id}{xixia bing}{spoils}{jia;qiang;silver}{path}{fly lz;#2 s}{room}{灵州南门}}
+	{184} {{name}{西夏兵}{id}{xixia bing}{spoils}{jia;qiang;silver}{path}{fly lz;#2 s}{room}{灵州南门}}
+	{185} {{name}{年轻弟子}{id}{boy}{spoils}{xionghuang;jian;silver}{path}{fly sld;s}{room}{大门}}
+	{186} {{name}{年轻弟子}{id}{boy}{spoils}{xionghuang;jian;silver}{path}{fly sld;s}{room}{大门}}
+	{187} {{name}{年轻弟子}{id}{boy}{spoils}{xionghuang;jian;silver}{path}{fly sld;s}{room}{大门}}
+	{188} {{name}{年轻女弟子}{id}{girl}{spoils}{xionghuang;jian;silver}{path}{fly sld;s}{room}{大门}}
+	{189} {{name}{年轻弟子}{id}{boy}{spoils}{xionghuang;jian;silver}{path}{fly sld}{room}{神龙教大厅}}
+	{190} {{name}{年轻弟子}{id}{boy}{spoils}{xionghuang;jian;silver}{path}{fly sld}{room}{神龙教大厅}}
+	{191} {{name}{西夏兵}{id}{xixia bing}{spoils}{jia;qiang;silver}{path}{fly lz;#2 w;s}{room}{小校场}}
+	{192} {{name}{西夏兵}{id}{xixia bing}{spoils}{jia;qiang;silver}{path}{fly lz;#2 w;s}{room}{小校场}}
+	{193} {{name}{门卫}{id}{wei}{spoils}{dao;silver}{path}{fly xx;s}{room}{后门}}
+	{194} {{name}{小贼}{id}{zei}{spoils}{gold;silver}{path}{fly cd;w;n}{room}{东大街}}
+	{195} {{name}{门卫}{id}{wei}{spoils}{dao;silver}{path}{fly bt;sd;s}{room}{大门}}
+	{196} {{name}{门卫}{id}{wei}{spoils}{dao;silver}{path}{fly bt;sd;s}{room}{大门}}
+	{197} {{name}{山贼}{id}{zei}{spoils}{dao;silver}{path}{fly bt;s;sd;sd;s;#2 sd;se;#2 e;ne;#2 nu;ne}{room}{小路}}
+	{198} {{name}{山贼}{id}{zei}{spoils}{dao;silver}{path}{fly bt;s;sd;sd;s;#2 sd;se;#2 e;ne;#2 nu;ne;n}{room}{小路}}
+	{199} {{name}{山贼}{id}{zei}{spoils}{dao;silver}{path}{fly bt;s;sd;sd;s;#2 sd;se;#2 e;ne;#2 nu;ne;n}{room}{小路}}
+	{200} {{name}{门卫}{id}{wei}{spoils}{dao;silver}{path}{fly bt;n;#2 w}{room}{西门}}
+	{201} {{name}{西夏兵}{id}{xixia bing}{spoils}{jia;qiang;silver}{path}{fly lz;#2 w}{room}{骠骑营}}
+	{202} {{name}{守寺僧兵}{id}{seng bing}{spoils}{zhang;silver}{path}{fly xs;n}{room}{广场}}
+	{203} {{name}{守寺僧兵}{id}{seng bing}{spoils}{zhang;silver}{path}{fly xs;n}{room}{广场}}
+	{204} {{name}{守寺僧兵}{id}{seng bing}{spoils}{zhang;silver}{path}{fly xs;n}{room}{广场}}
+	{205} {{name}{守寺僧兵}{id}{seng bing}{spoils}{zhang;silver}{path}{fly xs;n}{room}{广场}}	
+	{206} {{name}{西夏兵}{id}{xixia bing}{spoils}{jia;qiang;silver}{path}{fly lz;#2 w}{room}{骠骑营}}
+	{207} {{name}{西夏兵}{id}{xixia bing}{spoils}{jia;qiang;silver}{path}{fly lz;#2 w;n}{room}{营房}}
+	{208} {{name}{西夏兵}{id}{xixia bing}{spoils}{jia;qiang;silver}{path}{fly lz;#2 w;n}{room}{营房}}
+	{209} {{name}{西夏兵}{id}{xixia bing}{spoils}{jia;qiang;silver}{path}{fly lz;#2 w;n}{room}{营房}}
+	{210} {{name}{西夏兵}{id}{xixia bing}{spoils}{jia;qiang;silver}{path}{fly lz;#2 w;s}{room}{小校场}}
+	{211} {{name}{石人武士}{id}{wu shi}{spoils}{jia;qiang;silver}{path}{fly lz;#2 e;ne;n;ne;n;ne;nw;nd}{room}{西夏王陵}}
+	{212} {{name}{石人武士}{id}{wu shi}{spoils}{jia;qiang;silver}{path}{fly lz;#2 e;ne;n;ne;n;ne;nw;nd}{room}{西夏王陵}}
+	{213} {{name}{石人武士}{id}{wu shi}{spoils}{jia;qiang;silver}{path}{fly lz;#2 e;ne;n;ne;n;ne;nw;nd}{room}{西夏王陵}}
+	{214} {{name}{石人武士}{id}{wu shi}{spoils}{jia;qiang;silver}{path}{fly lz;#2 e;ne;n;ne;n;ne;nw;nd}{room}{西夏王陵}}
+	{215} {{name}{石人武士}{id}{wu shi}{spoils}{jia;qiang;silver}{path}{fly lz;#2 e;ne;n;ne;n;ne;nw;nd;#2 n}{room}{德陵}}
+	{216} {{name}{石人武士}{id}{wu shi}{spoils}{jia;qiang;silver}{path}{fly lz;#2 e;ne;n;ne;n;ne;nw;nd;#2 n}{room}{德陵}}
+	{217} {{name}{一品堂武士}{id}{wu shi}{spoils}{jia;dao;silver}{path}{fly lz;w;n}{room}{一品堂大门}}
+	{218} {{name}{一品堂武士}{id}{wu shi}{spoils}{jia;dao;silver}{path}{fly lz;w;n}{room}{一品堂大门}}
+	{219} {{name}{一品堂武士}{id}{wu shi}{spoils}{jia;dao;silver}{path}{fly lz;w;n;n}{room}{一品堂大院}}
+	{220} {{name}{一品堂武士}{id}{wu shi}{spoils}{jia;dao;silver}{path}{fly lz;w;n;n}{room}{一品堂大院}}
+	{221} {{name}{校尉}{id}{xiao wei}{spoils}{dao;fu;silver}{path}{fly lz;e;s}{room}{大将军府}}
+	{222} {{name}{衙役}{id}{ya yi}{spoils}{bang;fu;silver}{path}{fly lz;e;n}{room}{衙门}}
+	{223} {{name}{衙役}{id}{ya yi}{spoils}{bang;fu;silver}{path}{fly lz;e;n}{room}{衙门}}
+	{224} {{name}{衙役}{id}{ya yi}{spoils}{bang;fu;silver}{path}{fly lz;e;n}{room}{衙门}}
+	{225} {{name}{衙役}{id}{ya yi}{spoils}{bang;fu;silver}{path}{fly lz;e;n}{room}{衙门}}
+	{226} {{name}{校尉}{id}{xiao wei}{spoils}{dao;fu;silver}{path}{fly lz;#2 s}{room}{灵州南门}}
+	{227} {{name}{校尉}{id}{xiao wei}{spoils}{dao;fu;silver}{path}{fly lz;e;s}{room}{大将军府}}
+	{228} {{name}{年轻弟子}{id}{boy}{spoils}{xionghuang;jian;silver}{path}{fly sld;s}{room}{大门}}
+	{229} {{name}{年轻弟子}{id}{boy}{spoils}{xionghuang;jian;silver}{path}{fly sld;s}{room}{大门}}
+	{230} {{name}{年轻弟子}{id}{boy}{spoils}{xionghuang;jian;silver}{path}{fly sld;s}{room}{大门}}
+	{231} {{name}{年轻女弟子}{id}{girl}{spoils}{xionghuang;jian;silver}{path}{fly sld;s}{room}{大门}}
+	{232} {{name}{年轻弟子}{id}{boy}{spoils}{xionghuang;jian;silver}{path}{fly sld}{room}{神龙教大厅}}
+	{233} {{name}{年轻弟子}{id}{boy}{spoils}{xionghuang;jian;silver}{path}{fly sld}{room}{神龙教大厅}}
+	{234} {{name}{亲兵}{id}{qin bing}{spoils}{dao;silver}{path}{fly cd;#3 w;n}{room}{提督府门}}
+	{235} {{name}{亲兵}{id}{qin bing}{spoils}{dao;silver}{path}{fly cd;#3 w;n}{room}{提督府门}}
+	{236} {{name}{亲兵}{id}{qin bing}{spoils}{dao;silver}{path}{fly cd;#3 w;n;n}{room}{提督府}}
+	{237} {{name}{亲兵}{id}{qin bing}{spoils}{dao;silver}{path}{fly cd;#3 w;n;n}{room}{提督府}}
+	{238} {{name}{亲兵}{id}{qin bing}{spoils}{dao;silver}{path}{fly cd;#3 w;n;n}{room}{提督府}}
+	{239} {{name}{亲兵}{id}{qin bing}{spoils}{dao;silver}{path}{fly cd;#3 w;n;n}{room}{提督府}}
+	{240} {{name}{门卫}{id}{men wei}{spoils}{jian;silver}{path}{fly wm;e;n;e}{room}{长乐帮大门}}
+	{241} {{name}{门卫}{id}{men wei}{spoils}{jian;silver}{path}{fly wm;e;n;e}{room}{长乐帮大门}}
+	{242} {{name}{门卫}{id}{men wei}{spoils}{jian;silver}{path}{fly wm;e;n;e}{room}{长乐帮大门}}
+	{243} {{name}{门卫}{id}{men wei}{spoils}{jian;silver}{path}{fly wm;e;n;e}{room}{长乐帮大门}}
+	{244} {{name}{山贼头}{id}{tou}{spoils}{dao;silver}{path}{chuansong bt;sd;s;#2 sd;se;#2 e;ne;nu;nu;ne;n;n}{room}{洞内}}
+	{245} {{name}{马贼}{id}{zei}{spoils}{mabang;jia;silver}{path}{chuansong wm;e;n;#3 w;n;n;e;ne;n;n;n;w;sw;sw;w;w;n;ne;n;nw;n;ne;ne;ne;ne;se;s}{room}{红山峡}}
+	{246} {{name}{土匪}{id}{tufei}{spoils}{jian;silver}{path}{chuansong wm;e;#2 s;enter dong;an;d;5;#2 sw;out}{room}{林中小路}}
+	{247} {{name}{土匪}{id}{tufei}{spoils}{jian;silver}{path}{chuansong wm;e;#2 s;enter dong;an;d;5;#2 sw;out}{room}{林中小路}}
+	{248} {{name}{土匪}{id}{tufei}{spoils}{jian;silver}{path}{chuansong wm;e;#2 s;enter dong;an;d;5;#2 sw;out;s}{room}{林中小路}}
+	{249} {{name}{土匪}{id}{tufei}{spoils}{jian;silver}{path}{chuansong wm;e;#2 s;enter dong;an;d;5;#2 sw;out;s}{room}{林中小路}}
+	{250} {{name}{土匪}{id}{tufei}{spoils}{jian;silver}{path}{chuansong wm;e;#2 s;enter dong;an;d;5;#2 sw;out;s;e}{room}{林中小路}}
+	{251} {{name}{土匪}{id}{tufei}{spoils}{jian;silver}{path}{chuansong wm;e;#2 s;enter dong;an;d;5;#2 sw;out;s;e}{room}{林中小路}}
+	{252} {{name}{土匪}{id}{tufei}{spoils}{jian;silver}{path}{chuansong wm;e;#2 s;enter dong;an;d;5;#2 sw;out;nd}{room}{林中小路}}
+	{253} {{name}{土匪}{id}{tufei}{spoils}{jian;silver}{path}{chuansong wm;e;#2 s;enter dong;an;d;5;#2 sw;out;nd}{room}{林中小路}}
+	{254} {{name}{土匪头}{id}{tufei tou}{spoils}{jian;silver}{path}{chuansong wm;e;#2 s;enter dong;an;d;5;#2 sw;out;s;e}{room}{林中小路}}
+	{255} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 n}{room}{皇宫正门}}
+	{256} {{name}{官兵}{id}{bing}{spoils}{dao;fu;silver}{path}{fly bj;#2 n}{room}{皇宫正门}}
+	{257} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly bj;#2 w;#4 n}{room}{西四北大街}}
+	{258} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly bj;#4 e;#2 se;s}{room}{大驿道}}
+	{259} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly sz;w;n;n;sw;s}{room}{头门山}}
+	{260} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly sz;w;n;n;sw;s;w}{room}{万景山庄}}	
+	{261} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly sz;w;n;n;sw;s;w;eu}{room}{试剑石}}
+	{262} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly wm;e;#2 s;#5 e;ne;n}{room}{大驿道}}
+	{263} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly wm;e;#2 s;#5 e;ne;#3 n;#2 nu}{room}{ 一天门}}
+	{264} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly es;#5 sd}{room}{回马岭}}
+	{265} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly es;#5 sd}{room}{回马岭}}
+	{266} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#3 sw}{room}{玉皇山脚}}
+	{267} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#3 sw}{room}{玉皇山脚}}
+	{268} {{name}{绿营会众}{id}{hua}{spoils}{qiang;fu;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;#3 su}{room}{山路}}
+	{269} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#4 n;w;sw;#2 w}{room}{青石大道}}
+	{270} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#4 n;w;sw;#2 w}{room}{青石大道}}
+	{271} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;s;s;sw}{room}{沿湖大道}}
+	{272} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;s;s;sw}{room}{沿湖大道}}
+	{273} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly cd;w;n;nw}{room}{北大街}}
+	{274} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly cd;#3 w;#2 s;w}{room}{南大街}}
+	{275} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly mj;s;sd;s;#4 sd;out;#4 sd;ed}{room}{青石阶}}
+	{276} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly mj;s;sd;s;#4 sd;out;#4 sd;ed}{room}{青石阶}}	
+	{277} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly mj;s;sd;s;#4 sd;out;#4 sd;ed}{room}{青石阶}}	
+	{278} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly mj;s;sd;s;#4 sd;out;#4 sd;ed}{room}{青石阶}}	
+	{279} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly mj;s;sd;s;#4 sd;out;#4 sd;ed}{room}{青石阶}}	
+	{280} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly wm;e;#2 s;#5 e;ne;#3 n;#3 nu}{room}{斗母宫}}
+	{281} {{name}{绿营会众}{id}{hua}{spoils}{qiang;fu;silver}{path}{fly hz;w;sw;w;w}{room}{聚景园}}
+	{282} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly hz;w;sw;w;w}{room}{聚景园}}
+	{283} {{name}{绿营会众}{id}{hua}{spoils}{qiang;fu;silver}{path}{fly hz;w;#4 n;w;sw;w;n}{room}{岳廊}}
+	{284} {{name}{绿营会众}{id}{hua}{spoils}{qiang;fu;silver}{path}{fly hz;w;#4 n;w;sw;w;n}{room}{岳廊}}
+	{285} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly bj;#2 s}{room}{南城广场}}	
+	{286} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly bj;#2 s}{room}{南城广场}}
+	{287} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly hy;n;w;n;knock gate;#delay {1} {enter}}{room}{刘府大院}}
+	{288} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly hy;n;w;n;knock gate;#delay {1} {enter}}{room}{刘府大院}}
+	{289} {{name}{绿营清兵}{id}{bing}{spoils}{qiang;fu;silver}{path}{fly hz;w;n}{room}{青石大道}}
+	{290} {{name}{绿营清兵}{id}{bing}{spoils}{qiang;fu;silver}{path}{fly hz;w;n}{room}{青石大道}}
+	{291} {{name}{绿营清兵}{id}{bing}{spoils}{qiang;fu;silver}{path}{fly hz;w;n}{room}{青石大道}}
+	{292} {{name}{绿营清兵}{id}{bing}{spoils}{qiang;fu;silver}{path}{fly hz;w;n}{room}{青石大道}}
+	{293} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly hz;w;#2 sw;w;w;w}{room}{青石大道}}
+	{294} {{name}{龙骏}{id}{long jun}{spoils}{jia;silver}{path}{fly hz;w;#2 sw;w;w;w}{room}{青石大道}}
+	{295} {{name}{白阵}{id}{bai zhen}{spoils}{jia;silver}{path}{fly hz;w;#2 sw;w}{room}{青石大道}}
+	{296} {{name}{绿营会众}{id}{hua}{spoils}{qiang;fu;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;#3 su}{room}{山路}}
+	{297} {{name}{蒙面人}{id}{mengmianren}{spoils}{dao;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;#3 sw}{room}{青石大道}}
+	{298} {{name}{蒙面人}{id}{mengmianren}{spoils}{dao;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;#3 sw;s}{room}{飞来峰}}
+	{299} {{name}{贵公子}{id}{gongzi}{spoils}{silver}{path}{fly dl;s;w;n;e;eu;e;ed;se;ed;e;e;eu;e}{room}{沿池堤岸}}	
+	{300} {{name}{观众}{id}{guan}{spoils}{silver}{path}{fly bj;w;n}{room}{长安戏院}}
+	{301} {{name}{观众}{id}{guan}{spoils}{silver}{path}{fly bj;w;n}{room}{长安戏院}}
+	{302} {{name}{观众}{id}{guan}{spoils}{silver}{path}{fly bj;w;n}{room}{长安戏院}}
+	{303} {{name}{观众}{id}{guan}{spoils}{silver}{path}{fly bj;w;n}{room}{长安戏院}}
+	{304} {{name}{观众}{id}{guan}{spoils}{silver}{path}{fly bj;w;n}{room}{长安戏院}}	
+	{305} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;#6 su}{room}{法喜寺}}
+	{306} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;#6 su}{room}{法喜寺}}	
+	{307} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly hz;w;#4 n;w;sw;w;w;wu}{room}{玉泉}}
+	{308} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;su;su}{room}{法镜寺}}	
+	{309} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;#4 su}{room}{法净寺}}
+	{310} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly tls;#3 n}{room}{大门}}
+	{311} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly tls;#3 n}{room}{大门}}
+	{312} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly tls;#3 n}{room}{大门}}
+	{313} {{name}{僧人}{id}{seng ren}{spoils}{silver}{path}{fly dl;s;w;n;e;eu;e;ed;se;ed;e}{room}{金汁河畔}}
+	{314} {{name}{僧人}{id}{seng ren}{spoils}{silver}{path}{fly dl;s;w;n;e;eu;e;ed;se;ed;e}{room}{金汁河畔}}
+	{315} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly dl;s;w;#4 s;e;ne;n;nu;eu}{room}{碧鸡山顶}}
+	{316} {{name}{家丁}{id}{jia ding}{spoils}{silver}{path}{fly yzw;e}{room}{练武场}}
+	{317} {{name}{家丁}{id}{jia ding}{spoils}{silver}{path}{fly yzw;e}{room}{练武场}}
+	{318} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly ws1;se;#2 su;#2 eu}{room}{千尺幢}}
+	{319} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly ws1;se;#2 su;#2 eu}{room}{千尺幢}}
+	{320} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly ws1;se;#3 su}{room}{石阶}}
+	{321} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly ws1;se;#3 su}{room}{石阶}}	
+
+
+};
+
+#class {moneynpc_list} close

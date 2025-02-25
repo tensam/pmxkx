@@ -1,0 +1,32 @@
+#class {tuna} open
+#nop ==========================Variable==========================
+#variable {tunaClass} {1};
+
+#nop ===========================Alias============================
+#alias {tuna.start} {
+	updatedolist tuna;
+	tuna 200;
+}
+
+#alias {tuna.end} {
+	#class {tuna} kill;
+	halt;fly wm;w;exert recover;exert regenerate;
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你吐纳完毕，睁开双眼，站了起来。} {
+	exert regenerate;
+	dazuo 100;
+}
+
+#action {^%?%?$dazuo_end} {
+	#variable epochStamp @get_epoch_time{};
+	exert recover;
+	tuna 200;
+}
+
+#action {^%?%?你的精力修为似乎已经达到了瓶颈。} {
+	tuna.end;
+}
+
+#class {tuna} close

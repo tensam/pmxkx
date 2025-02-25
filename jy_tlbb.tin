@@ -1,0 +1,161 @@
+#class {jy_tlbb} open
+#nop ==========================Variable==========================
+#variable {jyClass} {1};
+#variable {tri_lvl} {4};
+
+#nop ===========================Alias============================
+#alias {jy_tlbb.start} {
+    updatedolist jy_tlbb;
+    fly lz;s;w;ask duan about 钟灵
+};
+
+#alias {jy_tlbb.kill} {
+    #variable {tri_lvl} {5};
+    #unticker end;
+    #unalias {arrive_cmd};
+    #class {jy_tlbb} kill;
+}
+
+#alias {jy_tlbb.end} {
+    jy_tlbb.kill;
+    fly wm;w
+}
+
+
+#action {^%?%?{这里没有这个人|乔峰说道：好！好|你身上没有这样东西。|你身上没有这样东西|你任务超时，下次继续努力|慕容博扑在地上挣扎了几下，口中喷出几口鲜血，死了！}} {
+    jy_tlbb.end
+}
+
+#action {^%?%?你向段誉打听有关『钟灵』的消息。} {
+    fly wjg;n;w;n;give zhong xie
+}
+
+#action {^%?%?你拿出绣花小鞋(Xiuhua xiaoxie)给钟灵} {
+    fly lz;s;w;ask duan about 木婉清
+}
+
+
+#action {^%?%?你向段誉打听有关『木婉清』的消息。} {
+    fly wjg;n;n;push 大石头
+}
+
+#action {^%?%?大石头动了一下。} {
+    #delay {push} {push 大石头} {1}
+}
+
+#action {^%?%?大石终于被推开了，露出通向石屋的通道} {
+    #undelay {push};
+    #unaction {^%?%?大石头动了一下。};
+    #delay {3} {n;give mu mianjin}
+}
+
+
+#action {^%?%?你拿出蒙面面巾(Mengmian mianjin)给木婉清} {
+    fly lz;s;w;ask duan about 王语嫣
+}
+
+#action {^%?%?你向段誉打听有关『王语嫣』的消息} {
+    fly lz;#7 n;e;search men;knock men;enter;n;press jikuo;zou gangsi;n;w;zhai zihua;fly lz;s;w;give hua to duan
+}
+
+#action {^%?%?你拿出舞剑图(Wujian tu)给段誉} {
+    #alias {arrive_cmd} {give hua to wang};gotonpc 王语嫣;
+}
+
+
+#action {^%?%?你拿出舞剑图(Wujian tu)给王语嫣} {
+    fly lz;s;w;ask duan about 虚竹
+}
+
+#action {^%?%?段誉说道：虚竹是我二哥,不知道他找到他的梦姑没有} {
+    fly lj;ask xu about 梦姑
+}
+
+#action {^%?%?虚竹脸色通红，道：“糟糕，糟糕，那姑娘跟我所说的话} {
+    #alias {arrive_cmd} {ask gong nv about 梦郎};
+    walkto 589;
+}
+
+#action {^%?%?你悄没声的穿过帷幕，踏着厚厚的地毯，走向内堂。} {
+    #delay {1} {ask gongzhu about 梦郎}
+}
+
+
+#action {^%?%?银川公主说道：多谢这位%*给我带来梦郎的消息} {
+    fly lj;ask xu about 问君三语;fly lz;s;w;ask duan about 乔峰
+}
+
+#action {^%?%?段誉说道：乔峰是我大哥,不知道他和阿朱姑娘现在怎么样了} {
+    fly cs;#5 sd;d;sw;sd;#3 s;w;w;nu;w;n;#2 ask qiao about 薛神医
+}
+
+#action {^%?%?乔峰说道：薛神医是在附近么？我只道他远在甘州。若在近处，阿朱这小丫头可有救了} {
+    fly xyl;n;n;ask xue about 乔峰
+}
+
+
+#action {^%?%?薛慕华说道：中原武林同道相约聚贤庄，就是为了商议如何对付乔峰} {
+    fly cs;#5 sd;d;sw;sd;#3 s;w;w;nu;w;n;ask qiao about 薛神医;yes
+}
+
+
+#action {^%?%?乔峰说道：那就多谢这位壮士了，我们现在就出发吧} {
+    #alias {arrive_cmd} {#showme 到了;#unaction {^%?%?#PATH WALK: #END OF PATH};#unticker walk;yell 乔峰拜庄};
+    #action {^%?%?#PATH WALK: #END OF PATH} {arrive_cmd};
+    #var {alias} {s;e;sd;e;e;e;south;s;ne};#path load {alias};#ticker {walk} {#path walk forward} {2};
+}
+
+#action {^%?%?你纵身长啸：乔峰拜庄} {
+    #action {^%?%?%*对%*造成%*点伤害} {
+        #ticker {end} {out} {5}
+    }
+}
+
+
+#action {^%?%?乔峰说道：爹娘师父于一日之间逝世，我的身世之谜更是难明} {
+    #unaction {^%?%?%*对%*造成%*点伤害};
+    #unticker end;
+    #alias {arrive_cmd} {ask qiao about 带头大哥};
+    sw;gotonpc 乔峰;
+}
+
+#action {^%?%?乔峰说道：我爹爹妈妈被这些汉人无辜害死} {
+    fly sl;knock gate;n;n;nu;n;n;n;nu;n;n;u;n;ask dashi about 带头大哥
+}
+
+#action {^%?%?你向玄慈大师打听有关『带头大哥』的消息。} {
+    fly cs;#5 sd;d;sw;sd;#3 s;w;w;nu;w;n;ask qiao about 带头大哥
+}
+#action {^%?%?乔峰说道：原来慕容老贼才是罪魁祸首，只是不知他躲在哪出} {
+    fly sl;knock gate;n;n;nu;n;n;n;nu;n;n;u;n;ask dashi about 英雄帖
+}
+
+#action {^%?%?{丁春秋|慕容复|庄聚贤}扑在地上挣扎了几下，口中喷出几口鲜血，死了！} {
+    #ticker {end} {ask xiao about 慕容博} {1}
+} {1}
+
+#action {^%?%?萧峰说道：在下在少室山下候着} {
+    #unticker end;
+    #alias {arrive_cmd} {fight_ready;follow bo;touxi bo};
+    #delay {2} {e;gotonpc 慕容博};
+}
+
+#action {^%?%?慕容博往%*落荒而逃了。} {
+    #delay {2} {touxi bo};
+}
+
+慕容博往东落荒而逃了。
+
+#action {^%?%?慕容博脚下一个不稳，跌在地上一动也不动了} {
+    halt;get bo;follow none;#unticker kb;
+    #ticker {get_bo} {halt;get bo} {0.2}
+}
+
+
+#action {^%?%?你将慕容博扶了起来背在背上} {
+    #unticker get_bo;
+    fly cs;#5 sd;d;sw;sd;#3 s;w;w;nu;w;n;give qiao bo
+}
+
+
+#class {jy} close;

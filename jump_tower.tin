@@ -1,0 +1,70 @@
+#class {jump_tower} open
+#nop ==========================Variable==========================
+#variable {jump_towerClass} {1};
+#variable {maxlevel} {0};
+#variable {bAutoAfterJump} {0};
+
+#nop ===========================Alias============================
+#alias {jump_tower.start} {
+	updatedolist jump_tower;
+	uw;remove all;wear xunzhang;
+	iskills;
+	#delay {1} {
+		#variable {maxlevel} {@skillmaxlevel{}};
+		#if {$skill_list[基本轻功][level] < $maxlevel && $skill_list[基本闪躲][level] < $maxlevel} {
+			#if {"$me[family]" != "少林派" && $traps[slling]<2 && $xunzhang_level<15} {fly wm;e;#4 s;give 1 gold to tuobo seng};
+			fly sl;knock gate;n;n;nu;n;e;enter;#6 u;out;
+		};
+		#else {#showme $maxlevel;jump_tower.end};
+	}
+}
+
+#alias {jump_tower1.start} {
+	#variable {bAutoAfterJump} {1};
+	jump_tower.start;
+}
+
+#alias {jump_tower.kill} {
+	#undelay {jump_step1};
+	#undelay {jump_step2};
+	#unticker {jumpout};
+	#class {jump_tower} kill;
+}
+
+#alias {jump_tower.end} {
+	halt;weara;wi;
+	scmd {halt;fly wm;w;};
+	#if {0 != $bAutoAfterJump} {robot start};
+	jump_tower.kill;
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你已稳稳地站在地上。} {
+	#unticker {jumpout};
+	scmd {halt;exert recover;exert regenerate;enter;#6 u;dazuo 100};
+	#delay {jump_step1} {halt;out} {10};
+}
+
+#action {^%?%?$dazuo_end}
+{
+	#variable epochStamp @get_epoch_time{};
+	halt;
+	exert recover;
+	exert regenerate;
+	#format hour {%t} {%H};
+    #if {$hour>= 0 && $hour<5 } {halt;jump_tower.kill;fly wm;#zap};
+	#else {
+		#delay {jump_step2} {halt;fight_ready;#undelay {jump_step1};out} {1};
+		#ticker {jumpout} {out} {5}; 
+	};
+	
+}
+
+#action {^%?%?你的「%*」进步了！}
+{
+	#if {&skill_list[%3] == 0} {#variable skill_list[%3][level] 1};
+	#else {#math skill_list[%3][level] {$skill_list[%3][level]+1}};
+	#if {($skill_list[基本轻功][level]+$skill_list[基本闪躲][level]) >= (2 * $maxlevel)} {jump_tower.end}; 
+}
+
+#class {jump_tower} close

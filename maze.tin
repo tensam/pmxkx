@@ -1,0 +1,200 @@
+#class maze open
+
+#var current_x 10
+#var current_y 0
+#var current_layer 1
+#var target_found 0
+#var maze_map {}
+#var map_lines {}
+#var path_to_target {}
+#var target_x -1
+#var target_y -1
+
+#alias {maze_init} {
+    #var current_x 10;
+    #var current_y 0;
+    #var current_layer 1;
+    #var target_found 0;
+    #var maze_map {};
+    #var map_lines {};
+    #var path_to_target {};
+    #var target_x -1;
+    #var target_y -1;
+    map1;
+    #showme 迷宫导航初始化完成;
+}
+
+#action {^o%*o%*o} {
+    #list map_lines add {%0};
+    #if {&map_lines[] == 9} {
+        parse_map;
+    }
+}
+
+#function {parse_map} {
+    #var maze_map {};
+    #var row_count 0;
+    #var col_count 0;
+    
+    #foreach {$map_lines[]} {line} {
+        #var col_count 0;
+        #parse {$line} {char} {
+            #if {"$char" == "o"} {
+                #var maze_map[$row_count,$col_count] {normal};
+                #math col_count {$col_count + 1};
+            };
+            #elseif {"$char" == "○"} {
+                #var maze_map[$row_count,$col_count] {target};
+                #var target_x $col_count;
+                #var target_y $row_count;
+                #var target_found 1;
+                #showme <158>发现目标点！坐标：($target_x, $target_y)，开始寻路...<099>;
+                #math col_count {$col_count + 1};
+            };
+            #elseif {"$char" == "-"} {
+                #var maze_map[$row_count,$col_count-1,east] {1};
+                #var maze_map[$row_count,$col_count,west] {1};
+            };
+            #elseif {"$char" == "|"} {
+                #var maze_map[$row_count-1,$col_count,south] {1};
+                #var maze_map[$row_count,$col_count,north] {1};
+            }
+        };
+        #math row_count {$row_count + 1};
+    };
+    
+    #if {$target_found} {
+        find_path;
+    } {
+        explore_unknown;
+    };
+    #var map_lines {};
+}
+
+#alias {reconstruct_path} {
+    #var path_to_target {};
+    #var current {%1};
+    
+    #while {"$current" != "$current_x,$current_y"} {
+        #list path_to_target insert 1 {$current};
+        #var current {$parent[$current]};
+    };
+    
+    #showme <158>计算出路径，共需移动 &path_to_target[] 步<099>;
+    execute_path;
+}
+
+#alias {explore_unknown} {
+    #var visited {};
+    #var queue {};
+    
+    #list queue add {$current_x,$current_y};
+    #var visited[$current_x,$current_y] {1};
+    
+    #while {&queue[] > 0} {
+        #list queue get 1 pos;
+        #list queue delete 1;
+        
+        #foreach {east west north south} {dir} {
+            #if {$maze_map[$pos][,$dir]} {
+                #switch {"$dir"} {
+                    #case {"east"}   {#math next_x {$current_x + 1}; #var next_y $current_y};
+                    #case {"west"}   {#math next_x {$current_x - 1}; #var next_y $current_y};
+                    #case {"north"}  {#var next_x $current_x; #math next_y {$current_y + 1}};
+                    #case {"south"}  {#var next_x $current_x; #math next_y {$current_y - 1}};
+                };
+                
+                #if {&visited[$next_x,$next_y] == 0} {
+                    #if {&maze_map[$next_x,$next_y] == 0} {
+                        move_to $next_x $next_y;
+                        #return;
+                    };
+                    #list queue add {$next_x,$next_y};
+                    #var visited[$next_x,$next_y] {1};
+                }
+            }
+        }
+    }
+}
+
+#alias {move_to} {
+    #local dest_x %1;
+    #local dest_y %2;
+    
+    #if {$dest_x > $current_x} {
+        go_east;
+    };
+    #elseif {$dest_x < $current_x} {
+        go_west;
+    };
+    #elseif {$dest_y > $current_y} {
+        go_north;
+    };
+    #elseif {$dest_y < $current_y} {
+        go_south;
+    }
+}
+
+#alias {find_path} {
+    #var queue {};
+    #var visited {};
+    #var parent {};
+    
+    #list queue add {$current_x,$current_y};
+    #var visited[$current_x,$current_y] {1};
+    
+    #while {&queue[] > 0} {
+        #list queue get 1 current_pos;
+        #list queue delete 1;
+        
+        #if {$maze_map[$current_pos] == "target"} {
+            reconstruct_path $current_pos;
+            #break;
+        };
+        
+        #foreach {east west north south} {dir} {
+            #if {$maze_map[$current_pos][,$dir]} {
+                #regex {$current_pos} {^(\d+),(\d+)$} {
+                    #switch {"$dir"} {
+                        #case {"east"}   {#math next_x {&1 + 1}; #var next_y &2};
+                        #case {"west"}   {#math next_x {&1 - 1}; #var next_y &2};
+                        #case {"north"}  {#var next_x &1; #math next_y {&2 + 1}};
+                        #case {"south"}  {#var next_x &1; #math next_y {&2 - 1}};
+                    };
+                    
+                    #if {&visited[$next_x,$next_y] == 0} {
+                        #list queue add {$next_x,$next_y};
+                        #var visited[$next_x,$next_y] {1};
+                        #var parent[$next_x,$next_y] {$current_pos};
+                    }
+                }
+            }
+        }
+    }
+}
+
+#alias {go_east} {
+    #math current_x {$current_x + 1};
+    e;
+    #delay 0.5 {map1};
+}
+
+#alias {go_west} {
+    #math current_x {$current_x - 1};
+    w;
+    #delay 0.5 {map1};
+}
+
+#alias {go_north} {
+    #math current_y {$current_y + 1};
+    n;
+    #delay 0.5 {map1};
+}
+
+#alias {go_south} {
+    #math current_y {$current_y - 1};
+    s;
+    #delay 0.5 {map1};
+}
+
+#class maze close

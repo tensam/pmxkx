@@ -1,0 +1,500 @@
+#class {prepare} open
+#nop ==========================Variable==========================
+#variable {prepareClass} {1};
+#variable {bEquipfilter} {1};
+#variable {item_id} {};
+#variable {item_find} {0};
+#variable {equip_status} {0};
+#variable {dazuo_kee} {0};
+#variable {dazuo_factor} {2};
+#variable {dazuo_minkee} {50};
+#variable {tuna_gin} {0};
+#list {missing_equips} {clr};
+#variable {broken_name} {};
+#variable {broken_idx} {1};
+#variable {broken_find} {0};
+#list {doubtlist} {clr};
+#var cnt_xuantie 1;
+
+#nop ===========================Alias============================
+#alias {prepare.start} {
+	#echo  载入prepare;
+	#if {&keep_equips[] > 0} {
+		#foreach {$keep_equips[%*]} {item_id} {
+			#list {trapslist} {find} {$item_id} {item_find};
+			#if {$item_find == 0} {#list {missing_equips} {add} {$item_id}};
+		}
+	};
+	#if {&missing_equips[] > 0} {
+		#foreach {$missing_equips[%*]} {item_id} {
+			#echo {****missing equip: $item_id****};
+			#if {"$item_id" == "%* {jian|dao|zhang|bang|di|xiao|fu|bian|qin|gun|chui|zhen|lun|qiang}"} {equip callback weapon};
+			#if {"$item_id" == "%* yi"} {equip callback armor}; 
+			#if {"$item_id" == "%* mao"} {equip callback head};
+			#if {"$item_id" == "%* xue"} {equip callback boots}; 
+			#if {"$item_id" == "%* hushou"} {equip callback hands};
+			#if {"$item_id" == "%* ring"} {equip callback finger};
+			#if {"$item_id" == "%* xunzhang"} {equip callback neck};
+		};
+		#class {prepare} kill;
+		#if {&specialforce[] > 1} {
+			#if {0 != &{default_specialforce}} {enable force $default_specialforce};
+			#else {
+				#variable {l_max} {0};
+				#variable {l_force} {};
+				#foreach {$specialforce[%*]} {l_skill} {
+					#if {$skill_list[$skill_e2c[$l_skill]][level] > $l_max} {
+						#variable {l_max} {$skill_list[$skill_e2c[$l_skill]][level]};
+						#variable {l_force} {$l_skill};
+					};
+				};
+				enable force $l_force;					
+				#unvariable {l_force};
+				#unvariable {l_skill};
+				#unvariable {l_max};
+			}	
+		};
+		#zap;
+	};
+	#else {
+		updatedolist prepare;
+		#if {"$dazuo_end" == ""} {init};
+		#list {gain_equips} {clr};
+		#if {$double_flag == 1} {
+			#variable {dazuo_factor} {3};
+			#math {dazuo_minkee} {$me[kee]/30};
+		};
+		#if {&droplist[]>0} {
+			fly fs;s;
+			#foreach {$droplist[%*]} {item_id} {give $item_id to mafu};
+			#list {droplist} {clr};
+		};
+		#if {$traps[nFire]>2} {fly gm;#$traps[nFire] drop fire;#2 get fire};
+		#if {$traps[nXionghuang]>2} {fly gm;#$traps[nXionghuang] drop xionghuang;#2 get xionghuang};
+		fly wm;w;
+	}
+}
+
+#alias {prepare.process} {
+	#if {$me[comb_exp]>2000000 && $me[yl_exp]>50000 && $traps[shanpai] == 0} {
+		#echo {****Missing traps: Shan pai****};
+		#if {&broken_equips[]>0} {
+			fly fs;s;
+			#foreach {$broken_equips[%*]} {item_id} {
+				#list {keep_equips} {find} {$item_id} {broken_find};
+				#if {$broken_find != 0} {give $item_id to mafu};	
+			};
+			fly wm;
+		};
+		#if {&specialforce[] > 1} {
+			#if {0 != &{default_specialforce}} {enable force $default_specialforce};
+			#else {
+				#variable {l_max} {0};
+				#variable {l_force} {};
+				#foreach {$specialforce[%*]} {l_skill} {
+					#if {$skill_list[$skill_e2c[$l_skill]][level] > $l_max} {
+						#variable {l_max} {$skill_list[$skill_e2c[$l_skill]][level]};
+						#variable {l_force} {$l_skill};
+					};
+				};
+				enable force $l_force;					
+				#unvariable {l_force};
+				#unvariable {l_skill};
+				#unvariable {l_max};
+			}	
+		};
+		quit;
+	};
+	#elseif {&broken_equips[]>0} {
+		#list {list_missing} {clr};
+		#list {list_broken} {clr};
+		#foreach {$broken_equips[%*]} {item_id} {
+			#list {keep_equips} {find} {$item_id} {l_find};
+			#if {$l_find != 0} {#list {list_missing} {add} {$item_id}} {#list {list_broken} {add} {$item_id}};	
+		};
+		#unvariable {l_find};
+		#if {&list_missing[]>0} {
+			#if {&list_broken[]>0} {
+				fly wm;u;n;#foreach {$list_broken[%*]} {item_id} {repair $item_id};
+			};
+			fly fs;s;
+			#foreach {$list_missing[%*]} {item_id} {give $item_id to mafu};
+			fly wm;#zap;
+		};
+		#else {
+			fly wm;u;n;#foreach {$list_broken[%*]} {item_id} {repair $item_id};fly wm;w;
+		};			
+		#unvariable {list_missing};
+		#unvariable {list_broken};
+	};
+	#elseif {$traps[nGold]>=3 || $traps[nGold]<1 || $traps[nSilver]>=150 || $traps[nSilver]<50 || $traps[nCoin]>150 || $me[pot]*2 > $me[max_pot]} { 
+		fly ca;s;
+		#if {$me[pot]>0} {deposit $me[pot] qn};	
+		#list {trapslist} {find} {gold-bar} {l_goldbar};
+		#if {$l_goldbar != 0} {deposit 1 gold-bar};
+		#unvariable {l_goldbar};
+		#if {$traps[nCoin]>0} {deposit $traps[nCoin] coin;#var traps[nCoin] 0;};
+		#if {$traps[nSilver]>0} {deposit $traps[nSilver] silver};
+		#if {$traps[nGold]>0} {deposit $traps[nGold] gold};
+		score;
+		withdraw 1 gold;							
+		withdraw 99 silver;
+		#if {$b_gold_full == 1} {
+			fly ca;s;withdraw 1000 gold;withdraw 1000 gold;withdraw 500 gold;
+			scmd {fly wm;e;#5 s;#4 w;n;move stone;nw;w;buy xu lian;eat xu lian;scmd {#var b_gold_full 0;halt;fly wm;w}};
+		};
+		#else {
+			scmd {halt;fly wm;w};
+		};
+	};
+	#elseif {$traps[nFire]<2} {
+		#math l_nFire {2-$traps[nFire]};
+		fly wm;e;#2 s;e;s;#$l_nFire buy fire;scmd {halt;fly wm;w};
+		#unvariable l_nFire;
+	};
+	#elseif {$traps[nXionghuang]<2} {
+		#math l_nXh {2-$traps[nXionghuang]};
+		fly wm;e;#2 s;#2 e;n;#$l_nXh buy xionghuang;scmd {halt;fly wm;w};
+		#unvariable l_nXh;
+	};
+	#elseif {$hmling && $traps[hmling] == 0} {
+		fly qz;w;#2 n;e;s;fight_ready;
+		scmd {ask ren woxing about 比剑;start;halt;fly wm;w};
+	};
+	#elseif {$bDownExp && $me[comb_exp]>=$downExp} {
+			fly xi;w;#3 n;
+			#10 {ask guo jing about job;ask guo jing about fangqi};
+			scmd {halt;fly wm;w};
+	};
+	#elseif {$bUseMudao == 1 && $traps[mudao] == 0 && $traps[mutou]== 0} {
+		fly xi;#3 e;s;buy mu dao;
+		scmd {halt;fly wm;w};
+	};
+	#elseif {$bUseJiudai == 1 && $traps[nJiudai] < 2} {
+		#math {l_nJiudai} {2-$traps[nJiudai]};
+		fly wm;#2 e;#$traps[nJiudai] drop jiu dai;#2 buy jiu dai;scmd {halt;fly wm;w};
+		#unvariable l_nJiudai;			
+	};
+	#elseif {$bUseChu == 1 && $traps[hzchu] == 0} {
+		fly xi;#3 s;e;l tiejiang;buy hezui chu;
+		scmd {halt;fly wm;w};			
+	};
+	#elseif {$bUseDagger == 1 && $traps[nDagger] < 2} {
+		#math {l_nDagger} {2-$traps[nDagger]};
+		fly wm;e;#2 s;#2 e;s;#$l_nDagger buy dagger;scmd {halt;fly wm;w};
+		#unvariable l_nDagger;			
+	};
+	#elseif {$bUseBilin == 1 && $traps[nBilin] < 50 && "$me[family]" == "星宿派"} {
+		fly xx;#2 n;ask ding chunqiu about 碧磷针;drop 900 bilin zhen;scmd {halt;fly wm;w};
+	};
+	#elseif {$drunkClass == 1 && $drunk_level < 2 && @get_epoch_time{} > $drunk_epoch+30} {
+		#action {^%?%?%S给你一个大酒坛。} {
+			#unaction {^%?%?%S给你一个大酒坛。};
+			e;drunk.do;
+		};
+		tell $bag_id give jiu tan to $me[ename];
+	};
+	#elseif {"$me[cmaster]" == "杨过" && 0 != &skill_list[玄铁剑法] && $cnt_xuantie == 0} {
+		#var cnt_xuantie 1;fly gm;ask yang about 玄铁剑;scmd {halt;fly wm;w};
+	};
+	#else {
+		traps.filter;
+		fly wm;u;
+		#if {$bEquipfilter} {
+			#if {&doubtlist[]>0} {
+				#echo {Gain filter start};
+				n;te gainfilter;
+				#variable item_idx 0;
+				#ticker {look_tick} {
+					#math {item_idx} {$item_idx + 1};
+					#if {$item_idx <= &doubtlist[]} {look $doubtlist[$item_idx]};
+					#else {#unticker look_tick;#showme {Gain filter finished!}}; 
+				} {0.3}				
+			} {
+				#if {"$trapslist[1]" != "$weapons[1]"} {give $me[ename] $weapons[1]};
+				weara;wi;dazuo max;
+			}
+		} {
+			n;i;
+			#delay {2} {
+				#if {"$trapslist[1]" != "$weapons[1]"} {give $me[ename] $weapons[1]};
+				s;weara;wi;dazuo max;			
+			}
+		}		
+	};
+}
+
+#alias {prepare.kill} {
+	#if {$gainfilterClass} {gainfilter.kill};
+	#class prepare kill;
+}
+
+#alias {prepare.end} {
+	prepare.kill;
+	#if {$bDouble && "$current_day" != "$doubleStamp" && $epochStamp > $doubleEpoch + 900} {#variable double_flag 0};
+	#if {$robot == 1 && &mission_list[] > 0} {
+		#if {&task_aider[] > 0 && $skill_list[乾坤大挪移][level]> 200} {
+			#class {mission_task_nuoyi} {read} {$MOD/mission_task_nuoyi.tin};
+			#delay {2} {mission_task_nuoyi.start};			
+		};
+		#elseif {&{biwu_asker} != 0 && $double_flag == 0} {
+			#variable robot 0;
+			fly wm;w;tell $biwu_asker yz_biwu;
+			#unvariable {biwu_asker};
+			#variable {biwuepoch} {@get_epoch_time{}};
+		};
+		#elseif {$double_flag == 0 && $me[deposit_pot] > $potVolume} {
+			halt;remove all;uw;weara int;wi int;fly ca;s;withdraw $potVolume qn;
+			#math {me[deposit_pot]} {$me[deposit_pot]-$potVolume};
+			scmd {halt;ilearn}
+		};
+		#else {
+			#if {$double_flag == 0 && $mission_complete == 1 && $mission_count % &mission_list[] == 0} {score;ixiuwei};
+			#showme {Ready~~~Go!!!};
+		};		
+	};
+	#else {halt;exert regenerate;exert recover;fly wm;w};
+}
+
+#alias {checkMissionStatus} {
+	#if {"$starClearStamp" != "$current_day"} {		
+		#variable {mission_status} {};
+		#variable {starClearStamp} {$current_day};
+	};
+	#elseif {"$starFullStamp" != "$current_day"} {
+		#variable {fCnt} {0};
+		#variable {mCnt} {0};
+		#if {&mission_status[mission_task] != 0} {
+			#math {mCnt} {$mCnt+1};
+			#if {$mission_status[mission_task][complete] > $mission_status[mission_task][total]} {
+				#math {fCnt} {$fCnt+1};
+			};
+		};
+		#if {&mission_status[mission_guanfu] != 0} {
+			#math {mCnt} {$mCnt+1};
+			#if {$mission_status[mission_guanfu][complete] > $mission_status[mission_guanfu][total]} {
+				#math {fCnt} {$fCnt+1};
+			};
+		};
+		#if {&mission_status[mission_guojob] != 0} {
+			#math {mCnt} {$mCnt+1};
+			#if {$mission_status[mission_guojob][complete] > $mission_status[mission_guojob][total]} {
+				#math {fCnt} {$fCnt+1};
+			};
+		};
+		#if {&mission_status[mission_songxin] != 0} {
+			#math {mCnt} {$mCnt+1};
+			#if {$mission_status[mission_songxin][complete] > $mission_status[mission_songxin][total]} {
+				#math {fCnt} {$fCnt+1};
+			};
+		};
+		#if {&mission_status[mission_xiaojob] != 0} {
+			#math {mCnt} {$mCnt+1};
+			#if {$mission_status[mission_xiaojob][complete] > $mission_status[mission_xiaojob][total]} {
+				#math {fCnt} {$fCnt+1};
+			};
+		};	
+		#if {&mission_status[mission_biao] != 0} {
+			#math {mCnt} {$mCnt+1};
+			#if {$mission_status[mission_biao][complete] > $mission_status[mission_biao][total]} {
+				#math {fCnt} {$fCnt+1};
+			};
+		};	
+		#if {$fCnt == $mCnt && $mCnt > 0} {#variable {starFullStamp} {$current_day}};
+		#unvariable {fCnt};
+		#unvariable {mCnt};
+	}
+}
+
+#alias {traps.filter} {
+	#list gain_equips clr;
+	#list doubtlist clr;
+	#variable l_gemlist $trapslist;
+	#variable l_equiplist $trapslist;
+	#list {l_gemlist} {filter} {{jewel}};
+	#list {l_equiplist} {filter} {%* {yi|mao|head|xue|boots|hushou|hands|jian|dao|zhang|bang|di|xiao|fu|bian|qin|gun|chui|zhen|lun|qiang}};
+	#foreach {$keep_equips[%*]} {item_id} {
+		#list {l_equiplist} {find} {$item_id} {item_find};
+		#if {$item_find != 0} {#list {l_equiplist} {delete} {$item_find}};
+	};
+	#foreach {$l_equiplist[%*]} {item_id} {
+		#if {"$item_id" != "{bilin zhen|mu dao}"} {#list doubtlist add $item_id};
+	};
+	#foreach {$l_gemlist[%*]} {item_id} {
+		#list {doubtlist} {find} {$item_id} {item_find};
+		#if {$item_find == 0} {#list doubtlist add $item_id};
+	};
+	#unvariable l_equiplist;
+	#unvariable l_gemlist;
+}
+
+#nop ===========================Action===========================
+#action {^%?%?$dazuo_end} {
+	#echo 在执行prepare;
+	#variable epochStamp @get_epoch_time{};
+	exert recover;
+	#if {$equip_status == 2} {
+		#variable equip_status 0;
+		weara;wi;
+	};
+	#elseif {$equip_status == 1} {
+		#variable equip_status 0;
+		remove all;unwield all;weara;wi;
+	};
+	ihp;
+	#delay {1} {
+		#if {$me[gin_ratio] < 100 || $me[kee_ratio] < 100} {prepare.kill;fly wm;w};
+		#elseif {$me[eff_mana] < $me[max_mana]} {
+			#echo 执行吐纳;
+			#if {$ginFull} {#math tuna_gin {$me[eff_gin]/2}} {#math tuna_gin {$me[eff_gin]-10}};			
+			tuna $tuna_gin;
+		};
+		#else {
+			#math {dazuo_kee} {(2*$me[max_force] - $me[eff_force])/$dazuo_factor};
+			#if {$dazuo_kee > $me[eff_kee] - 50} {#math {dazuo_kee} {$me[eff_kee]-50}};
+			#if {$dazuo_kee > $dazuo_minkee} {dazuo $dazuo_kee};
+			#else {
+				#format {current_day} {%t} {%d};
+				#if {$bDouble && $finish_flag == 1 $$ $mission_status[mission_task][complete]<$mission_status[mission_task][total]-10} {
+					#echo $current_day;
+					#if {"$current_day" != "$doublestartStamp" && $double_flag == 0} {fly wm;u;n;ask jin yong about 双倍奖励};
+				};	
+				checkMissionStatus;				
+				#delay {1} {prepare.end};				
+			}
+		}
+	}
+} {3}
+
+#action {^%?%?你吐纳完毕，睁开双眼，站了起来。} {
+	#variable epochStamp @get_epoch_time{};
+	exert regenerate;
+	ihp;
+	#delay {1} {
+		#if {$me[gin_ratio] < 100 || $me[kee_ratio] < 100} {prepare.kill;fly wm;w};
+		#elseif {$me[eff_mana] < $me[max_mana]} {
+			#math tuna_gin {$me[eff_gin]-10};
+			tuna $tuna_gin;
+		};
+		#else {dazuo 500};
+	}
+}
+
+#action {^%?%?你的精力修为似乎已经达到了瓶颈。} {
+	#variable {ginFull} {1};
+}
+
+#action {^%?%?你现在精不够，无法控制内息的流动！} {
+	exert regenerate;
+	dazuo max;
+}
+
+#action {^%?%?{你已经穿戴了同类型的护具了|你必须先放下你目前装备的武器}} {
+	#if {$equip_status == 0} {#variable {equip_status} {1}};
+}
+
+#action {^%?%?{你的内力不够，无法装备|你感觉全身气息翻腾，原来你真气不够，不能装备}} {
+	#if {$equip_status >= 0} {#variable {equip_status} {2}};
+}
+
+#action {^%?%?你{领取了.*双倍奖励时间|已领取过双倍奖励时间}} {
+	#variable {double_flag} {1};
+	#variable {doubleEpoch} {@get_epoch_time{}};
+	#variable {double_flag1} {1};
+	#variable {doubleEpoch1} {@get_epoch_time{}};
+	#format doublestartStamp {%t} {%d};
+}
+
+#action {^%?%?你的双倍奖励时间已用完} {
+	#variable {double_flag} {0};
+	#variable {double_flag1} {0};
+	#variable {mission_idx} {0};
+	#format doubleStamp {%t} {%d};
+}
+
+/*
+#nop  yellow item   \e[1;33m%*\e[0m
+#nop  blue item     \e[1;34m%*\e[0m
+#nop  white item    \e[1;37m%*\e[0m
+#nop  red item      \e[1;31m%*\e[0m
+#nop  purple item   \e[1;35m%*\e[0m
+#nop  green item    \e[1;32m%*\e[0m
+*/
+
+
+#action {~^　　　\e[1;{31|32|35|33|34|37}m%*\e[0m(%*)} {
+	#if {$bEquipfilter} {#variable bEnable 0} {#variable bEnable 1};
+	#if {$bEnable} {
+		#regex {%3} {%* {yi|mao|head|xue|boots|hushou|hands|jian|dao|zhang|bang|di|xiao|fu|bian|qin|gun|chui|zhen|lun|qiang}} {
+			#format {item_id} {%l} {%3};
+			#regex {%1} {{33|34|37}} {give $item_id to ouye zi} {
+				#list {keep_equips} {find} {$item_id} {item_find};
+				#if {$item_find == 0} {
+					#list {gain_equips} {find} {$item_id} {item_find};
+					#if {$item_find == 0} {#list gain_equips add $item_id};
+				}
+			}
+		}
+	};
+	#unvariable bEnable;
+}
+
+#action {backup~^　　　\e[1;{31|32|35|33|34|37}m%*\e[0m(%*)} {
+	#regex {%3} {%* {boots|hands|heads|yi|mao|xue|hushou|jian|dao|zhang|bang|di|xiao|fu|bian|qin|gun|chui|zhen|lun|qiang}} {
+		#format {item_id} {%l} {%3};
+		#if {"$item_id" == "guitou dao" || "$item_id" == "seng mao"} {drop $item_id};
+		#else {
+			#regex {%1} {{33|34|37}} {give $item_id to ouye zi} {
+				#if {"$me[ename]" == "wf%*"} {give $item_id to ouye zi};
+				#else {
+					#regex {%1} {{31}} {
+						#regex {$item_id} {%* {qiang|qin|bang}} {#echo 保留装备} {fenjie $item_id};
+					} {#echo 高级装备};
+				};
+				#list {keep_equips} {find} {$item_id} {item_find};
+				#if {$item_find == 0} {
+					#list {gain_equips} {find} {$item_id} {item_find};
+					#if {$item_find == 0} {#list gain_equips add $item_id};
+				};
+			};
+		};	
+	};
+}
+
+#nop 装备处理，确定保留还是分解
+#alias item_process {
+	#var l_item %1;
+	te equip;
+	l $l_item; 
+}
+
+
+#action {{一团烟雾之中|扬州炒饭|皮水囊|嘉兴粽子|麻布袋|火折|离开|过来|穿上|戴上|脱了下来|摘了下来|你正穿着.*呢}} {
+	#line gag
+}
+
+
+#action {^%?%?你不通知你的队友就走，太不够朋友了吧} {
+	team dismiss;
+	quit;
+}
+
+#action {^%?%?Gain filter finished!} {
+	ts gainfilter;
+	#if {&gain_equips[]>0} {fly wm;w};
+	#else {
+		#if {"$trapslist[1]" != "$weapons[1]"} {give $me[ename] $weapons[1]};
+		s;weara;wi;dazuo max;
+	};
+}
+
+#action {您在弊号只能存} {
+	#showme 存满了！！！;
+	#var b_gold_full 1};
+
+
+#nop ===========================Ticker===========================
+#ticker {prepare_antiidle} {#if {$robot && @get_epoch_time{} > $epochStamp+40} {halt;fly wm;w}} {20};
+
+
+#class {prepare} close

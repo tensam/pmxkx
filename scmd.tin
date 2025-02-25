@@ -1,0 +1,12 @@
+#class {scmd} open
+
+#action {^%?%?你正忙着呢，没空自杀！} {
+	#delay {isbusy} {suicide} {1};
+}
+
+#action {^%?%?请用 suicide -f 确定自杀} {
+	#class {scmd} kill;
+	$cmd;
+}
+
+#class {scmd} close

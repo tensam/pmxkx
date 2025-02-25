@@ -1,0 +1,69 @@
+#class {xuedao} open
+#nop ======================= Variables ======================
+#variable {xuedaoClass} {1};
+#list {xuedao_list} {clr};
+#list {xuedao_status} {clr};
+#variable {xuedao_idx} {1};	
+#variable {xuedao_pre_idx} {1};
+
+#nop ===========================ALIAS============================
+#nop ----------------------- xuedao init ---------------------------
+#alias {xuedao.init} {
+	#list {xuedao_list} {clr};
+	#list {xuedao_status} {clr};
+	#foreach {$keep_equips[%*]} {l_item} {
+		#regex {$l_item} {%* dao} {
+			#list {xuedao_list} {add} {$l_item};
+			#list {xuedao_status} {add} {0};
+		};
+	};
+	#unvariable {l_item};
+	#if {&xuedao_list[] > 0} {
+		#variable {xuedao_idx} {1};
+		#variable {xuedao_pre_idx} {1};	
+	};
+	#else {
+		#echo {Because of no blade, Kill the xuedao Module!!!};
+		#class {xuedao} kill;
+	}
+}
+
+#nop ----------------------- xuedao prepare ---------------------------
+#alias {xuedao.prepare} {
+	#loop {1} {&xuedao_status[]} {l_idx} {
+		#if {$xuedao_status[$l_idx] == 0} {
+			#variable {xuedao_pre_idx} {$l_idx};
+			#break
+		};
+	};
+	#unvariable {l_idx};
+	#if {$xuedao_status[$xuedao_pre_idx] == 1} {#variable {xuedao_pre_idx} {1}};
+	enable blade xue-dao;
+	unwield all;
+	wield $xuedao_list[$xuedao_pre_idx];	
+}
+
+#nop ---------------------- xuedao wield ---------------------------------
+#alias {xuedao.wield} {wield $xuedao_list[$xuedao_idx]};
+
+#nop ===========================Action===========================
+#action {^{[^：]+}上的血气也消耗殆尽了。} {	
+	#variable {xuedao_status[$xuedao_idx]} {0};		
+	#loop {1} {&xuedao_status[]} {l_idx} {
+		#if {$xuedao_status[$l_idx] == 1} {
+			#variable {xuedao_idx} {$l_idx};
+			#break
+		};
+	};
+	#unvariable {l_idx};
+	#if {$xuedao_status[$xuedao_idx] == 0} {		
+		#math {xuedao_idx} {$xuedao_idx+1};
+		#if {$xuedao_idx > &xuedao_list[]} {#variable {xuedao_idx} {1}};
+	};
+}
+
+#action {^{[^：]+}已经吸满血气了，再吸也没用了。} {
+	#variable {xuedao_status[$xuedao_pre_idx]} {1};	
+}
+
+#class {xuedao} close

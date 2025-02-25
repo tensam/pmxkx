@@ -1,0 +1,68 @@
+#class {silvernpc_list} open
+#variable {silvernpc_list} 
+{	
+	{1} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly bj;#2 w;#4 n}{room}{西四北大街}}
+	{2} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly bj;#4 e;#2 se;s}{room}{大驿道}}
+	{3} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly sz;w;n;n;sw;s}{room}{头门山}}
+	{4} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly sz;w;n;n;sw;s;w}{room}{万景山庄}}	
+	{5} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly sz;w;n;n;sw;s;w;eu}{room}{试剑石}}
+	{6} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly wm;e;#2 s;#5 e;ne;n}{room}{大驿道}}
+	{7} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly wm;e;#2 s;#5 e;ne;#3 n;#2 nu}{room}{ 一天门}}
+	{8} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly es;#5 sd}{room}{回马岭}}
+	{9} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly es;#5 sd}{room}{回马岭}}
+	{10} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#3 sw}{room}{玉皇山脚}}
+	{11} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#3 sw}{room}{玉皇山脚}}
+	{12} {{name}{绿营会众}{id}{hua}{spoils}{qiang;fu;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;#3 su}{room}{山路}}
+	{13} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#4 n;w;sw;#2 w}{room}{青石大道}}
+	{14} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#4 n;w;sw;#2 w}{room}{青石大道}}
+	{15} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;s;s;sw}{room}{沿湖大道}}
+	{16} {{name}{红花会众}{id}{hua}{spoils}{jian;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;s;s;sw}{room}{沿湖大道}}
+	{17} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly cd;w;n;nw}{room}{北大街}}
+	{18} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly cd;#3 w;#2 s;w}{room}{南大街}}
+	{19} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly mj;s;sd;s;#4 sd;out;#4 sd;ed}{room}{青石阶}}
+	{20} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly mj;s;sd;s;#4 sd;out;#4 sd;ed}{room}{青石阶}}	
+	{21} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly mj;s;sd;s;#4 sd;out;#4 sd;ed}{room}{青石阶}}	
+	{22} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly mj;s;sd;s;#4 sd;out;#4 sd;ed}{room}{青石阶}}	
+	{23} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly mj;s;sd;s;#4 sd;out;#4 sd;ed}{room}{青石阶}}	
+	{24} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly wm;e;#2 s;#5 e;ne;#3 n;#3 nu}{room}{斗母宫}}
+	{25} {{name}{绿营会众}{id}{hua}{spoils}{qiang;fu;silver}{path}{fly hz;w;sw;w;w}{room}{聚景园}}
+	{26} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly hz;w;sw;w;w}{room}{聚景园}}
+	{27} {{name}{绿营会众}{id}{hua}{spoils}{qiang;fu;silver}{path}{fly hz;w;#4 n;w;sw;w;n}{room}{岳廊}}
+	{28} {{name}{绿营会众}{id}{hua}{spoils}{qiang;fu;silver}{path}{fly hz;w;#4 n;w;sw;w;n}{room}{岳廊}}
+	{29} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly bj;#2 s}{room}{南城广场}}	
+	{30} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly bj;#2 s}{room}{南城广场}}
+	{31} {{name}{剑客}{id}{ke}{spoils}{jian;dao;silver}{path}{fly hy;n;w;n;knock gate;#delay {1} {enter}}{room}{刘府大院}}
+	{32} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly hy;n;w;n;knock gate;#delay {1} {enter}}{room}{刘府大院}}
+	{33} {{name}{绿营清兵}{id}{bing}{spoils}{qiang;fu;silver}{path}{fly hz;w;n}{room}{青石大道}}
+	{34} {{name}{绿营清兵}{id}{bing}{spoils}{qiang;fu;silver}{path}{fly hz;w;n}{room}{青石大道}}
+	{35} {{name}{绿营清兵}{id}{bing}{spoils}{qiang;fu;silver}{path}{fly hz;w;n}{room}{青石大道}}
+	{36} {{name}{绿营清兵}{id}{bing}{spoils}{qiang;fu;silver}{path}{fly hz;w;n}{room}{青石大道}}
+	{37} {{name}{刀客}{id}{ke}{spoils}{dao;jian;silver}{path}{fly hz;w;#2 sw;w;w;w}{room}{青石大道}}
+	{38} {{name}{龙骏}{id}{long jun}{spoils}{jia;silver}{path}{fly hz;w;#2 sw;w;w;w}{room}{青石大道}}
+	{39} {{name}{白阵}{id}{bai zhen}{spoils}{jia;silver}{path}{fly hz;w;#2 sw;w}{room}{青石大道}}
+	{40} {{name}{绿营会众}{id}{hua}{spoils}{qiang;fu;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;#3 su}{room}{山路}}
+	{41} {{name}{蒙面人}{id}{mengmianren}{spoils}{dao;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;#3 sw}{room}{青石大道}}
+	{42} {{name}{蒙面人}{id}{mengmianren}{spoils}{dao;silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;#3 sw;s}{room}{飞来峰}}
+	{43} {{name}{贵公子}{id}{gongzi}{spoils}{silver}{path}{fly dl;s;w;n;e;eu;e;ed;se;ed;e;e;eu;e}{room}{沿池堤岸}}	
+	{44} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly ws1;se;#2 su;#2 eu}{room}{千尺幢}}
+	{45} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly ws1;se;#2 su;#2 eu}{room}{千尺幢}}
+	{46} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly ws1;se;#3 su}{room}{石阶}}
+	{47} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly ws1;se;#3 su}{room}{石阶}}	
+	{48} {{name}{家丁}{id}{jia ding}{spoils}{silver}{path}{fly yzw;e}{room}{练武场}}
+	{49} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;#6 su}{room}{法喜寺}}
+	{50} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;#6 su}{room}{法喜寺}}	
+	{51} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly hz;w;#4 n;w;sw;w;w;wu}{room}{玉泉}}
+	{52} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;su;su}{room}{法镜寺}}	
+	{53} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly hz;w;#4 n;w;sw;#2 w;sw;s;sw;sw;#4 su}{room}{法净寺}}
+	{54} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly tls;#3 n}{room}{大门}}
+	{55} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly tls;#3 n}{room}{大门}}
+	{56} {{name}{进香客}{id}{ke}{spoils}{silver}{path}{fly tls;#3 n}{room}{大门}}
+	{57} {{name}{僧人}{id}{seng ren}{spoils}{silver}{path}{fly dl;s;w;n;e;eu;e;ed;se;ed;e}{room}{金汁河畔}}
+	{58} {{name}{僧人}{id}{seng ren}{spoils}{silver}{path}{fly dl;s;w;n;e;eu;e;ed;se;ed;e}{room}{金汁河畔}}
+	{59} {{name}{游客}{id}{youke}{spoils}{silver}{path}{fly dl;s;w;#4 s;e;ne;n;nu;eu}{room}{碧鸡山顶}}
+	{60} {{name}{家丁}{id}{jia ding}{spoils}{silver}{path}{fly yzw;e}{room}{练武场}}
+
+
+};
+
+#class {silvernpc_list} close

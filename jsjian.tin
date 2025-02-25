@@ -1,0 +1,95 @@
+#class {jsjian} open
+#nop ==========================Variable==========================
+#variable {jsjianClass} {1};
+#variable {maxlevel} {0};
+#variable {bAutoAfterJsjian} {0};
+
+#nop ===========================Alias============================
+#alias {jsjian.start}
+{
+	updatedolist jsjian;
+	#if {$skill_list[金蛇剑法][level] > 199} {jsjian.end};
+	#else {
+		#class walk read $ROOT/walk.tin;
+		#class fight read $ROOT/fight.tin;	
+		#variable {maxlevel} {@skillmaxlevel{}};
+		getjsbook;
+		#delay {error} {#echo {no response};jsjian.end} {5}
+	}
+}
+
+
+#alias {jsjian1.start} {
+	#variable {bAutoAfterJsjian} {1};
+	jsjian.start;
+}
+
+#alias {jsjian.kill}
+{
+	#unticker {jsjian_act};
+	#map leave;
+	unwield all;
+	remove all;
+	weara;
+	wi;
+	#if {1 == $bAutoAfterJsjian} {robot start};
+	#class jsjian kill;
+}
+
+#alias {jsjian.end}
+{
+	halt;
+	backbook;
+	jsjian.kill;
+}
+
+#alias {getjsbook} {
+	halt;fly wm;w;tell $bag_id give jinshe book1 to $me[ename];
+}
+
+#alias {backbook} {
+	halt;fly wm;w;give jinshe book1 to $bag_id;
+}
+
+
+#nop ===========================Action===========================
+#action {^%?%?你的内力不够}
+{
+	#unticker {jsjian_act};
+	dazuo max;
+}
+
+你研读了一会儿，但是发现上面所说的对你而言都太浅了，没有学到任何东西。
+
+#action {^%?%?你研读了一会儿，但是发现上面所说的对你而言都太浅了，没有学到任何东西。} {
+	jsjian.end;
+}
+
+#action {%*给你一本} {
+	#echo {gotbook};
+	#undelay {error};
+	fly lj;n;#2 e;#2 n;#3 w;climb ice;e;
+	remove all;unwield all;
+	weara int;wi int;
+	#ticker {jsjian_act} {#3 du book1;exert regenerate} {0.5};
+}
+
+#action {^%?%?$dazuo_end}
+{
+	#variable epochStamp @get_epoch_time{};
+	exert recover;
+	#ticker {jsjian_act} {#3 du book1;exert regenerate} {0.5};
+}
+
+#action {^%?%?你的「%*」进步了！}
+{
+	#if {#math skill_list[%3][level] {$skill_list[%3][level]+1}};
+	#if {$skill_list[%3][level] > $maxlevel} {jsjian.end};	
+}
+
+
+#action {^%?%?你现在精不够，无法控制内息的流动！}
+{
+	#delay {gin_wait} {exert regenerate;dazuo max} {2}
+}
+#class {jsjian} close

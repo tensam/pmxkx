@@ -1,0 +1,130 @@
+#CLASS {newname} OPEN
+#VAR {newnameClass} {1};
+#var pre_idx 1;
+#var last_idx 1;
+
+#function gen_name {
+    #var pre_idx @rnd{1;&family_names[]};
+    #var last_idx @rnd{1;&last_names[]};
+    #var l_cname {$family_names[$pre_idx]$last_names[$last_idx]};
+    #var result $l_cname;
+}
+
+#function get_family {
+    #var family_idx @rnd{1;&family[]};
+    #var l_family {$family[$family_idx]};
+    #var result $l_family;
+}
+
+#var family_names {
+    {1}{欧阳}
+    {2}{太史}
+    {3}{端木}
+    {4}{上官}
+    {5}{司马}
+    {6}{东方}
+    {7}{独孤}
+    {8}{南宫}
+    {9}{万俟}
+    {10}{闻人}
+    {11}{夏侯}
+    {12}{诸葛}
+    {13}{尉迟}
+    {14}{公羊}
+    {15}{赫连}
+    {16}{澹台}
+    {17}{皇甫}
+    {18}{宗政}
+    {19}{濮阳}
+    {20}{公冶}
+    {21}{太叔}
+    {22}{申屠}
+    {23}{公孙}
+    {24}{慕容}
+    {25}{仲孙}
+    {26}{钟离}
+    {27}{长孙}
+    {28}{宇文}
+    {29}{司徒}
+    {30}{鲜于}
+    {31}{司空}
+    {32}{闾丘}
+    {33}{子车}
+    {34}{司寇}
+    {35}{巫马}
+    {36}{公西}
+    {37}{公良}
+    {38}{拓跋}
+    {39}{轩辕}
+    {40}{令狐}
+    {41}{百里}
+    {42}{呼延}
+    {43}{东郭}
+    {44}{南门}
+    {45}{羊舌}
+    {46}{微生}
+    {47}{左丘}
+}
+
+#var last_names {
+    {1}{夜雨}
+    {2}{白衣}
+    {3}{红衣}
+    {4}{晨星}
+    {5}{冰璃}
+    {6}{云长}
+    {7}{懿德}
+    {8}{孟德}
+    {9}{子龙}
+    {10}{若曦}
+    {11}{若惜}
+    {12}{若兮}
+    {13}{若溪}
+    {14}{诗雨}
+    {15}{诗语}
+    {16}{太白}
+    {17}{子玉}
+    {18}{雨亭}
+    {19}{巨君}
+    {20}{帝师}
+    {21}{公瑾}
+    {22}{子瑜}
+    {23}{世遗}
+    {24}{安石}
+    {25}{子如}
+    {26}{难民}
+    {27}{遗老}
+    {28}{遗少}
+    {29}{九如}
+    {30}{长空}
+    {31}{长虹}
+}
+
+#var family {
+    {1}{baituo}
+    {2}{dali}
+    {3}{emei}
+    {4}{gaibang}
+    {5}{gumu}
+    {6}{huashan}
+    {7}{kunlun}
+    {8}{lingjiu}
+    {9}{meizhuang}
+    {10}{mingjiao}
+    {11}{mizong}
+    {12}{murong}
+    {13}{quanzhen}
+    {14}{riyue1}
+    {15}{riyue2}
+    {16}{shaolin}
+    {17}{shenlong}
+    {18}{taohua}
+    {19}{tiejian}
+    {20}{tiezhang}
+    {21}{wudang}
+    {22}{xiaoyao}
+    {23}{xingxiu}
+    {24}{yunlong}
+}
+
+#CLASS {newname} OPEN

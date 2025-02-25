@@ -1,0 +1,481 @@
+#class {practice} open
+#nop ==========================Variable==========================
+#variable {practiceClass} {1};
+#variable {act} {};
+#variable {ex_act} {};
+#variable {act_cnt} {0};
+#variable {act_num} {0};
+#variable {practice_idx} {1};
+#variable {enable_list} {};
+#variable {enable_idx} {1};
+#variable {bskill} {};
+#variable {dskill} {};
+#variable {interval} {0.35};
+#variable {bAutoAfterPractice} {0};
+#variable maxlevel 0;
+
+#variable {shaolin_skill_tree[cuff]} {
+	{1}{luohan-quan}
+	{2}{jingang-quan}
+};
+
+#variable {shaolin_skill_tree[finger]} {
+	{1}{mohe-zhi}
+	{2}{ninahua-zhi}
+	{3}{yizhi-chan}
+};
+
+#variable {shaolin_skill_tree[claw]} {
+	{1}{jimie-zhua}
+	{2}{yingzhua-gong}
+	{3}{longzhua-gong}
+};
+
+#variable {shaolin_skill_tree[strike]} {
+	{1}{sanhua-zhang}
+	{2}{weituo-zhang}
+	{3}{banruo-zhang}
+};
+
+#variable {shaolin_skill_tree[hand]} {
+	{1}{fengyun-shou}
+	{2}{qianye-shou}
+};
+
+#variable {shaolin_skill_tree[unarmed]} {
+	{1}{shaolin-tantui}
+	{2}{ruying-suixingtui}
+};
+
+#variable {shaolin_skill_tree[sword]} {
+	{1}{fumo-jian}
+	{2}{damo-jian}
+};
+
+#variable {shaolin_skill_tree[blade]} {
+	{1}{cibei-dao}
+	{2}{xiuluo-dao}
+	{3}{ranmu-daofa}
+};
+
+#variable {shaolin_skill_tree[staff]} {
+	{1}{wuchang-zhang}
+	{2}{pudu-zhang}
+};
+
+#variable {shaolin_skill_tree[whip]} {
+	{1}{riyue-bian}
+};
+
+#variable {shaolin_skill_tree[club]} {
+	{1}{zui-gun}
+	{2}{weituo-gun}
+};
+
+#nop ===========================Alias============================
+#alias {practice.start} {
+	updatedolist practice;
+	#variable maxlevel @skillmaxlevel{};	
+	#if {"$ex_act" != ""} {
+		#ticker {practice_act} {$ex_act;exert recover} {$interval};
+	};
+	#elseif {&practice_list[] > 0} {
+		ienable;
+		#variable {bskill} {$practice_list[$practice_idx]};
+		get_enable_list;
+		#delay {1} {		
+			#variable {enable_idx} {1};
+			#variable {dskill} {$enable_list[$enable_idx]};
+			enable $bskill $dskill;
+			get_act;
+			#delay {practice_go} {practice.go} {0.5};
+		}
+	};
+	#else {practice.end};	
+}
+
+#alias {practice1.start} {
+	#variable {bAutoAfterPractice} {1};
+	practice.start;
+}
+
+#alias {practice.kill} {
+	#unticker {practice_act};
+	#undelay {anti_idle};
+	#if {"$ex_act" == "" && &practice_list[] > 0} {#map leave};
+	#if {1 == $bAutoAfterPractice} {robot start};
+	#class practice kill;
+}
+
+#alias {practice.end} {
+	practice.kill;
+	halt;
+	scmd {halt;fly wm;w};
+}
+
+#alias {prepractice} {
+	#regex {%0} {{cuff|strike|hand|finger|unarmed|claw}} {unwield all};
+	#regex {%0} {{sword|blade|staff|whip|stick|club|hammer|axe|dagger|spear}} {unwield all;wield &1};
+}
+
+#alias {shaolin_tree_adjust} {
+	#if {&shaolin_skill_tree[%1] != 0 && &shaolin_skill_tree[%1][] > 1} {
+		#list l_idxlist clr;
+		#foreach {$shaolin_skill_tree[%1][%*]} {l_skill} {
+			#list {enable_list} {find} {$l_skill} {l_idx};
+			#list {l_idxlist} {add} {$l_idx};
+		};
+		#loop {1} {&l_idxlist[]} {l_i} {
+			#loop {$l_i+1} {&l_idxlist[]} {l_j} {
+				#if {$l_idxlist[$l_i] > $l_idxlist[$l_j]} {
+					#variable l_idx {$l_idxlist[$l_i]};
+					#variable {l_idxlist[$l_i]} {$l_idxlist[$l_j]};
+					#variable {l_idxlist[$l_j]} {$l_idx};
+				};
+			};
+		};
+		#loop {1} {&l_idxlist[]} {l_i} {
+			#if {$l_idxlist[$l_i] != 0 } {#variable {enable_list[$l_idxlist[$l_i]]} {$shaolin_skill_tree[%1][$l_i]}};
+		};
+		#unvariable l_%*;
+	};
+}
+
+#alias {get_enable_list} {
+	#list {enable_list} clr;	
+	#action {^%?%?你目前所掌握的技能(%*)} {		
+		#variable {l_cnt} {0};
+		#list {l_list} {clr};
+		#action {^%%%0}	{
+			#regex {%%%0} {{★|}%S (%*)%s- %S%s%d/} {
+				#variable skill_list[&2][level] &7;
+				#if {"$bskill" != "&3"} {#list {l_list} {add} {&3}};			
+			};
+			#regex {%%%0} {%*──────%*} {
+				#math {l_cnt} {$l_cnt+1};
+				#if {$l_cnt >= 2} {
+					#unaction {^%%%%0};
+					#unaction {^%?%?你目前所掌握的技能(%*)};
+					#unvariable {l_cnt};
+					#if {"$bskill" == "sword"} {
+						#list {l_list} {find} {fenglei-jianfa} {l_fenglei};
+						#foreach {$l_list[%*]} {l_dskill} {								
+							#if {"$l_dskill" == "miaojia-jianfa" && $skill_list[苗家剑法][level] < 150} {#continue};
+							#if {"$l_dskill" == "jinshe-jian" && $skill_list[金蛇剑法][level] < 200} {#continue};
+							#if {"$l_dskill" == "pixie-jian" && $skill_list[辟邪剑法][level] < 250} {#continue};
+							#if {"$l_dskill" == "sun-finger" && !(0 != &skill_list[先天气功] || 0 != &skill_list[枯荣禅功] || $skill_list[无相功][level] > 250)} {#continue};							
+							#if {"$l_dskill" == "taiji-jian" && !((0 != &skill_list[太极神功] && "$me[cmaster]" == "张三丰") || $skill_list[无相功][level] > 250)} {#continue};
+							#if {"$l_dskill" == "lonely-sword" && $skill_list[无相功][level] < 250} {#continue};
+							#if {"$l_dskill" == "chixin-qingchang-jian" && $skill_list[无相功][level] < 250} {#continue};
+							#if {"$l_dskill" == "fumo-jian" && $skill_list[伏摩剑][level] >= 200} {#continue};
+							#list {enable_list} {add} {$l_dskill};
+						};						
+						#unvariable {l_fenglei};						
+					};
+					#if {"$bskill" == "blade"} {
+						#foreach {$l_list[%*]} {l_dskill} {								
+							#if {"$l_dskill" == "hujia-daofa" && $skill_list[胡家刀法][level] < 150} {#continue};
+							#if {"$l_dskill" == "xue-dao" && !(0 != &skill_list[龙象般若功] || $skill_list[无相功][level] > 250)} {#continue};	
+							#if {"$l_dskill" == "cibei-dao" && $skill_list[慈悲刀][level] >= 200} {#continue};	
+							#list {enable_list} {add} {$l_dskill};
+						};			
+					};
+					#if {"$bskill" == "staff"} {
+						#foreach {$l_list[%*]} {l_dskill} {								
+							#if {"$l_dskill" == "wuchang-zhang" && $skill_list[无常杖][level] >= 200} {#continue};	
+							#list {enable_list} {add} {$l_dskill};
+						};			
+					};
+					#if {"$bskill" == "{whip|stick|club|hammer|axe|dagger}"} {
+						#foreach {$l_list[%*]} {l_dskill} {								
+							#list {enable_list} {add} {$l_dskill};
+						};			
+					};					
+					#if {"$bskill" == "dodge"} {
+						#foreach {$l_list[%*]} {l_dskill} {								
+							#if {"$l_dskill" == "qiankun-danuoyi" && $skill_list[无相功][level] < 250} {#continue};
+							#if {"$l_dskill" == "taixuan-gong"} {#continue};
+							#if {"$l_dskill" == "qixing-bufa" && $skill_list[七星步法][level] < 100} {#continue};
+							#list {enable_list} {add} {$l_dskill};
+						};			
+					};
+					#if {"$bskill" == "force"} {
+						#foreach {$l_list[%*]} {l_dskill} {								
+							#if {"$l_dskill" != "shenyuan-gong" && "$l_dskill" != "yunv-xinfa"} {#continue};	
+							#list {enable_list} {add} {$l_dskill};
+						};			
+					};
+					#if {"$bskill" == "move"} {
+						#foreach {$l_list[%*]} {l_dskill} {															
+							#if {"$l_dskill" == "taixuan-gong"} {#continue};
+							#if {"$l_dskill" == "ruying-suixingtui"} {#continue};
+							#if {"$l_dskill" == "qixing-bufa" && $skill_list[七星步法][level] < 100} {#continue};
+							#list {enable_list} {add} {$l_dskill};
+						};			
+					};			
+					#if {"$bskill" == "cuff"} {
+						#foreach {$l_list[%*]} {l_dskill} {															
+							#if {"$l_dskill" == "taiji-quan" && !((0 != &skill_list[太极神功] && "$me[cmaster]" == "张三丰") || $skill_list[无相功][level] > 250)} {#continue};	
+							#if {"$l_dskill" == "qishang-quan" && !(0 != &skill_list[九阳神功] || $skill_list[无相功][level] > 250)} {#continue};	
+							#if {"$l_dskill" == "poyu-quan" && 0 == &skill_list[紫霞神功]} {#continue};
+							#if {"$l_dskill" == "luohan-quan" && $skill_list[罗汉拳][level]>=200} {#continue};
+							#list {enable_list} {add} {$l_dskill};
+						};			
+					};			
+					#if {"$bskill" == "strike"} {
+						#foreach {$l_list[%*]} {l_dskill} {															
+							#if {"$l_dskill" == "huoyan-dao" && 0 == &skill_list[龙象般若功]} {#continue};	
+							#if {"$l_dskill" == "xianglong-zhang" && !(0 != &skill_list[混天气功] || $skill_list[无相功][level] > 250)} {#continue};	
+							#if {"$l_dskill" == "hunyuan-zhang" && 0 == &skill_list[紫霞神功]} {#continue};	
+							#if {"$l_dskill" == "jinshe-zhang" && $skill_list[金蛇游身掌][level] < 200} {#continue};
+							#if {"$l_dskill" == "sanhua-zhang" && $skill_list[散花掌][level]>=200} {#continue};
+							#if {"$l_dskill" == "anranxiaohun-zhang" && $skill_list[黯然销魂掌][level] < 250} {#continue};								
+							#list {enable_list} {add} {$l_dskill};
+						};			
+					};	
+					#if {"$bskill" == "finger"} {
+						#foreach {$l_list[%*]} {l_dskill} {															
+							#if {"$l_dskill" == "sun-finger" && !(0 != &skill_list[先天气功] || 0 != &skill_list[枯荣禅功] || $skill_list[无相功][level] > 250)} {#continue};
+							#if {"$l_dskill" == "mohe-zhi" && $skill_list[摩诃指][level]>=200 }	{#continue};							
+							#list {enable_list} {add} {$l_dskill};
+						};			
+					};						
+					#if {"$bskill" == "unarmed"} {
+						#foreach {$l_list[%*]} {l_dskill} {															
+							#if {"$l_dskill" == "taixuan-gong"} {#continue};
+							#elseif {"$l_dskill" == "shaolin-tantui" && $skill_list[少林弹腿][level]>=200 }	{#continue};							
+							#list {enable_list} {add} {$l_dskill};
+						};			
+					};						
+					#if {"$bskill" == "hand"} {
+						#foreach {$l_list[%*]} {l_dskill} {
+							#if {"$l_dskill" == "fengyun-shou" && $skill_list[风云手]][level]>=200 } {#continue};							
+							#list {enable_list} {add} {$l_dskill};
+						};						
+					};		
+					#if {"$bskill" == "claw"} {
+						#foreach {$l_list[%*]} {l_dskill} {
+							#if {"$l_dskill" == "jimie-zhua" && $skill_list[寂灭爪]][level]>=200 } {#continue};							
+							#list {enable_list} {add} {$l_dskill};
+						};						
+					};
+					#if {"$bskill" == "spear"} {
+						#foreach {$l_list[%*]} {l_dskill} {						
+							#list {enable_list} {add} {$l_dskill};
+						};						
+					};							
+					#unvariable {l_dskill};					
+					#unvariable {l_list};
+					#if {0 != &skill_list[达摩易筋经] || 0 != &skill_list[混元一气功]} {shaolin_tree_adjust $bskill};
+				};
+			};
+		};
+	};
+	skills me.$bskill;
+}
+
+#alias {get_act} {
+	#math {l_cnt} {$me[kee]/300};
+	#if {$l_cnt > 100} {#variable l_cnt 100};
+	#elseif {$l_cnt < 1} {#variable l_cnt 1};
+	#if {"$bskill" == "force"} {#var l_cnt 5};
+	#if {"$bskill" == "sword"} {#var l_cnt 30};
+	#variable {l_act} {practice};
+	#if {("$dskill" == "{qiankun-danuoyi|chixin-qingchang-jian}") 
+		|| ("$dskill" == "xue-dao" && 0 == &skill_list[龙象般若功])
+		|| ("$dskill" == "xianglong-zhang" && 0 == &skill_list[混天气功])
+		|| ("$dskill" == "{taiji-jian|taiji-quan}" && !((0 != &skill_list[太极神功]) && ("$me[cmaster]" == "张三丰")))
+		|| ("$dskill" == "qishang-quan" && 0 == &skill_list[九阳神功])} {
+		#variable {l_act} {wuxiang};
+	};	
+	#variable {act} {$l_act $bskill $l_cnt;exert recover};
+	#if {"$dskill" == "lonely-sword" && 0 == &skill_list[小无相功]} {
+		#variable {act} {exert recover;#3 perform sword.po};
+	};
+	#elseif {"$dskill" == "qixing-bufa" && $skill_list[七星步法][level] > 100} {
+		fly qzj;knock gate;#9 e;ne;ne;e;n;e;e;s;enter;ask wang about 华山论剑;
+	};
+	#elseif {"$dskill" == "yunv-xinfa" && $skill_list[玉女心法][level] > 200} {
+		#variable {act} {exert recover;#3 sleep chuang};
+	};
+	#unvariable {l_act};
+	#unvariable {l_cnt};
+}
+
+
+#alias {practice.go} {
+	#if {"$bskill" == "sword"} {walkto 1001};
+	#elseif {"$bskill" == "blade"} {walkto 2421};
+	#elseif {"$bskill" == "cuff" && "$me[family]" == "明教"} {#echo qsqs;walkto 2652};
+	#elseif {"$bskill" == "force" && "$dskill" == "yunv-xinfa"} {gotonpc 小龙女};
+	#else {walkto 3798};
+}
+
+#alias {arrive_cmd} {
+	prepractice $bskill;
+	#if {"$bskill" == "blade"} {
+		#delay {10} {#ticker {practice_act} {$act;exert recover} {$interval}};
+	};
+	#else {
+		#ticker {practice_act} {$act;exert recover} {$interval};
+	};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你的内力不够{。|练.*。|，没有力气|练.*}} {
+	#unticker {practice_act};
+	#if {"$me[family]" == "明教"} {#regex {$act} {practice cuff %*} {ask hu about 疗伤}};
+	#if {$skill_list[龙象般若功][level] > 290} {exert powerup};
+	dazuo max;
+}
+
+#action {^%?%?你现在的修为不足以提高神元功了} {
+	#unticker {practice_act};
+	ihp;
+	#math pot1 {-$me[max_pot]/2+100};
+	#if {$me[pot] <= $pot1} {
+		#if {"$ex_act" != ""} {practice.end};
+		#else {
+			#math {enable_idx} {$enable_idx+1};
+			#if {$enable_idx <= &enable_list[]} {
+				#variable {dskill} {$enable_list[$enable_idx]};
+				enable $bskill $dskill;
+				get_act;
+				#ticker {practice_act} {$act;exert recover} {$interval};
+			};
+			#else {
+				enable $bskill $skill_enable[$bskill][name];
+				#math {practice_idx} {$practice_idx+1};
+				#if {$practice_idx > &practice_list[]} {practice.end};
+				#else {
+					#variable {bskill} {$practice_list[$practice_idx]};
+					get_enable_list;
+					#delay {1} {
+						#variable {enable_idx} {1};
+						#variable {dskill} {$enable_list[$enable_idx]};
+						enable $bskill $dskill;
+						get_act;
+						#delay {practice_go} {practice.go} {0.5};
+					}
+				}
+			}
+		}
+	};
+	#else {dazuo max};
+}
+
+#action {^%?%?$dazuo_end} {
+	#variable epochStamp @get_epoch_time{};
+	exert recover;
+	#if {"$ex_act" != ""} {
+		#ticker {practice_act} {$ex_act;exert recover} {$interval};
+	};
+	#else {
+		#ticker {practice_act} {$act;exert recover} {$interval};
+	};
+}
+
+#action {^%?%?你对七星步法的精深奥妙之处无法深入理解，不能自己练七星步法。} {
+	fly qzj;knock gate;#9 e;ne;ne;e;n;e;e;s;enter;ask wang about 华山论剑;
+}
+
+#action {王重阳说道：破军剑你不是拿着吗！} {
+	out;#var interval {0.8};#variable {act} {erg;#3 mian sword};
+}
+
+#action {可能是因为机缘不够，你无法从破军剑中领悟到任何东西。} {
+	#variable {act} {lian $bskill 45;exert recover};
+}
+
+#action {^%?%?{独孤九剑只有向风清扬老前辈学习。|这套剑法我就教到这儿，以后就要靠你自己练了。}} {
+	#if {0 == &skill_list[小无相功]} {
+		#variable {act} {exert recover;perform sword.po};
+		#ticker {check_sword} {cha me.sword} {120};
+	};
+	#else {
+		enable force xiaowuxiang;
+		#variable {act} {exert recover;wuxiang sword 30};
+	};
+}
+
+#action {^%?%?练一阳指必须空手。} {uw}
+
+#action {~\e[1;36m你的「独孤九剑」进步了！}
+{
+	iskills;
+	#if {$skill_list[独孤九剑][level] >= $maxlevel} {#unticker {check_sword};#delay {15} {#showme {练满了}}};	
+}
+
+#action {你的「玉女心法」进步了！}
+{
+	iskills;
+	#if {$skill_list[玉女心法][level] >= $maxlevel || $skill_list[玉女心法][level] >= $skill_list[基本内功][level]} {#delay {3} {#showme {练满了}}};	
+}
+
+
+#action {^%?%?{也许是缺乏实战经验|你的实战经验不足|你的.*火候未到|你的.*修为不够，不能继续练习|%*没法教授|你无法向此人学习狂风快剑|练满了|辟邪剑法只能通过研习|王重阳说道：华山论剑时贫道沾了武器之利|你的九阳神功火候不够，无法练习七伤拳。}} {
+	#unticker {practice_act};
+	#if {"$ex_act" != ""} {practice.end};
+	#else {
+		#math {enable_idx} {$enable_idx+1};
+		#if {$enable_idx <= &enable_list[]} {
+			#variable {dskill} {$enable_list[$enable_idx]};
+			enable $bskill $dskill;
+			get_act;
+			#ticker {practice_act} {$act;exert recover} {$interval};
+		};
+		#else {
+			enable $bskill $skill_enable[$bskill][name];
+			#math {practice_idx} {$practice_idx+1};
+			#if {$practice_idx > &practice_list[]} {practice.end};
+			#else {
+				#variable {bskill} {$practice_list[$practice_idx]};
+				get_enable_list;
+				#delay {1} {
+					#variable {enable_idx} {1};
+					#variable {dskill} {$enable_list[$enable_idx]};
+					enable $bskill $dskill;
+					get_act;
+					#delay {practice_go} {practice.go} {0.5};
+				}
+			}
+		}
+	}
+}
+
+#action {^%?%?你苦练七伤拳，自身也受到损伤！} {
+	ask hu qingniu about 疗伤;
+}
+
+#action {^%?%?{你的体力不够练日月鞭法。|你的体力太差了，不能练身空行。}} {
+	#unticker {practice_act};
+	fly wm;e;n;e;e;n;n;
+	sleep;
+}
+
+#action {^%?%?你使用的武器不对。} {
+	wi1;
+}
+
+
+#action {^%?%?你一觉醒来，只觉精力充沛。该活动一下了。} {
+	s;
+	#variable epochStamp @get_epoch_time{};
+	#if {"$ex_act" != ""} {
+		#ticker {practice_act} {$ex_act;exert recover} {$interval};
+	};
+	#else {
+		#ticker {practice_act} {$act;exert recover} {$interval};
+	};
+}
+
+#action {^%?%?你现在精不够，无法控制内息的流动！} {
+	#if {"$bskill" == "cuff" && "$me[family]" == "明教"} {ask hu about 疗伤};
+	#delay {gin_wait} {exert regenerate;dazuo max} {3};
+}
+
+#action {你必须先去找一把剑。} {
+	wield jian;
+}
+
+#class {practice} close

@@ -1,0 +1,172 @@
+#class {mission_money2} open
+#nop ==========================Variable==========================
+#variable {mission_money2Class} {1};
+#var roundtime {0};
+#var bOverLoad {0};
+
+
+#nop 当前要去杀的对象
+#variable {curTarget} {}
+
+#nop 本轮已经执行劫杀的数量，没人也算一次
+#nop #variable {killedCount} {1}
+
+#nop  一轮要劫杀的数量
+#variable {numToKill} {10}
+
+#variable {gotodp} {
+	{1} {{city}{bj}{path}{fly bj;s;w}}
+	{2} {{city}{sz}{path}{fly sz;w;s;s;se;s}}
+	{3} {{city}{fs}{path}{fly fs;n;e;s}}
+	{4} {{city}{xy}{path}{fly xi;w;s}}
+	{5} {{city}{yz}{path}{fly wm;e;#3 s;e}}
+	{6} {{city}{hs}{path}{fly wm;e;s;s;s;s;s;w;w;w;w;n;move stone;nw}}
+}
+
+#variable {dp_idx} {1};
+
+
+
+#nop ===========================Alias============================
+#alias {mission_money2.start}
+{
+	#variable {killedCount} {0};
+	#var {bOverLoad} {0};
+	#list {spoils} {clear};
+	score;
+	#if {$gold_starttime == 0} {#var {gold_starttime} {@get_epoch_time{}}};
+	#if {$gold == 0} {#var {gold} {$me[deposit]}};
+	#if {$gold != 0} {
+		#math {income} {$me[deposit]-$gold};
+		#math {income_time} {@get_epoch_time{}-$gold_starttime};
+		#math {income_factor} {86400/$income_time};
+		#math {predict_income} {$income*$income_factor};
+	};
+	#if {&robot ==0 || (&robot != 0 && "$dolist[-1]" != "mission_money2")} {
+		#variable mission_complete 0;
+		updatedolist mission_money2;
+		#class {npc_list} read $MOD/moneynpc_list.tin;
+		#showme {goto get money2 !!!!!!};
+		wi.money;
+		fly ca;s;deposit 1 gold;deposit 99 silver;
+		#delay {2} {fight_ready;gotokill_target;}
+	};
+}
+ 
+
+#alias {mission_money2.kill} {
+	#class {mission_money2} kill;
+	#echo {%c#class mission_money2 killed!} {cyan};
+}
+
+#alias {mission_money2.end}
+{
+	mission_money2.kill;
+	#delay {1} {halt;fly wm;w};
+}
+
+
+#alias {gotokill_target} {
+	#math moneynpc_idx {$moneynpc_idx+1};
+	#if {$moneynpc_idx > &moneynpc_list[]  ||  $moneynpc_idx > $moneynpc_end} {#variable {moneynpc_idx} {$moneynpc_start}};
+	#variable {curTarget} {${moneynpc_list[+$moneynpc_idx]}};
+	#showme {gotokill_target};
+	#if {$moneynpc_idx == $moneynpc_start} {#variable {startime} {@get_epoch_time{}}};
+	#if {$moneynpc_idx == &moneynpc_idx[]} {#variable {finishtime} {@get_epoch_time{}}};
+	#if {$finishtime > $startime} {#math {roundtime} {$finishtime-$startime}};
+	#var {curtime} {@get_epoch_time{}};
+	#math {l_lasttime} {$curtime-$startime};
+	#math {total_to_kill} {&moneynpc_list[]-$moneynpc_start};
+	#math {killed_cnt} {$moneynpc_idx-$moneynpc_start+1};
+	#math {l_timefactor} {$total_to_kill/$killed_cnt};
+	#math {predict_roundtime} {$l_lasttime*$l_timefactor};
+	#delay {1} {halt;$curTarget[path];kill $curTarget[id]};
+}
+
+
+#alias {sell_spoils} {
+	#echo {go to sell spoils!!!!!} {1};
+	#math sell_idx 1;
+	#list {spoils} {find} {silver} {l_find};
+	#echo {找到白银，位于$l_find} {1};
+	#while {$l_find != 0} {
+		#echo {找到白银，位于$l_find} {1};
+		#list {spoils} {delete} {$l_find};
+		#list {spoils} {find} {silver} {l_find};
+	};
+	#list {spoils} {find} {} {l_find};
+	#echo {找到空白，位于$l_find} {1};
+	#while {$l_find != 0} {
+		#list {spoils} {delete} {$l_find};
+		#list {spoils} {find} {} {l_find};
+	};
+	#delay {1} {halt;$gotodp[$dp_idx][path];
+				#math {dp_idx} {$dp_idx+1};
+				#if {$dp_idx>&gotodp[]} {#variable {dp_idx} {1}};
+				#echo {sell $spoils[$sell_idx]}; 
+				sell $spoils[$sell_idx]};
+}
+
+
+
+#nop ===========================Action===========================
+
+#action {^{>?}你一次输入太多命令了} {
+	#echo {命令太多触发};
+	#delay {10} {gotokill_target}
+}
+
+#action {^{>?}战斗中无法飞行。}
+{	
+	#delay {2} {sell_spoils;};
+}
+
+#action {%*对你而言太重了。} {
+	#showme {too heavy};
+	#var {bOverLoad} {1};
+} {2};
+
+#action {^{>?}%*扑在地上挣扎了几下，口中喷出几口鲜血，死了！} {
+	#showme {get $curTarget[name] msg!!!!!!!!!!};
+	#foreach {$curTarget[spoils]} {item} {
+		get $item from corpse;
+		#list {spoils} {add} {$item};
+	};
+	#math killedCount {$killedCount+1};
+	#showme $bOverLoad;
+	#if {$killedCount <= $numToKill} {
+		#if {$bOverLoad == 0} {gotokill_target};
+		#else {sell_spoils};
+	};
+	#else {sell_spoils};
+}
+
+
+
+#action {^{>?}%*往%*落荒而逃了}
+{	
+	gotokill_target
+}
+
+#action {^{>?}这里没有这个人。}
+{
+	gotokill_target;
+}
+
+
+#action {^{>?}{你要卖断什么物品？|掌柜的唱道|你要卖「钱|掌柜的说：我们这不收此类装备和宝石！|这个东西不值钱}} {
+	#math sell_idx {$sell_idx+1};
+	#if {$sell_idx <= &spoils[]} {
+		#showme 下一个准备卖$spoils[$sell_idx];
+		#delay {1} {sell $spoils[$sell_idx]}
+	};
+	#else {#showme 卖完了！！！！！！！！;#delay {1} {mission_money2.end}}
+}
+
+
+#prompt {gotokill_target} {目标$moneynpc_idx $curTarget[name]，第$killedCount个，预计耗时$predict_roundtime秒，24小时预计收入$predict_income} {1};
+#nop ===========================Ticker===========================
+#ticker {mission_money2_end} {#echo time is over!;mission_money2.end} {600};
+
+
+#class {mission_money2} close

@@ -1,0 +1,103 @@
+#class {zhangpu} open
+#nop ==========================Variable==========================
+#variable {zhangpuClass} {1};
+#variable {dp_idx} {1};
+#variable {dp_list} {
+	{1} {{city}{bj}{path}{fly bj;south;west}}
+	{2} {{city}{sz}{path}{fly sz;west;south;south;southeast;south}}
+	{3} {{city}{fs}{path}{fly fs;north;east;south}}
+	{4} {{city}{xy}{path}{fly xi;west;south}}
+}
+
+
+#nop ===========================Alias============================
+#alias {zhangpu.start}
+{
+	zhangpu.go;
+}
+
+#alias {zhangpu.go} {
+    #format hour {%t} {%H};
+    #if {$hour>25} {fly wm};
+    #else {
+        fly tzf;north;north;west;jump 瀑布;
+        #delay {1} {open he};
+    };
+}
+
+#alias {gotodp} {
+    $dp_list[$dp_idx][path];
+    #math {dp_idx} {$dp_idx+1};
+    #if {$dp_idx>&dp_list[]} {#variable {dp_idx} {1}};
+    sell zhangpu;
+}
+
+#alias {chi} {
+    fly lj;north;west;west;west;eat gao;#showme gotohe;
+}
+
+#alias {he} {
+    fly tzf;southdown;east;southeast;fill dai;#2 drink dai;#showme gotozhangpu
+}
+
+#nop ===========================Action===========================
+#action {你用力打开石盒，发现里面有一本落满尘土的书籍。你急忙把它捡起揣在怀中。} {
+    #delay {0.5} {gotodp};
+}
+
+#action {你把身上的铁掌掌谱卖掉。} {
+    ii;
+    #delay {cunqian} {
+        #if {$traps[nCoin] != 0} {deposit $traps[nCoin] coin};
+        #elseif {$traps[nSilver] != 0} {deposit $traps[nSilver] silver};
+        #elseif {$traps[nGold] != 0} {deposit $traps[nGold] gold};
+        withdraw 10 gold;
+    } {1}
+}
+
+#action {你从银号里取出十两黄金。} {
+    #delay {2} {fly wm;w}
+}
+
+#action {你存的钱不够取。} {
+    #delay {2} {fly wm;w}
+}
+
+#action {^%?%?武庙内殿{| - }$} {
+    #delay {1} {give breakadm gold;#showme gotochi};
+} {1}
+
+#action {gotochi} {
+    #delay {0.5} {chi}
+}
+
+#action {gotohe} {
+    #delay {0.5} {he}
+}
+
+#action {gotozhangpu} {
+    #delay {1} {zhangpu.go}
+}
+
+#action {你用力打开石盒，发现里面空空的什么也没有。} {
+    fly xi;west;south;sell zhangpu;
+}
+
+#action {战斗中无法飞行。} {
+    #delay {3} {fly wm;west}
+}
+
+#action {你现在体力不支，走不动路。} {
+    #delay {3} {fly gm;w;n;sleep}
+}
+
+#action {你一觉醒来，只觉精力充沛。该活动一下了。} {
+    zhangpu.go
+}
+
+#event {HOUR 0} {fly wm;west};
+
+#nop ===========================Ticker===========================
+#ticker {zhangpu_end} {zhangpu.end} {30};
+
+#class {mission_ttask} close

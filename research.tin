@@ -1,0 +1,261 @@
+#class {research} open
+#nop ==========================Variable==========================
+#variable {researchClass} {1}
+#variable {skill} {};
+#variable {research_status} {};
+#variable {research_idx} {1};
+#variable {research_cnt} {1};
+#variable {maxlevel} {0};
+#variable {bAutoAfterresearch} {0};
+#variable {bsuper} {0};
+
+#nop ===========================Alias============================
+#alias {research.start} {
+	updatedolist research;
+	#class superint read $MOD/superint.tin;
+	#if {&research_list[] == 0} {research.end};
+	#else {
+		#if {$bsuper == 1} {fly wm;w;tell $bag_id superint};
+		fly ca;s;withdraw $me[deposit_pot] qn;	
+		#delay {2} {fly wm;e;n;#2 e;#2 n;};
+		#list {research_status} {clr};
+		#loop {1} {&research_list[]} {l_cnt} {#list {research_status} add 0};
+		#unvariable {l_cnt};		
+		#if {$bAverageSkill} {			
+			iskills;
+			#delay {1} {
+				#variable {maxlevel} {@skillmaxlevel{}};					
+				#variable {l_diff} {0};
+				#variable {l_maxdiff} {0};
+				#foreach {$research_list[%*]} {l_yanjiu} {					
+					#math {l_diff} {$maxlevel - $skill_list[$skill_e2c[$l_yanjiu]][level]};
+					#if {$l_diff > $l_maxdiff} {
+						#variable {l_maxdiff} {$l_diff};
+						#variable {skill} {$l_yanjiu};
+					};	
+				};
+				#unvariable {l_yanjiu};
+				#unvariable {l_diff};
+				#unvariable {l_maxdiff};
+				#if {"$skill" == ""} {
+					#variable {research_idx} {1};
+					#variable skill {$research_list[1]};
+				};
+				#else {#list {research_list} {find} {$skill} {research_idx}};	
+				#if {&skill_list[临济十二庄] != 0} {enable force linji-zhuang;exert zhixinzhuang};
+				#if {$bsuper == 1} {#echo {superint mode!!!};#variable {int_level} {superint}};
+				#else {#variable {int_level} {int}};
+				remove all;unwield all;weara $int_level;wi $int_level;
+				#ticker {research_act} {
+					exert regenerate;
+					research $skill 200;
+					#math research_cnt {$research_cnt+1};
+					#if {$research_cnt>10} {
+						skills me.$skill;
+						#variable research_cnt 1;
+					}
+				} {1}					
+			};
+		};
+		#else {
+			#variable {research_idx} {1};
+			#variable skill {$research_list[1]};	
+			#if {&skill_list[临济十二庄] != 0} {enable force linji-zhuang;exert zhixinzhuang};
+			#if {$bsuper == 1} {#echo {superint mode!!!};#variable {int_level} {superint}};
+			#else {#variable {int_level} {int}};
+			remove all;unwield all;weara $int_level;wi $int_level;
+			#ticker {research_act} {
+				exert regenerate;
+				research $skill 200;
+				#math research_cnt {$research_cnt+1};
+				#if {$research_cnt>10} {
+					skills me.$skill;
+					#variable research_cnt 1;
+				}
+			} {1}			
+		}
+	}
+}
+
+
+#alias {research1.start} {
+	#variable {bAutoAfterresearch} {1};
+	research.start;
+}
+
+#alias {research2.start} {
+	#variable {bsuper} {1};
+	research.start;
+}
+
+#alias {research.kill} {
+	#unticker {research_act};
+	unwield all;
+	remove all;
+	weara;
+	wi;
+	#regex {$skill} {{force|parry|sword|blade|staff|hammer|club|stick|whip|dagger|throwing|move|dodge|hand|finger|cuff|strike|claw|unarmed|array}} {
+		#2 s;#2 w;#4 s;#2 w;
+		gamble big skill $skill 50;
+	};
+	#class {research} kill;
+}
+
+#alias {research.end} {
+	research.kill;
+	#variable mission_complete 0;
+	scmd {halt;fly wm;w;#if {$bsuper == 1} {superint.back}};
+}
+
+#nop ===========================Action===========================
+#action {^%?%?你的「%*」进步了！} {
+	#if {&skill_list[%3] == 0} {#variable skill_list[%3][level] 1};
+	#else {#math skill_list[%3][level] {$skill_list[%3][level]+1}};
+	#if {$skill_list[%3][level] > $maxlevel} {#variable {maxlevel} {$skill_list[%3][level]}};
+	#if {$bAverageSkill && "%3" != "神元功"} {
+		#unticker {research_act};
+		#variable {skill} {};
+		#variable {l_diff} {0};
+		#variable {l_maxdiff} {0};
+		#foreach {$research_list[%*]} {l_yanjiu} {					
+			#math {l_diff} {$maxlevel - $skill_list[$skill_e2c[$l_yanjiu]][level]};
+			#if {$l_diff > $l_maxdiff} {
+				#variable {l_maxdiff} {$l_diff};
+				#variable {skill} {$l_yanjiu};
+			};	
+		};
+		#unvariable {l_yanjiu};
+		#unvariable {l_diff};
+		#unvariable {l_maxdiff};
+		#if {"$skill" == ""} {
+			#variable {research_idx} {1};
+			#variable skill {$research_list[1]};
+		};
+		#else {#list {research_list} {find} {$skill} {research_idx}};
+		#ticker {research_act} {
+			exert regenerate;
+			research $skill 200;
+			#math research_cnt {$research_cnt+1};
+			#if {$research_cnt>10} {
+				skills me.$skill;
+				#variable research_cnt 1;
+			}
+		} {1}
+	};
+}
+
+#action {^%?%?你的内力不够。} {
+	#unticker {research_act};
+	#delay {3} {dazuo max};
+}
+
+
+#action {^%?%?$dazuo_end} {
+	#variable epochStamp @get_epoch_time{};
+	exert recover;
+	#if {$research_status[$research_idx] >0} {
+		#loop {1} {&research_list[]} {l_cnt} {
+			#math {research_idx} {$research_idx+1};
+			#if {$research_idx > &research_list[]} {#variable research_idx 1};
+			#if {$research_status[$research_idx] == 0} {#break};
+		};
+		#unvariable {l_cnt};
+		#if {$research_status[$research_idx] > 0} {research.end};
+		#else {
+			#variable skill $research_list[$research_idx];
+			#if {&skill_list[临济十二庄] != 0} {enable force linji-zhuang;exert zhixinzhuang};			
+			#ticker {research_act} {
+				yun zhixinzhuang;
+				exert regenerate;
+				research $skill 200;
+				#math research_cnt {$research_cnt+1};
+				#if {$research_cnt>10} {
+					skills me.$skill;
+					#variable research_cnt 1;
+				}
+			} {1};
+		}
+	};
+	#else {		
+		#if {&skill_list[临济十二庄] != 0} {enable force linji-zhuang;exert zhixinzhuang};
+		#ticker {research_act} {
+			yun zhixinzhuang;
+			exert regenerate;
+			research $skill 200;
+			#math research_cnt {$research_cnt+1};
+			#if {$research_cnt>10} {
+				skills me.$skill;
+				#variable research_cnt 1;
+			}
+		} {1};
+	}
+}
+
+#action {^%?%?{也许是缺乏实战经验|也许是学问不够深|这项技能你恐怕没法研究了|学龙象般若功，要心狠手辣}} {
+	#unticker {research_act};
+	#if {&research_list[] == 0} {research.end};
+	#else {
+		#variable research_status[$research_idx] 1;
+		dazuo max;
+	};
+}
+
+#action {^%s%s你的潜能不够研究所需的了。} {
+	ihp;
+	#delay {0.5} {research.end};
+}
+
+#action {^%?%?你现在精不够，无法控制内息的流动！} {
+	#delay {gin_wait} {exert regenerate;dazuo max} {2};
+}
+
+#action {~\e[1;35m%*($$skill)%s\e[0m -} {
+	#regex {$skill} {{force|parry|sword|blade|staff|hammer|club|stick|whip|dagger|throwing|move|dodge|hand|finger|cuff|strike|claw|unarmed|array|shenyuan-gong}} {
+		#unticker {research_act};
+		#delay {2} {
+			#if {"$skill" == "shenyuan-gong"} {s;lian force 1};
+			#else {#2 s;#2 w;#4 s;#2 w;gamble big skill $skill 50};				
+			#delay {2} {
+				#if {"$skill" == "shenyuan-gong"} {n};
+				#else {
+					fly wm;e;n;#2 e;#2 n;
+					#math {skill_list[$skill_e2c[$skill]][level]} {$skill_list[$skill_e2c[$skill]][level]+1};
+					#if {$skill_list[$skill_e2c[$skill]][level] > $maxlevel} {
+						#variable {maxlevel} {$skill_list[$skill_e2c[$skill]][level]};
+					}
+				};
+				#if {$bAverageSkill} {
+					#variable {skill} {};
+					#variable {l_diff} {0};
+					#variable {l_maxdiff} {0};
+					#foreach {$research_list[%*]} {l_yanjiu} {					
+						#math {l_diff} {$maxlevel - $skill_list[$skill_e2c[$l_yanjiu]][level]};
+						#if {$l_diff > $l_maxdiff} {
+							#variable {l_maxdiff} {$l_diff};
+							#variable {skill} {$l_yanjiu};
+						};	
+					};
+					#unvariable {l_yanjiu};
+					#unvariable {l_diff};
+					#unvariable {l_maxdiff};
+					#if {"$skill" == ""} {
+						#variable {research_idx} {1};
+						#variable skill {$research_list[1]};
+					};
+					#else {#list {research_list} {find} {$skill} {research_idx}};
+				};
+				#ticker {research_act} {
+					exert regenerate;
+					research $skill 200;
+					#math research_cnt {$research_cnt+1};
+					#if {$research_cnt>10} {
+						skills me.$skill;
+						#variable research_cnt 1;
+					}
+				} {1};
+			}
+		}
+	};
+}
+
+#class {research} close

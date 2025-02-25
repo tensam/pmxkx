@@ -1,0 +1,106 @@
+#class {mission_silver} open
+#nop ==========================Variable==========================
+#variable {mission_silverClass} {1};
+
+
+#nop 当前要去杀的对象
+#variable {curTarget} {}
+
+#nop 本轮已经执行劫杀的数量，没人也算一次
+#nop #variable {killedCount} {1}
+
+#nop  一轮要劫杀的数量
+#variable {numToKill} {15}
+
+#variable {interval} {1}
+
+
+
+#nop ===========================Alias============================
+#alias {mission_silver.start}
+{
+	#variable {killedCount} {0};
+	#if {&robot ==0 || (&robot != 0 && "$dolist[-1]" != "mission_silver")} {
+		#variable mission_complete 0;
+		updatedolist mission_silver;
+		#class {npc_list} read $MOD/silvernpc_list.tin;
+		#showme {goto get silver !!!!!!};
+		wi.money;
+		#variable {interval} {1};
+		gotokill_target;
+	};
+}
+
+
+#alias {mission_silver.kill} {
+	#class {mission_silver} kill;
+	#undelay {wait};
+	#echo {%c#class mission_silver killed!} {cyan};
+}
+
+#alias {mission_silver.end}
+{
+	mission_silver.kill;
+	#delay {3} {halt;fly wm;w};
+}
+
+
+#alias {gotokill_target} {
+	#math silvernpc_idx {$silvernpc_idx+1};
+	#if {$silvernpc_idx > &silvernpc_list[]} {#variable {silvernpc_idx} {1}};
+	#variable {curTarget} {${silvernpc_list[$silvernpc_idx]}};
+	#showme {gotokill_silvertarget $silvernpc_idx};
+	#delay {$interval} {halt;$curTarget[path];kill $curTarget[id]};
+}
+
+
+#nop ===========================Action===========================
+#action {^{>?}看起来%*想杀死你111！} {
+	#if {"%2" != "$curTarget[name]"} {
+		halt;fly wm;missoin_money.end;
+	};
+	#else {yun shenyuan};
+}
+
+
+#action {^{>?}战斗中无法飞行。}
+{	
+	#delay {1} {gotokill_target};
+}
+
+
+#action {^{>?}%*扑在地上挣扎了几下，口中喷出几口鲜血，死了！} {
+	#showme {get $curTarget[name] msg!!!!!!!!!!};
+	get silver from corpse;
+	#math killedCount {$killedCount+1};
+	#variable {interval} {1};
+	#if {$killedCount <= $numToKill} {gotokill_target;};
+	#else {#showme mission_silver over!!!;#delay {1} {mission_silver.end}}
+}
+
+
+
+#action {^{>?}$$curTarget[name]往%*落荒而逃了}
+{	
+	#math killedCount {$killedCount+1};
+	#if {$killedCount <= $numToKill} {gotokill_target};
+}
+
+#action {^{>?}这里没有这个人。}
+{
+	#math killedCount {$killedCount+1};
+	#variable {interval} {2};
+	#if {$killedCount <= $numToKill} {gotokill_target};
+	#else {mission_silver.end};
+}
+
+#action {^{>?}你一次输入太多命令了} {
+	#echo {to many cmds  wait 10 seconds};
+	#delay {wait} {kill taishanglaojun} {10};
+}
+
+
+#nop ===========================Ticker===========================
+#ticker {mission_silver_end} {#echo time is over!;mission_silver.end} {100};
+
+#class {mission_silver} close

@@ -1,0 +1,50 @@
+#class {jy_xsfh} open
+#nop ==========================Variable==========================
+#variable {jy_xsfhClass} {1};
+#variable {tri_lvl} {4};
+
+#nop ===========================Alias============================
+#alias {jy_xsfh.start} {
+    updatedolist jy_xsfh;
+    #alias {arrive_cmd} {ask yan ji about 闯王宝刀};
+    fly xi;e;e;e;s;buy gun;uw;wield gun;#delay {3} {gotonpc 阎基};
+};
+
+#alias {jy_xsfh.kill} {
+    #variable {tri_lvl} {5};
+    #unalias {arrive_cmd};
+    #class {jy_xsfh} kill;
+}
+
+#alias {jy_xsfh.end} {
+    jy_xsfh.kill;
+    fly wm;w
+}
+
+#action {^%?%?{你获得奖励|你身上没有这样东西。|你身上没有这样东西|这里没有这个人}} {
+    jy_xsfh.end
+}
+
+#action {^%?%?阎基恨恨的说：想要闯王宝刀?去找胡斐那个孽种吧!} {  
+   #alias {arrive_cmd} {ask hu fei about 闯王宝刀};gotonpc 胡斐;uw;
+}
+
+
+#action {^%?%?胡斐说道：{好吧，这把闯王宝刀就赠与你，希望你好好利用它。|哼！就算你拿到这把刀，也取不到闯王宝藏!}} {
+   ask hu fei about 苗若兰
+}
+
+
+
+#action {^%?%?你向胡斐打听有关『苗若兰』的消息。} {
+   #alias {arrive_cmd} {ask miao about 苗若兰;give miao baodao};gotonpc 胡一刀;
+}
+
+#action {^%?%?苗人凤说道：既然这位%*能拿到这把刀，武功必有可取之处。不如和我兄弟二人比划比划！} {
+   wi;bihua
+}
+
+
+
+
+#class {jy_xsfh} close;

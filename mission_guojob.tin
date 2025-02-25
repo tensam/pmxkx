@@ -1,0 +1,255 @@
+#class {mission_guojob} open
+#nop ==========================Variable==========================
+#variable {mission_guojobClass} {1};
+#variable {guo_npc} {
+	{裨将}{fly xi;#4 w}
+	{店小二}{fly xi;#2 s;e}
+	{高丽商}{fly xi;#2 w;#3 n;e;n}
+	{郭芙}{fly xi;#2 w;#3 s}
+	{老先生}{fly xi;w;e;s;e}
+	{流氓}{fly xi;#2 s}
+	{木匠}{fly xi;#3 e;s}
+	{男孩}{fly xi;#2 w;#3 n;w}
+	{女孩}{fly xi;#2 w;#4 n}
+	{偏将}{fly xi;#2 w;#3 n;#2 e;n;w}
+	{烧饭师傅}{fly xi;#2 w;#4 s}
+	{书店老板}{fly xi;#2 w;#2 n;w}
+	{宋兵}{fly xi;#2 w;#3 n;#2 e;n;w}
+	{铁匠}{fly xi;#3 s;e}
+	{武三通}{fly xi;#2 w}
+	{武修文}{fly xi;#2 w;#3 s;se}
+	{小贩}{fly xi;#2 w;#3 n}
+	{小孩}{fly xi;#2 w;#3 n;w}
+	{牙将}{fly xi;#4 w;#4 su}
+	{耶律齐}{fly xi;w;n}
+	{朱子柳}{fly xi;#2 w;s}
+	{佐将}{fly xi;#2 w;#3 n;#2 e;n;w}
+	{穷汉}{s;s;s;e;e;e;s;w;e;e}
+};
+#variable {guo_npc_name} {};
+#variable {heiyiren_flag} {0};
+#variable {heiyiren_escape} {};
+#variable {heiyiren_idx} {1};
+#variable {bExist} {0};
+
+#nop ===========================Alias============================
+#alias {mission_guojob.start} {
+	#if {!$robot || ($robot && "$dolist[-1]" != "mission_guojob")} {
+		#if {0 != &{noforce}} {
+			#variable {bad_status} {1};
+			#echo {Bad status: dangerous in noforce mode!!!};
+		};
+		#variable mission_complete 0;
+		updatedolist mission_guojob;
+		#class fight read $MOD/fight.tin;
+		fly xi;w;#3 n;ask guo jing about job;
+		#delay {ask_failure} {mission_guojob.end} {3};
+	};
+}
+
+#alias {mission_guojob.kill} {
+	#unticker walk;
+	#unticker get_heiyiren;
+	#unticker get_corpse;
+	#if {$fightClass == 1} {fight.kill};
+	#if {$mission_complete} {#math {mission_count} {$mission_count + 1}};
+	#class {mission_guojob} kill;
+	#echo {%c#class mission_guojob killed!} {cyan};
+}
+
+#alias {mission_guojob.end} {
+	mission_guojob.kill;
+	halt;fly wm;w;
+}
+
+#alias {fight_cmd_under_attack} {
+	#if {"%1" == "黑衣人"} {		
+		#if {0 == $long_pfm} {
+			prefight;
+			#if {"$me[family]" != "少林派"} {busy_pfm};
+			#ticker {busy_test} {$status_test} {1};
+			#variable {cmd} {busy_pfm};
+		};	
+	}
+}
+
+#nop ===========================Action===========================
+#action {^%?%?郭靖点了点头，对你说道：蒙古人收买了一批武林败类，好象要暗杀%*，你去保护他一下。} {
+	#undelay {ask_failure};
+	#variable {guo_npc_name} {%3};
+	#variable {kill_id} {heiyi ren};
+	ai;
+	#if {"$guo_npc_name" != "穷汉"} {
+		$guo_npc[$guo_npc_name];
+		l;
+		#delay {2} {
+			#if {$bExist == 0} {mission_guojob.end};
+			#else {fight_ready};
+		};
+	};
+	#else {
+		#path load {$guo_npc[$guo_npc_name]};
+		#ticker {walk} {#path walk} {0.5};
+		#delay {5} {
+			#if {$bExist == 0} {mission_guojob.end};
+			#else {fight_ready};
+		}
+	};
+	#unaction {^%?%?郭靖说道：现在我可没有给你的任务，等会再来吧。};
+	#unaction {^%?%?郭靖说道：你上一次的任务还没完成!};
+}
+
+#action {^%?%?郭靖说道：你上一次的任务还没完成!} {
+	#undelay {ask_failure};
+	ask guo jing about fangqi;
+	ask guo jing about job;
+}
+
+#action {^%?%?郭靖说道：现在我可没有给你的任务，等会再来吧。} {
+	#undelay {ask_failure};
+	mission_guojob.kill;
+	#if {$robot && &mission_list[] > 0} {mission.do};
+	#else {halt;fly wm;w};
+}
+
+#action {^%?%?你对黑衣人喝道：大胆狂徒，竟敢在这撒野！！} {
+	follow heiyi ren;
+	#variable heiyiren_flag 1; 
+}
+
+#action {^%?%?黑衣人往%*落荒而逃了} {
+	#if {$heiyiren_flag == 1} {
+		#variable heiyiren_escape $cpathdir[%3];
+		#delay {heiyiren_escape} {$heiyiren_escape;kill heiyi ren} {4};
+	}
+}
+
+#action {^%?%?这里没有 heiyi ren。} {
+	#if {"$status_test" != "ai"} {
+		fight.end;
+		#undelay {heiyiren_escape};
+		#variable cmd {$heiyiren_escape;kill heiyi ren};
+		#ticker {busy_test} {$status_test} {1};
+	}
+}
+
+#action {^%?%?黑衣人脚下一个不稳，跌在地上一动也不动了。} {
+	#if {$heiyiren_flag == 1} {
+		#if {"$busy_test" != "ai"} {#variable {cmd} {tuna 10}};
+	}
+}
+
+#action {^%?%?战斗中吐纳，好象只有神仙才能做到。} {
+	#variable {cmd} {busy_pfm};
+	busy_pfm;	
+}
+
+#action {^%?%?你盘膝坐下，开始吐纳炼精} {
+	fight.end;halt;
+	get heiyi ren;
+	#ticker {get_heiyiren} {
+		#math heiyiren_idx {$heiyiren_idx+1};
+		get heiyi ren $heiyiren_idx;
+		#if {$heiyiren_idx > 4} {
+			#unticker {get_heiyiren};
+			#showme Fail to get heiyi ren!!!;
+		}
+	} {0.3};
+}
+
+#action {^%?%?Fail to get heiyi ren!!!} {
+	#delay {0.5} {
+		#action {^%?%?你附近没有这样东西} {
+			#unaction {^%?%?你附近没有这样东西};
+			#unaction {^%?%?你将黑衣人的尸体扶了起来背在背上};
+			#variable heiyiren_flag 3;
+			fly wm;
+			#delay {15} {
+				fly xi;w;#3 n;
+				#action {^%?%?你附近没有这样东西} {
+					#unticker {get_corpse};
+					#unaction {^%?%?你附近没有这样东西};
+					mission_guojob.end;
+				};
+				#variable heiyiren_idx 0;
+				#ticker {get_corpse} {
+					#math heiyiren_idx {$heiyiren_idx+1};
+					get corpse $heiyiren_idx;
+					give corpse to guo jing;
+				} {0.3};
+			}
+		};
+		#action {^%?%?你将黑衣人的尸体扶了起来背在背上} {
+			#unaction {^%?%?你将黑衣人的尸体扶了起来背在背上};
+			#unaction {^%?%?你附近没有这样东西};
+			#variable heiyiren_flag 2;
+			fly xi;w;#3 n;give corpse to guo jing;
+		};
+		get corpse;
+	}
+}
+
+#action {^%?%?你将黑衣人扶了起来背在背上} {
+	#unticker {get_heiyiren};
+	#variable heiyiren_flag 2;
+	$sx_go;
+	drop heiyi ren;
+        uw;
+	kill heiyi ren;
+}
+
+#action {^%?%?黑衣人%*死了} {
+	#echo {heiyi ren died!!!};
+	#if {$heiyiren_flag == 2} {		
+		#if {$xuedaoClass == 1} {xuedao.prepare;kantou corpse;drop head};
+		get corpse;fly xi;w;#3 n;get all from corpse;give corpse to guo jing
+	};
+}
+
+#action {^%?%?你今日已完成了%s%d/%d%s次job/郭1任务} {
+	#unaction {^%?%?你附近没有这样东西};	
+	#variable {mission_complete} {1};
+	#variable {mission_status[mission_guojob][complete]} {%4};
+	#variable {mission_status[mission_guojob][total]} {%5};
+	te pawnshop;rand_pawn;sell guitou dao;
+	scmd {sell yexing yi;scmd {mission_guojob.end}};
+}
+
+#action {^%?%?郭靖不接受这样东西。} {
+	drop corpse;
+	#if {$heiyiren_flag == 2} {
+		chat 我杀错黑衣人了，丢郭那边了！;
+		chat* sorry;
+		#variable heiyiren_flag 3;
+		fly wm;
+		#delay {15} {
+			fly xi;w;#3 n;
+			#action {^%?%?你附近没有这样东西} {
+				#unticker {get_corpse};
+				#unaction {^%?%?你附近没有这样东西};
+				mission_guojob.end;
+			};
+			#variable heiyiren_idx 0;
+			#ticker {get_corpse} {
+				#math heiyiren_idx {$heiyiren_idx+1};
+				get corpse $heiyiren_idx;
+				give corpse to guo jing;
+			} {0.3};
+		}
+	}
+}
+
+#action {$guo_npc_name(%*)} {
+	#if {"$guo_npc_name" != ""} {
+		#variable bExist 1;
+		#if {"$guo_npc_name" == "穷汉"} {
+			#unticker walk;
+			follow poor man;
+		};
+	};
+}
+
+#nop ===========================Ticker===========================
+#ticker {mission_guojob_end} {mission_guojob.end} {90};
+
+#class {mission_guojob} close

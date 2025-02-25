@@ -1,0 +1,43 @@
+#class {explor} open
+#nop ==========================Variable==========================
+#variable {breatheClass} {1};
+#var {w_idx} {1};
+
+
+#nop ===========================Alias============================
+#alias {explor.start}
+{
+	updatedolist explor;
+	#class walk read $MOD/walk.tin;	
+    #map goto 1;
+    walkto $w_idx;   
+}
+
+#alias {explor.kill} {
+    #unticker goon;
+    ts walk;
+}
+
+#alias {explor.end} {
+    explor.kill;
+    fly wm;w;
+}
+
+#alias {arrive_cmd} {
+    #undelay cmdagain;
+    mine;
+    #math {w_idx} {$w_idx+1};
+    #if {$w_idx > 4042} {explor.end};
+    #else {#delay {goon} {
+        walkto $w_idx;
+        #delay {cmdagain} {walkto $w_idx} {15};
+    } {1}};
+}
+
+#nop ===========================Action===========================
+
+#action {^%?%?空手就来挖矿？} {
+    #line log {$LOG/$mine.log} {$w_idx};
+}
+
+#class {explor} close
