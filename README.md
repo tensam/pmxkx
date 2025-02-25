@@ -1,30 +1,33 @@
-# 飘渺侠客行自动机器人包
+# PMXKX Auto Bot Package
 
-## 项目简介
-这是一个用于自动化玩浙江大学MUD游戏《飘渺侠客行》的机器人框架。该工具可以帮助玩家自动完成游戏中的日常任务、练功、打怪等重复性操作，提高游戏效率和体验。
+## Project Introduction
+This is an automation framework for the MUD game "Piao Miao Xia Ke Xing" from Zhejiang University. This tool helps players automatically complete daily tasks, level up, fight monsters and other repetitive operations, improving gameplay efficiency and experience.
 
-## 主要功能
-- 自动登录游戏账号
-- 自动完成日常任务
-- 智能练功升级
-- 自动打怪掉宝
-- 自动江湖闯荡
-- 自动完成门派任务
-- 定时任务执行
-- 游戏状态监控
+## Main Features
+- Automatic game account login
+- Automatic completion of daily tasks
+- Smart training and leveling
+- Automatic monster fighting and treasure hunting
+- Auto adventure in the game world
+- Automatic faction mission completion
+- Scheduled task execution
+- Game status monitoring
 
-## 技术栈
-- 使用Python作为主要开发语言
-- 基于Socket通信与游戏服务器交互
-- 利用正则表达式解析游戏文本信息
-- 使用状态机模型处理游戏逻辑
-- 支持多账号并发操作
+## Technology Stack
+- Python as the main development language
+- Socket-based communication with the game server
+- Text parsing using regular expressions
+- Game logic handling with state machine model
+- Support for multiple concurrent accounts
 
-## 安装与使用
+## Installation and Usage
 
-### 环境要求
+### Requirements
 - Python 3.7+
-- 依赖包：见requirements.txt
+- Dependencies: see requirements.txt
 
-### 安装步骤
-1. 克隆本仓库 
+### Installation Steps
+1. Clone this repository
+
+git clone https://github.com/tensam/pmxkx.git
+cd pmxkx 
